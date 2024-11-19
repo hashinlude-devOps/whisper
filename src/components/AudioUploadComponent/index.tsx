@@ -1,45 +1,93 @@
 "use client";
 
-import React, { useRef } from "react";
-
-import type { UploadProps } from "antd";
-import { message, Upload } from "antd";
+import React from "react";
+import { message, Upload, Button } from "antd";
+import axios from "axios";
 
 import { InputNumber } from "antd";
 
 const { Dragger } = Upload;
 
-export default function AudioUploadComponent() {
-  const audioRef = useRef(null);
+export default function AudioUploadComponent({ setAudioUploadFetched }: any) {
+  const [countOfSpeaker, setCountOfSpeaker] = React.useState<number>();
+  const [audioFileState, setAudioFileState] = React.useState<any>();
+  const [audio, setAudio] = React.useState<any>();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const [countOfSpeaker, setCountOfSpeaker] = React.useState<number>(0);
-
-  console.log(countOfSpeaker);
-
-  const props: UploadProps = {
+  const props = {
     name: "file",
-    multiple: true,
-    action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
-    onChange(info) {
-      const { status } = info.file;
-      if (status !== "uploading") {
-        console.log(info.file, info.fileList);
+    accept: "audio/*",
+    beforeUpload(file: any) {
+      const isAllowedSize = file.size / 1024 / 1024 < 10; // 10 MB limit
+      if (!isAllowedSize) {
+        message.error("File must be smaller than 10MB!");
       }
-      if (status === "done") {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
+      return isAllowedSize;
     },
-    onDrop(e) {
-      console.log("Dropped files", e.dataTransfer.files);
+    onChange(info: any) {
+      const { status, originFileObj } = info.file;
+      if (status !== "uploading" && originFileObj) {
+        setAudioFileState(info.file);
+        // Ensure originFileObj is defined before creating a URL
+        const fileUrl = URL.createObjectURL(originFileObj);
+        setAudio(fileUrl);
+      }
+      // if (status === "done") {
+      //   message?.success(`${info.file.name} file uploaded successfully.`);
+      // } else if (status === "error") {
+      //   message?.error(`${info.file.name} file upload failed.`);
+      // }
     },
   };
+
+  const handlePostRequest = async () => {
+    const formData = new FormData();
+    formData.append("audio", audioFileState?.originFileObj); // Pass the raw file object
+    formData.append("num_speakers", countOfSpeaker?.toString() || "0");
+
+    try {
+      setIsLoading(true);
+      const result = await axios.post(
+        "http://192.168.70.112:5000/upload-audio",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setAudioUploadFetched(result?.data);
+    } catch (error) {
+      console.error("Error posting data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (audio) {
+        URL.revokeObjectURL(audio);
+      }
+    };
+  }, [audio]);
 
   return (
     <div className="flex justify-center items-center h-full">
       <div>
-        <div className="mb-[2rem]">Upload Audio File here</div>
+        <div className="flex justify-between items-center my-[1rem]">
+          <div className="">Upload Audio File here</div>
+          <div>
+            <Button
+              type="primary"
+              loading={isLoading}
+              className="bg-black"
+              onClick={() => handlePostRequest()}
+            >
+              Upload
+            </Button>
+          </div>
+        </div>
         <div className="h-[30rem] md:w-[30rem]">
           <Dragger {...props}>
             <p className="ant-upload-drag-icon">{/* <InboxOutlined /> */}</p>
@@ -53,16 +101,20 @@ export default function AudioUploadComponent() {
           </Dragger>
         </div>
 
-        <div className="flex justify-center items-center mt-[1rem] ">
-          <audio
-            controls
-            style={{
-              width: 350,
-            }}
-          >
-            <source src="/audio/sample-audio.mp3" type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
+        <div className="flex justify-center items-center mt-[3rem] ">
+          {audio ? (
+            <audio
+              controls
+              style={{
+                width: 350,
+              }}
+            >
+              <source src={audio} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
+          ) : (
+            <p>Please upload an audio file to preview.</p>
+          )}
         </div>
 
         <div className="mt-[1rem]">
@@ -71,7 +123,7 @@ export default function AudioUploadComponent() {
             <InputNumber
               className="w-[15rem] "
               value={countOfSpeaker}
-              onChange={(e: any) => setCountOfSpeaker(e?.target?.value)}
+              onChange={(value: any) => setCountOfSpeaker(value)}
             />
           </div>
         </div>
