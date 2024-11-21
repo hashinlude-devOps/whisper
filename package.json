@@ -11,6 +11,7 @@
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.1",
     "antd": "^5.22.1",
+    "appwrite": "^16.0.2",
     "axios": "^1.7.7",
     "jspdf": "^2.5.2",
     "next": "15.0.3",
