@@ -12,6 +12,7 @@
     "@ant-design/nextjs-registry": "^1.0.1",
     "antd": "^5.22.1",
     "axios": "^1.7.7",
+    "jspdf": "^2.5.2",
     "next": "15.0.3",
     "react": "18",
     "react-dom": "18"
