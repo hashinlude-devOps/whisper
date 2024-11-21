@@ -4,10 +4,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 
-// export const metadata: Metadata = {
-//   title: "WHISPER",
-//   description: "WHISPER",
-// };
+export const metadata: Metadata = {
+  title: "WHISPER",
+  description: "WHISPER",
+};
 
 const inter = Inter({ subsets: ["latin"] });
 

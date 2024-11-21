@@ -4,10 +4,22 @@ import React from "react";
 import AudioUploadComponent from "@/components/AudioUploadComponent";
 import SpeakerListToName from "@/components/SpeakerListToName";
 import TranslateComponent from "@/components/TranslateComponent";
+import Loading from "@/components/svg/loading.svg";
+import Image from "next/image";
 
 export default function Home() {
   const [audioUploadFetched, setAudioUploadFetched] = React.useState<any>([]);
   const [script, setScript] = React.useState();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <Image src={Loading} alt="" />
+        <div className="font-bold text-[24px] animate-bounce">Loading..</div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-[3rem] py-[2rem] -">
@@ -18,6 +30,8 @@ export default function Home() {
       <AudioUploadComponent
         audioUploadFetched={audioUploadFetched}
         setAudioUploadFetched={setAudioUploadFetched}
+        setIsLoading={setIsLoading}
+        isLoading={isLoading}
       />
 
       {audioUploadFetched && (

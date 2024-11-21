@@ -33,9 +33,7 @@ export default function SpeakerListToName({
   return (
     <div className="mt-[2rem]">
       {audioUploadFetched?.result?.map((item: any, index: number) => {
-        // Check if the speaker has already been rendered
         if (item?.speaker && !renderedSpeakers.has(item?.speaker)) {
-          // Add the speaker to the Set to ensure it isn't rendered again
           renderedSpeakers.add(item?.speaker);
 
           return (
