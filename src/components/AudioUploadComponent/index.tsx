@@ -8,22 +8,26 @@ import { InputNumber } from "antd";
 
 const { Dragger } = Upload;
 
-export default function AudioUploadComponent({ setAudioUploadFetched }: any) {
+export default function AudioUploadComponent({
+  setAudioUploadFetched,
+  setIsLoading,
+  isLoading,
+}: any) {
   const [countOfSpeaker, setCountOfSpeaker] = React.useState<number>();
   const [audioFileState, setAudioFileState] = React.useState<any>();
   const [audio, setAudio] = React.useState<any>();
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  // const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const props = {
     name: "file",
     accept: "audio/*",
-    beforeUpload(file: any) {
-      const isAllowedSize = file.size / 1024 / 1024 < 10; // 10 MB limit
-      if (!isAllowedSize) {
-        message.error("File must be smaller than 10MB!");
-      }
-      return isAllowedSize;
-    },
+    // beforeUpload(file: any) {
+    //   const isAllowedSize = file.size / 1024 / 1024 < 10; // 10 MB limit
+    //   if (!isAllowedSize) {
+    //     message.error("File must be smaller than 10MB!");
+    //   }
+    //   return isAllowedSize;
+    // },
     onChange(info: any) {
       const { status, originFileObj } = info.file;
       if (status !== "uploading" && originFileObj) {
