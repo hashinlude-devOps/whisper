@@ -1,16 +1,28 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 import AudioUploadComponent from "@/components/AudioUploadComponent";
 import SpeakerListToName from "@/components/SpeakerListToName";
 import TranslateComponent from "@/components/TranslateComponent";
 import Loading from "@/components/svg/loading.svg";
-import Image from "next/image";
 
 export default function Home() {
-  const [audioUploadFetched, setAudioUploadFetched] = React.useState<any>([]);
-  const [script, setScript] = React.useState();
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const session = useSession();
+  const router = useRouter();
+
+  if (!session?.data) {
+    return router?.push("/login");
+  }
+
+  console.log(session, "-- session --");
+
+  const [audioUploadFetched, setAudioUploadFetched] = useState<any>([]);
+  const [script, setScript] = useState(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   if (isLoading) {
     return (

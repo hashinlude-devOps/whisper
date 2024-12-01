@@ -44,11 +44,12 @@ export default function AudioUploadComponent({
     try {
       setIsLoading(true);
       const result = await axios.post(
-        "http://192.168.70.112:5000/upload-audio",
+        "http://192.168.0.178:5000/upload-audio",
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTczMjM1MDE5NiwianRpIjoiZjk4MDg4YzAtNmVmYy00OGNjLWFhZGUtZTM4NTQ2ZTkwNDc4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InJydDJAdGVzdC5jb20iLCJuYmYiOjE3MzIzNTAxOTYsImNzcmYiOiI2ODg3MmI2YS1iM2I0LTQwZTctYTFlNi1iM2Q1NjRlMjFjNDgiLCJleHAiOjE3MzIzNTEwOTZ9.n1EgbHVVtr6bZQRvpYIn6jmDVQq9UxNw_nnB5LLi9YQ`,
           },
         }
       );

@@ -13,14 +13,20 @@ export default function SpeakerListToName({
 
   const handlePostRequest = async () => {
     const data = {
-      json_path: `/home/silentguardian/Documents/Hashinclude/transcribeandtranscript/whisper-flask/${audioUploadFetched?.json_file}`,
+      json_path: audioUploadFetched?.json_file,
       speaker_name_updates: inputData,
     };
+
     try {
       setIsLoading(true);
       const result = await axios.post(
-        "http://192.168.70.112:5000/update-speaker-name",
-        data
+        "http://192.168.0.178:5000/update-speaker-name",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTczMjM1MDE5NiwianRpIjoiZjk4MDg4YzAtNmVmYy00OGNjLWFhZGUtZTM4NTQ2ZTkwNDc4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InJydDJAdGVzdC5jb20iLCJuYmYiOjE3MzIzNTAxOTYsImNzcmYiOiI2ODg3MmI2YS1iM2I0LTQwZTctYTFlNi1iM2Q1NjRlMjFjNDgiLCJleHAiOjE3MzIzNTEwOTZ9.n1EgbHVVtr6bZQRvpYIn6jmDVQq9UxNw_nnB5LLi9YQ`,
+          },
+        }
       );
       setScript(result?.data);
     } catch (error) {
@@ -44,7 +50,7 @@ export default function SpeakerListToName({
               <div>{item?.speaker}</div>
               <audio controls className="md:my-0 sm:my-[1rem] my-[1rem]">
                 <source
-                  src={`http://192.168.70.112:5000/${item?.segment_file}`}
+                  src={`http://192.168.0.178:5000/${item?.segment_file}`}
                   type="audio/mpeg"
                 />
                 Your browser does not support the audio element.
