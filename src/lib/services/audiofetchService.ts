@@ -1,6 +1,6 @@
 export const getSegmentAudio = async (segmentUrl: string): Promise<string> => {
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://192.168.70.112:5000";
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
   
       // Ensure the base URL ends with a single slash and the segment URL starts cleanly
       const fullUrl = new URL(segmentUrl, `${API_BASE_URL}/`).toString();

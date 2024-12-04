@@ -1,14 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { UserIcon, CogIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/navigation";
 
 export default function Header({ isMenuOpen }: { isMenuOpen: boolean }) {
   const router = useRouter();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [userInitial, setUserInitial] = useState<string>("A");
 
-  const userInitial = (localStorage.getItem("name")?.charAt(0).toUpperCase()) || "A";
+  useEffect(() => {
+    // This will run only in the browser after the component has mounted
+    const name = localStorage.getItem("name");
+    if (name) {
+      setUserInitial(name.charAt(0).toUpperCase());
+    }
+  }, []);
 
   const logout = async () => {
     try {
@@ -32,7 +39,6 @@ export default function Header({ isMenuOpen }: { isMenuOpen: boolean }) {
 
       {/* Profile Icon */}
       <div className="relative ml-auto mt-3">
-        {" "}
         {/* Use ml-auto for right alignment */}
         <button
           className="w-10 h-10 flex items-center justify-center bg-gray-800 text-white rounded-full focus:outline-none"

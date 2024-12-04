@@ -20,12 +20,14 @@ export default function AudioUpload({
   const props = {
     name: "file",
     accept: "audio/*",
+    action: undefined, // Disable automatic upload
     beforeUpload: (file: any) => {
       const isAudio = file.type.startsWith("audio/");
       if (!isAudio) {
         message.error("You can only upload audio files!");
+        return false; // Prevent the file from being uploaded
       }
-      return isAudio; // Allow upload if it's an audio file
+      return true; // Allow upload if it's an audio file
     },
     onChange(info: any) {
       const { status, originFileObj } = info.file;
@@ -36,6 +38,9 @@ export default function AudioUpload({
       }
     },
   };
+  
+  
+  
   
 
   const handlePostRequest = async () => {

@@ -7,7 +7,7 @@ interface ApiOptions {
   params?: Record<string, string | number>;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://192.168.70.112:5000';  // You can set your base URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL  // You can set your base URL
 
 export const apiClient = async <T>(
   endpoint: string,
