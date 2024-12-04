@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
     "rc-tree",
     "rc-table",
   ],
+  
 };
 
 export default nextConfig;

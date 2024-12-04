@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "WHISPER",
@@ -16,7 +17,7 @@ export default function RootLayout({ children }: any) {
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning>
         <main>
-          <AntdRegistry>{children}</AntdRegistry>
+          <AntdRegistry><Toaster position="bottom-right" />{children}</AntdRegistry>
         </main>
       </body>
     </html>
