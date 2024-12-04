@@ -16,6 +16,9 @@ export default function History({
     setIsMenuOpen((prev) => !prev);
   };
 
+  
+  
+
   return (
     <>
       {/* Menu */}
@@ -41,7 +44,7 @@ export default function History({
                   isMenuOpen ? "rotate-45 translate-y-2" : ""
                 }`}
               ></div>
-              
+
               <div
                 className={`w-full h-1 bg-white rounded transition-all duration-300 ${
                   isMenuOpen ? "-rotate-45 -translate-y-2" : ""
@@ -65,16 +68,15 @@ export default function History({
               <ul className="space-y-2 p-4">
                 {history.map((item) => (
                   <li key={item.id} className="flex flex-col space-y-1 p-2">
-                    <span className="text-gray-300 text-sm hover:text-gray-200 font-medium">
-                      {item.audio_file.split("/").pop()}
-                    </span>
                     <a
                       href={item.audio_file}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-400 hover:underline text-sm"
                     >
-                      Open Audio File
+                      <span className="text-gray-300 text-sm hover:text-gray-200 font-medium">
+                        {item.audio_file.split("/").pop()}
+                      </span>
                     </a>
                   </li>
                 ))}

@@ -14,6 +14,8 @@ interface AudioResultProps {
       speaker: string;
       transcribed_text: string;
       translated_text: string;
+      start_time: number;
+      end_time: number;
     }[];
     speaker_list: string[];
     status: string;
@@ -25,6 +27,19 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
     null
   );
+
+  // Helper function to format milliseconds to HH:mm:ss
+  const formatTime = (ms: number) => {
+    console.log("number is");
+    console.log(ms);
+
+    const date = new Date(ms * 1000); // Multiply by 1000 to convert to milliseconds
+    const hours = date.getUTCHours().toString().padStart(2, "0");
+    const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+    const seconds = date.getUTCSeconds().toString().padStart(2, "0");
+
+    return `${hours}:${minutes}:${seconds}`;
+  };
 
   // Fetch audio segments from the server
   const fetchSegmentAudio = async (segmentFile: string): Promise<string> => {
@@ -40,17 +55,7 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
   // Fetch audio files on mount and when result changes
   useEffect(() => {
     const fetchAudioFiles = async () => {
-      const audioPromises = result.result.map(async (segment) => {
-        const audioUrl = await fetchSegmentAudio(segment.segment_file);
-        return { [segment.segment_file]: audioUrl };
-      });
-
-      const audioResults = await Promise.all(audioPromises);
-      const audioMap = audioResults.reduce(
-        (acc, cur) => ({ ...acc, ...cur }),
-        {}
-      );
-      setAudioUrls(audioMap);
+      // Implement logic to fetch audio files if needed
     };
 
     fetchAudioFiles();
@@ -63,83 +68,87 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
       <div className="mt-4">
         <h3 className="font-semibold">Segments</h3>
         <div className="space-y-2">
-          {result.result.map((segment, index) => (
-            <div
-              key={index}
-              className="flex items-center space-x-4 hover:bg-gray-100 transition-colors duration-200 p-1 rounded-md"
-            >
-              {/* Dropdown Menu for Speakers */}
-              <div className="relative">
-                <div
-                  className="flex items-center justify-center cursor-pointer bg-gray-200 w-6 h-6 rounded-full"
-                  onClick={() =>
-                    setOpenDropdownIndex(
-                      openDropdownIndex === index ? null : index
-                    )
-                  }
-                  title="Select Speaker"
-                >
-                  {/* Icon as Dropdown Button */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-gray-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5 10l7 7 7-7"
-                    />
-                  </svg>
+          {result.result.map((segment, index) => {
+            const startTime = segment.start_time; // Start time in milliseconds
+            // For the first segment, set start time to 0
+            const elapsedTime = formatTime(index === 0 ? 0 : startTime); // For first segment, always 00:00:00
+            return (
+              <div
+                key={index}
+                className="flex items-center space-x-4 hover:bg-gray-100 transition-colors duration-200 p-1 rounded-md"
+              >
+                {/* Show the elapsed time relative to total audio */}
+                <div className="flex-1">
+                  <span>{elapsedTime}</span>
                 </div>
-                {/* Dropdown List */}
-                {openDropdownIndex === index && (
-                 <div className="absolute left-0 mt-2 bg-white border border-gray-300 rounded-md shadow-lg z-10 w-48">
-                 <ul>
-                   {/* Header for Dropdown */}
-                   <li className="px-4 py-2 hover:bg-gray-100 border-b cursor-pointer">
-                     Speakers
-                   </li>
-                   {result.speaker_list.map((speaker: string, speakerIndex: number) => (
-                    <li
-                    key={speakerIndex}
-                    className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer space-x-2"
-                  >
-                    {/* Editable Speaker Name */}
-                    <span
-                      contentEditable
-                      suppressContentEditableWarning
-                      className="flex-1 focus:border-gray-300 focus:outline-none rounded-md p-1"
-                    >
-                      {speaker}
-                    </span>
-                  
-                    {/* Pencil Icon aligned to the right */}
-                    <button className="text-gray-600 hover:text-gray-800 ml-auto">
-                      <PencilSquareIcon className="h-5 w-5" />
-                    </button>
-                  </li>
-                  
-                   ))}
-                 </ul>
-               </div>
-               
-                )}
-              </div>
 
-              {/* Speaker Name */}
-              <div className="flex-1">
-                <span>{segment.speaker}</span>
+                {/* Dropdown Menu for Speakers */}
+                <div className="relative">
+                  <div
+                    className="flex items-center justify-center cursor-pointer bg-gray-200 w-6 h-6 rounded-full"
+                    onClick={() =>
+                      setOpenDropdownIndex(
+                        openDropdownIndex === index ? null : index
+                      )
+                    }
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 text-gray-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 10l7 7 7-7"
+                      />
+                    </svg>
+                  </div>
+                  {openDropdownIndex === index && (
+                    <div className="absolute left-0 mt-2 bg-white border border-gray-300 rounded-md shadow-lg z-10 w-48">
+                      <ul>
+                        <li className="px-4 py-2 hover:bg-gray-100 border-b cursor-pointer">
+                          Speakers
+                        </li>
+                        {result.speaker_list.map(
+                          (speaker: string, speakerIndex: number) => (
+                            <li
+                              key={speakerIndex}
+                              className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer space-x-2"
+                            >
+                              <span
+                                contentEditable
+                                suppressContentEditableWarning
+                                className="flex-1 focus:border-gray-300 focus:outline-none rounded-md p-1"
+                              >
+                                {speaker}
+                              </span>
+                              <button className="text-gray-600 hover:text-gray-800 ml-auto">
+                                <PencilSquareIcon className="h-5 w-5" />
+                              </button>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                {/* Speaker Name */}
+                <div className="flex-1">
+                  <span>{segment.speaker}</span>
+                </div>
+
+                {/* Transcribed Text */}
+                <div className="flex-1">
+                  <span>{segment.transcribed_text}</span>
+                </div>
               </div>
-              {/* Transcribed Text */}
-              <div className="flex-1">
-                <span>{segment.transcribed_text}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

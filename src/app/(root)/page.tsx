@@ -1,3 +1,4 @@
+// src/app/(root)/page.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -7,18 +8,16 @@ import { getRecordings } from "@/lib/services/audioService";
 import Loader from "@/components/Loader";
 import AudioResult from "@/components/AudioResult";
 import Header from "@/components/Header";
+import { useRouter } from "next/navigation"; // Importing router for navigation
 
 export default function Home() {
   const [audioUploadFetched, setAudioUploadFetched] = useState(null);
   const [loading, setIsLoading] = useState(false);
   const [history, setHistory] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    if (window.innerWidth <= 768) {
-      setIsMenuOpen(false);
-    }
-
     const fetchHistory = async () => {
       try {
         setIsLoading(true);
@@ -35,6 +34,8 @@ export default function Home() {
     fetchHistory();
   }, []);
 
+ 
+
   return (
     <div className="flex h-screen">
       {loading && <Loader />}
@@ -45,14 +46,12 @@ export default function Home() {
         setIsMenuOpen={setIsMenuOpen}
         history={history}
       />
-
-      {/* Main Content */}
       <div
         className={`flex-1 flex flex-col overflow-hidden transition-all duration-500 ease-in-out ${
           isMenuOpen ? "md:ml-64" : "md:ml-0"
         } sm:ml-0`}
       >
-        <Header isMenuOpen={isMenuOpen}  />
+        <Header isMenuOpen={isMenuOpen} />
 
         <div className="flex-1 h-[calc(100vh-4rem)] overflow-y-auto">
           {audioUploadFetched ? (

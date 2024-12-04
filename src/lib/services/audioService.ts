@@ -58,3 +58,17 @@ export const updateSpeakerNames = async (
     throw error;
   }
 };
+
+
+export const getTranscribtion = async (id: string,): Promise<Response> => {
+  try {
+    const response = await apiClient<Response>(`/view-json/${id}`, {
+      method: "GET",
+    });
+    return (response); 
+  } catch (error) {
+    console.error("Error fetching recordings:", error);
+    throw error; 
+  }
+};
+
