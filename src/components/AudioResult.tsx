@@ -123,13 +123,15 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
                 const startTime = segment.start_time;
                 const endTime = segment.end_time;
                 const elapsedTime = formatTime(index === 0 ? 0 : startTime);
+                const bufferTime = 0.3; // Add a small buffer time (in seconds)
                 const isHighlighted =
-                  currentAudioTime >= startTime && currentAudioTime <= endTime;
+                  currentAudioTime >= startTime - bufferTime &&
+                  currentAudioTime <= endTime + bufferTime;
 
                 return (
                   <tr
                     key={index}
-                    className={`transition-colors duration-200 ${
+                    className={`table-row transition-colors duration-300 ${
                       isHighlighted ? "bg-gray-200" : "hover:bg-gray-200"
                     }`}
                   >

@@ -111,10 +111,10 @@
 
 /* Add these styles in your global CSS or module styles */
 .table-container {
-  /* overflow-x: auto; Allow horizontal scrolling when necessary */
+  overflow-x: auto; /* Allow horizontal scrolling when necessary */
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
   position: relative; /* Ensure it’s positioned */
-  overflow: auto;
+ 
 }
 
 table {
@@ -136,5 +136,9 @@ td, th {
 
 td {
   vertical-align: top; /* Align content to the top-left */
+}
+
+.table-row {
+  transition: background-color 0.3s ease-in-out;
 }
 
