@@ -45,6 +45,12 @@ export const apiClient = async <T>(
         window.location.href = '/sign-in';  
         return { status: 401, data: {} as T }; 
     }
+    // If the response is a binary file (audio, for example), return the blob directly
+    if (response.headers.get("Content-Type")?.startsWith("audio")) {
+      const blob = await response.blob();
+      return { status: response.status, data: blob as unknown as T }; // Return as blob
+    }
+
     const data = await response.json();
 
     return { status: response.status, data };  

@@ -1,4 +1,3 @@
-//src/components/AudioResult.tsx
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
@@ -43,7 +42,7 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
     return `${hours}:${minutes}:${seconds}`;
   };
 
-  // Fetch the full audio URL on mount
+  // Fetch the full audio URL on mount and ensure it's called only once
   useEffect(() => {
     const fetchFullAudio = async () => {
       if (hasFetchedAudio.current) return; // Prevent fetching if it's already done
@@ -60,7 +59,9 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
       }
     };
   
-    fetchFullAudio(); // Call the function to fetch the full audio
+    if (result.recording_id && !hasFetchedAudio.current) {
+      fetchFullAudio(); // Call the function to fetch the full audio
+    }
   }, [result.recording_id]); // Only depend on recording_id
   
   return (
