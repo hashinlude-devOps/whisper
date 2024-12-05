@@ -130,7 +130,7 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
                   <tr
                     key={index}
                     className={`transition-colors duration-200 ${
-                      isHighlighted ? "bg-yellow-100" : "hover:bg-gray-200"
+                      isHighlighted ? "bg-gray-200" : "hover:bg-gray-200"
                     }`}
                   >
                     <td className="px-4 py-2">{elapsedTime}</td>
