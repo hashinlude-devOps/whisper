@@ -69,7 +69,7 @@ const CustomAudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
   useEffect(() => {
     if (audioUrl && audioRef.current) {
       audioRef.current.src = audioUrl;
-      audioRef.current.play().then(() => setIsPlaying(true));
+    //   audioRef.current.play().then(() => setIsPlaying(true));
     }
   }, [audioUrl]);
 

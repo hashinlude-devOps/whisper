@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState, useRef } from "react";
 import { getFullAudio } from "@/lib/services/audiofetchService"; // Adjust the path to your service file
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
@@ -42,11 +40,11 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
     return `${hours}:${minutes}:${seconds}`;
   };
 
-  // Fetch the full audio URL on mount and ensure it's called only once
+  // Fetch the full audio URL on result change
   useEffect(() => {
     const fetchFullAudio = async () => {
       if (hasFetchedAudio.current) return; // Prevent fetching if it's already done
-  
+
       setLoadingAudio(true); // Set loading state to true before fetching audio
       try {
         const url = await getFullAudio(result.recording_id.toString());
@@ -58,12 +56,17 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
         setLoadingAudio(false); // Set loading state to false when finished
       }
     };
-  
-    if (result.recording_id && !hasFetchedAudio.current) {
+
+    // Reset state whenever result changes
+    setAudioUrl(null); // Reset audio URL
+    setLoadingAudio(true); // Reset loading state
+    hasFetchedAudio.current = false; // Reset the fetch flag
+
+    if (result.recording_id) {
       fetchFullAudio(); // Call the function to fetch the full audio
     }
-  }, [result.recording_id]); // Only depend on recording_id
-  
+  }, [result]); // Depend on result to fetch audio whenever result changes
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-col space-y-4 px-[2rem] py-[2rem] flex-1">

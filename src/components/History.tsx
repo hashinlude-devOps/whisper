@@ -16,6 +16,12 @@ export default function History({
   setAudioUploadFetched: React.Dispatch<React.SetStateAction<any>>; // For updating the result in the parent
 }) {
   const [historyData, setHistoryData] = useState<any[]>([]);
+  const [activeItem, setActiveItem] = useState(null);
+
+  const handleItemClick = (id:any) => {
+    setActiveItem(id); // Set the active item when clicked
+    handleHistoryClick(id); // Call the external handler
+  };
 
   const handleHistoryClick = async (id: string) => {
     try {
@@ -98,11 +104,16 @@ export default function History({
             {historyData.length > 0 ? (
               <ul className="space-y-2 p-4">
                 {historyData.map((item) => (
-                  <li key={item.id} className="flex flex-col space-y-1 p-2">
-                    <span
-                      className="text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer"
-                      onClick={() => handleHistoryClick(item.id)} // Call handleHistoryClick on click
-                    >
+                  <li
+                  key={item.id}
+                  className={`flex flex-col space-y-1 p-2 
+                    ${activeItem === item.id ? 'bg-gray-700 rounded-md' : 'hover:bg-gray-700'} 
+                    hover:rounded-md`} // Apply hover effect and active state effect
+                >
+                  <span
+                    className="text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer"
+                    onClick={() => handleItemClick(item.id)} // Set active on click
+                  >
                       {item.audio_file
                         .split("/")
                         .pop()
