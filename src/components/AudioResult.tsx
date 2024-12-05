@@ -130,11 +130,78 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
                   <tr
                     key={index}
                     className={`transition-colors duration-200 ${
-                      isHighlighted ? "bg-gray-200" : "hover:bg-gray-200"
+                      isHighlighted ? "bg-yellow-100" : "hover:bg-gray-200"
                     }`}
                   >
                     <td className="px-4 py-2">{elapsedTime}</td>
                     <td className="px-4 py-2">{segment.speaker}</td>
+                    <td className="px-4 py-2">
+                      <div
+                        className="relative"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div
+                          className="flex items-center justify-center cursor-pointer bg-gray-200 w-6 h-6 rounded-full"
+                          onClick={() =>
+                            setOpenDropdownIndex(
+                              openDropdownIndex === index ? null : index
+                            )
+                          }
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4 text-gray-600"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 10l7 7 7-7"
+                            />
+                          </svg>
+                        </div>
+                        {openDropdownIndex === index && (
+                          <div className="absolute left-0 mt-2 bg-white border border-gray-300 rounded-md shadow-lg z-10 w-48">
+                            <ul>
+                              <li className="px-4 py-1 hover:bg-gray-100 border-b cursor-pointer">
+                                Speakers
+                              </li>
+                              {result.speaker_list.map(
+                                (speaker: string, speakerIndex: number) => (
+                                  <li
+                                    key={speakerIndex}
+                                    className="flex items-center px-4 py-1 hover:bg-gray-100 cursor-pointer space-x-2"
+                                  >
+                                    <span
+                                      contentEditable
+                                      suppressContentEditableWarning
+                                      className="flex-1 focus:border-gray-300 focus:outline-none rounded-md p-1"
+                                      onKeyDown={(e) =>
+                                        handleKeyDown(
+                                          e,
+                                          speakerIndex,
+                                          result.json_file
+                                        )
+                                      }
+                                    >
+                                      {speakerNameUpdates[
+                                        `speaker_${speakerIndex}`
+                                      ] || speaker}
+                                    </span>
+                                    <button className="text-gray-600 hover:text-gray-800 ml-auto">
+                                      <PencilSquareIcon className="h-4 w-4" />
+                                    </button>
+                                  </li>
+                                )
+                              )}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-2">{segment.transcribed_text}</td>
                   </tr>
                 );
