@@ -23,6 +23,7 @@ interface AudioResultProps {
   };
 }
 
+
 const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
     null
