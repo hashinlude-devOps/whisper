@@ -1,19 +1,23 @@
-//src/components/CustomAudioPlayer.tsx
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
 
-const CustomAudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
+const CustomAudioPlayer = ({
+  audioUrl,
+  onTimeUpdate,
+}: {
+  audioUrl: string;
+  onTimeUpdate: (currentTime: number) => void;
+}) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
-  
 
   const togglePlayPause = () => {
     const audio = audioRef.current;
-    if (!audio) return; // Ensure audioRef.current is not null
+    if (!audio) return;
 
     if (audio.paused) {
       audio.play();
@@ -53,6 +57,7 @@ const CustomAudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
     const updateCurrentTime = () => {
       if (audioRef.current) {
         setCurrentTime(audioRef.current.currentTime);
+        onTimeUpdate(audioRef.current.currentTime);
       }
     };
 
@@ -64,12 +69,11 @@ const CustomAudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
         audioElement.removeEventListener("timeupdate", updateCurrentTime);
       };
     }
-  }, []);
+  }, [onTimeUpdate]);
 
   useEffect(() => {
     if (audioUrl && audioRef.current) {
       audioRef.current.src = audioUrl;
-    //   audioRef.current.play().then(() => setIsPlaying(true));
     }
   }, [audioUrl]);
 
@@ -103,13 +107,11 @@ const CustomAudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
           onEnded={handleAudioEnded}
         />
         <div className="flex items-center gap-2">
-        <h2 className="text-16 font-normal text-white-2">
+          <h2 className="text-16 font-normal text-white-2">
             {formatTime(currentTime)} / {formatTime(duration)}
           </h2>
-        
         </div>
 
-        {/* Center: Controls */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-1.5">
             <Image
@@ -140,9 +142,8 @@ const CustomAudioPlayer = ({ audioUrl }: { audioUrl: string }) => {
           </div>
         </div>
 
-        {/* Right: Timing */}
         <div className="flex items-center">
-        <Image
+          <Image
             src={isMuted ? "/icons/unmute.svg" : "/icons/mute.svg"}
             width={24}
             height={24}
