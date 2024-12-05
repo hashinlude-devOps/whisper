@@ -8,6 +8,9 @@ import { Toaster } from "react-hot-toast";
 export const metadata: Metadata = {
   title: "WHISPER",
   description: "WHISPER",
+  icons: {
+    icon: '/icons/logo.png'
+  }
 };
 
 const inter = Inter({ subsets: ["latin"] });
