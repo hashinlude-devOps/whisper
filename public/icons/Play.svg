@@ -1,0 +1,14 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <rect width="48" height="48" rx="24" fill="#1F2937"/>
+  
+  <!-- Play icon (triangle) -->
+  <path d="M18 12L34 24L18 36V12Z" fill="#FFFFFF"/>
+  
+  <defs>
+    <linearGradient id="paint0_linear_3676_2393" x1="43.5" y1="7.49999" x2="-49.5" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>

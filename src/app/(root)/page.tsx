@@ -34,7 +34,10 @@ export default function Home() {
     fetchHistory();
   }, []);
 
- 
+  // Handle navigation to the result page
+  const handleHistoryClick = (id: string) => {
+    router.push(`/result/${id}`); // Navigate to the result page based on history item id
+  };
 
   return (
     <div className="flex h-screen">
@@ -46,6 +49,8 @@ export default function Home() {
         setIsMenuOpen={setIsMenuOpen}
         history={history}
       />
+
+      {/* Main Content */}
       <div
         className={`flex-1 flex flex-col overflow-hidden transition-all duration-500 ease-in-out ${
           isMenuOpen ? "md:ml-64" : "md:ml-0"

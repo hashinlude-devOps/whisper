@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
   /* config options here */
   transpilePackages: [
     "antd",
@@ -15,5 +16,6 @@ const nextConfig: NextConfig = {
   ],
   
 };
+
 
 export default nextConfig;
