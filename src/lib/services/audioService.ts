@@ -60,7 +60,7 @@ export const updateSpeakerNames = async (
 };
 
 
-export const getTranscribtion = async (id: string,): Promise<Response> => {
+export const getTranscription = async (id: string,): Promise<Response> => {
   try {
     const response = await apiClient<Response>(`/view-json/${id}`, {
       method: "GET",

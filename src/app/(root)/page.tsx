@@ -1,43 +1,19 @@
-// src/app/(root)/page.tsx
-"use client";
 
-import React, { useEffect, useState } from "react";
+
+"use client";
+import React, { useState } from "react";
 import AudioUpload from "@/components/AudioUpload";
 import History from "@/components/History";
-import { getRecordings } from "@/lib/services/audioService";
 import Loader from "@/components/Loader";
 import AudioResult from "@/components/AudioResult";
 import Header from "@/components/Header";
-import { useRouter } from "next/navigation"; // Importing router for navigation
 
 export default function Home() {
   const [audioUploadFetched, setAudioUploadFetched] = useState(null);
   const [loading, setIsLoading] = useState(false);
-  const [history, setHistory] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-  const router = useRouter();
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getRecordings();
-        const fetchedHistory = response.data.recordings;
-        setHistory(fetchedHistory);
-      } catch (error) {
-        console.error("Failed to fetch recordings:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchHistory();
-  }, []);
-
-  // Handle navigation to the result page
-  const handleHistoryClick = (id: string) => {
-    router.push(`/result/${id}`); // Navigate to the result page based on history item id
-  };
+ 
 
   return (
     <div className="flex h-screen">
@@ -47,7 +23,8 @@ export default function Home() {
       <History
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
-        history={history}
+        setIsLoading={setIsLoading}
+        setAudioUploadFetched={setAudioUploadFetched} 
       />
 
       {/* Main Content */}

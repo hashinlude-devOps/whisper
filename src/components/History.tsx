@@ -1,24 +1,54 @@
-//src/components/History.tsx
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AudioOutlined } from "@ant-design/icons";
+import { getRecordings, getTranscription } from "@/lib/services/audioService"; // Import the service
 
 export default function History({
-  history,
   isMenuOpen,
   setIsMenuOpen,
+  setIsLoading,
+  setAudioUploadFetched, // Add this prop to pass data to the parent,
 }: {
-  history: any[];
   isMenuOpen: boolean;
   setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setAudioUploadFetched: React.Dispatch<React.SetStateAction<any>>; // For updating the result in the parent
 }) {
+  const [historyData, setHistoryData] = useState<any[]>([]);
+
+  const handleHistoryClick = async (id: string) => {
+    try {
+      setIsLoading(true);
+      const response = await getTranscription(id); // Call the transcription API
+      setAudioUploadFetched(response.data.result); // Pass the transcription data to the parent
+    } catch (error) {
+      console.error("Error fetching transcription:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getRecordings();
+        const fetchedHistory = response.data.recordings;
+        setHistoryData(fetchedHistory);
+      } catch (error) {
+        console.error("Failed to fetch recordings:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [setIsLoading]);
+
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
   };
-
-  
-  
 
   return (
     <>
@@ -65,20 +95,20 @@ export default function History({
           }`}
         >
           <div className="h-full max-h-[calc(100vh-4rem)] overflow-y-auto hide-scrollable ">
-            {history.length > 0 ? (
+            {historyData.length > 0 ? (
               <ul className="space-y-2 p-4">
-                {history.map((item) => (
+                {historyData.map((item) => (
                   <li key={item.id} className="flex flex-col space-y-1 p-2">
-                    <a
-                      href={item.audio_file}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:underline text-sm"
+                    <span
+                      className="text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer"
+                      onClick={() => handleHistoryClick(item.id)} // Call handleHistoryClick on click
                     >
-                      <span className="text-gray-300 text-sm hover:text-gray-200 font-medium">
-                        {item.audio_file.split("/").pop()}
-                      </span>
-                    </a>
+                      {item.audio_file
+                        .split("/")
+                        .pop()
+                        ?.replace(/\.[^/.]+$/, "")}{" "}
+                      {/* Display file name without extension */}
+                    </span>
                   </li>
                 ))}
               </ul>
