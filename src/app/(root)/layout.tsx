@@ -4,7 +4,6 @@ import History from "@/components/History";
 import Header from "@/components/Header";
 import { AudioProvider } from "@/context/AudioContext";
 import { redirect } from "next/navigation";
-import { getLoggedInUser } from "@/lib/action";
 
 
 export default async function RootLayout({
@@ -13,9 +12,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-  const loggedIn = await getLoggedInUser();
 
-  if(!loggedIn) redirect('/sign-in')
 
   return (
     <AudioProvider> 
