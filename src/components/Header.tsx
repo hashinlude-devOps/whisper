@@ -27,7 +27,7 @@ export default function Header({ isMenuOpen }: { isMenuOpen: boolean }) {
   };
 
   return (
-    <header className="h-16 bg-white flex items-center px-4 justify-between">
+    <header className="h-16 bg-white flex items-center px-4  justify-between">
       {/* Logo */}
       <p
         className={`text-[26px] text-gray-800 font-bold hidden md:block transition-all ${
