@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState, useRef } from "react";
 import { getFullAudio } from "@/lib/services/audiofetchService";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";

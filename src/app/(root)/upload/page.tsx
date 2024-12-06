@@ -1,9 +1,9 @@
-import React from 'react'
+import AudioUpload from "@/components/AudioUpload";
 
-const page = () => {
+export default function AudioUploadPage() {
   return (
-    <div>page</div>
-  )
+    <>
+      <AudioUpload />
+    </>
+  );
 }
-
-export default page

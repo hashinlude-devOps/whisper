@@ -1,24 +1,26 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import { AudioOutlined } from "@ant-design/icons";
 import { getRecordings, getTranscription } from "@/lib/services/audioService"; // Import the service
+import { useRouter } from "next/navigation";
+import { useAudio } from "@/context/AudioContext";
+import message from "antd/es/message";
 
 export default function History({
   isMenuOpen,
   setIsMenuOpen,
-  setIsLoading,
-  setAudioUploadFetched, // Add this prop to pass data to the parent,
 }: {
   isMenuOpen: boolean;
   setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setAudioUploadFetched: React.Dispatch<React.SetStateAction<any>>; // For updating the result in the parent
 }) {
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [activeItem, setActiveItem] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleItemClick = (id:any) => {
+  // Access the context here
+  const { setAudioResult } = useAudio();
+
+  const handleItemClick = (id: any) => {
     setActiveItem(id); // Set the active item when clicked
     handleHistoryClick(id); // Call the external handler
   };
@@ -26,10 +28,19 @@ export default function History({
   const handleHistoryClick = async (id: string) => {
     try {
       setIsLoading(true);
-      const response = await getTranscription(id); // Call the transcription API
-      setAudioUploadFetched(response.data.result); // Pass the transcription data to the parent
+      const response = await getTranscription(id);
+      const fetchedResult = response.data.result;
+      console.log(fetchedResult);
+      if (fetchedResult) {
+        // Now setAudioResult works as expected because it's inside the functional component
+        setAudioResult(fetchedResult);
+        router.push("/result");
+      } else {
+        message.error("No results found for this transcription.");
+      }
     } catch (error) {
       console.error("Error fetching transcription:", error);
+      message.error("Failed to fetch transcription.");
     } finally {
       setIsLoading(false);
     }
@@ -105,15 +116,15 @@ export default function History({
               <ul className="space-y-2 p-4">
                 {historyData.map((item) => (
                   <li
-                  key={item.id}
-                  className={`flex flex-col space-y-1 p-2 
-                    ${activeItem === item.id ? 'bg-gray-700 rounded-md' : 'hover:bg-gray-700'} 
-                    hover:rounded-md`} // Apply hover effect and active state effect
-                >
-                  <span
-                    className="text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer"
-                    onClick={() => handleItemClick(item.id)} // Set active on click
+                    key={item.id}
+                    className={`flex flex-col space-y-1 p-2 
+                      ${activeItem === item.id ? 'bg-gray-700 rounded-md' : 'hover:bg-gray-700'} 
+                      hover:rounded-md`} // Apply hover effect and active state effect
                   >
+                    <span
+                      className="text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer"
+                      onClick={() => handleItemClick(item.id)} // Set active on click
+                    >
                       {item.audio_file
                         .split("/")
                         .pop()

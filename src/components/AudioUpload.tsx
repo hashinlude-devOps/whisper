@@ -5,17 +5,18 @@ import React from "react";
 import { message, Upload, Button } from "antd";
 import { InputNumber } from "antd";
 import { uploadAudio } from "@/lib/services/audioService"; // Import the service
+import { useAudio } from "@/context/AudioContext"; // Import your context hook
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 
 const { Dragger } = Upload;
 
-export default function AudioUpload({
-  setAudioUploadFetched,
-  loading,
-  setIsLoading,
-}: any) {
+export default function AudioUpload() {
+  const { setAudioResult } = useAudio(); // Use the global context to update audio result
   const [countOfSpeaker, setCountOfSpeaker] = React.useState<number>();
   const [audioFileState, setAudioFileState] = React.useState<any>();
   const [audio, setAudio] = React.useState<any>();
+  const [loading, setIsLoading] = React.useState(false);
+  const router = useRouter(); // Use the router for navigation
 
   const props = {
     name: "file",
@@ -38,10 +39,6 @@ export default function AudioUpload({
       }
     },
   };
-  
-  
-  
-  
 
   const handlePostRequest = async () => {
     try {
@@ -52,7 +49,8 @@ export default function AudioUpload({
       );
       const fetchedResult = result.data;
       console.log(fetchedResult);
-      setAudioUploadFetched(fetchedResult);
+      setAudioResult(fetchedResult);
+      router.push("/result");
     } catch (error) {
       console.error("Error posting data:", error);
       message.error("Failed to upload the audio.");
@@ -68,8 +66,6 @@ export default function AudioUpload({
       }
     };
   }, [audio]);
-  
-  
 
   return (
     <div className="flex justify-center items-center h-full px-[2rem] py-[2rem]">
