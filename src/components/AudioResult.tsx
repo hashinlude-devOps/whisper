@@ -4,6 +4,8 @@ import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import Loader from "@/components/Loader";
 import { updateSpeakerNames } from "@/lib/services/audioService";
+import CalendarIcon from "@heroicons/react/20/solid/CalendarIcon";
+import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
 
 interface AudioResultProps {
   result: {
@@ -22,7 +24,6 @@ interface AudioResultProps {
     status: string;
   };
 }
-
 
 const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
@@ -91,6 +92,8 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
       });
   };
 
+  const handleFilenameChange = ()=>{}
+
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLSpanElement>,
     speakerIndex: number,
@@ -114,12 +117,43 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
       onClick={() => setOpenDropdownIndex(null)}
       className="flex flex-col min-h-screen"
     >
-      <div className="flex flex-col space-y-4 px-[2rem] py-[2rem] flex-1">
-        <h2 className="text-l">Audio Transcription and Translation Results</h2>
+      <div className="flex flex-col space-y-4 px-[2rem]  flex-1">
+        <div className="sticky top-0 bg-white z-10">
+          <div className="flex items-center space-x-2 mt-2 py-4">
+            <div className="flex items-center space-x-2">
+              <span
+                contentEditable
+                suppressContentEditableWarning
+                className="text-sm text-gray-700 font-bold focus:outline-none "
+                onKeyDown={(e) => handleFilenameChange()}
+              >
+               {result.json_file}
+              </span>
+              <button className="text-gray-600 hover:text-gray-800">
+                <PencilSquareIcon className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2 ">
+            <div className="flex items-center space-x-1">
+              <CalendarIcon className="h-5 w-5 text-gray-500" />
+              <span className="text-sm text-gray-700">
+                27/11/2024, 15:32:38
+              </span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <ClockIcon className="h-5 w-5 text-gray-500" />
+              <span className="text-sm text-gray-700">0:26</span>
+            </div>
+          </div>
+        </div>
 
-        <div className="mt-4 table-container">
-          <table className="min-w-full table-auto">
-            <tbody>
+        <div className="mt-4 table-container ">
+          <table className="min-w-full table-auto ">
+            <tbody
+              className="overflow-y-auto"
+              style={{ maxHeight: "calc(100vh - 160px)" }}
+            >
               {result.result.map((segment, index) => {
                 const startTime = segment.start_time;
                 const endTime = segment.end_time;
