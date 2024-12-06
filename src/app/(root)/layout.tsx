@@ -22,10 +22,10 @@ export default function RootLayout({
       <div
         className={`flex-1 flex flex-col overflow-hidden transition-all duration-500 ease-in-out ${
           isMenuOpen ? "md:ml-64" : "md:ml-0"
-        } sm:ml-0`}
+        } sm:ml-0 `}
       >
         <Header isMenuOpen={isMenuOpen} />
-        <main className="flex-1 h-[calc(100vh-4rem)] overflow-y-auto">
+        <main className="flex-1 h-[calc(100vh-4rem)]  mt-4">
           {children}
         </main>
       </div>
