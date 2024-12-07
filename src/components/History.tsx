@@ -1,17 +1,13 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { AudioOutlined } from "@ant-design/icons";
 import { getRecordings, getTranscription } from "@/lib/services/audioService"; // Import the service
 import { useRouter } from "next/navigation";
 import { useAudio } from "@/context/AudioContext";
 import message from "antd/es/message";
+import { useSidebar } from "@/context/SidebarProvider";
 
-export default function History({
-  isMenuOpen,
-  setIsMenuOpen,
-}: {
-  isMenuOpen: boolean;
-  setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+export default function History() {
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [activeItem, setActiveItem] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +15,7 @@ export default function History({
 
   // Access the context here
   const { setAudioResult } = useAudio();
+  const { isMenuOpen, setIsMenuOpen } = useSidebar(); // Access sidebar context
 
   const handleItemClick = (id: any) => {
     setActiveItem(id); // Set the active item when clicked
@@ -28,6 +25,7 @@ export default function History({
   const handleHistoryClick = async (id: string) => {
     try {
       setIsLoading(true);
+      setIsMenuOpen(false);
       const response = await getTranscription(id);
       const fetchedResult = response.data.result;
       console.log(fetchedResult);
@@ -64,7 +62,11 @@ export default function History({
   }, [setIsLoading]);
 
   const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
+    setIsMenuOpen((prev: any) => !prev);
+  };
+
+  const uploadnew = () => {
+    router.push("/"); // Redirect to the home page
   };
 
   return (
@@ -100,7 +102,7 @@ export default function History({
               ></div>
             </div>
           </button>
-          <button className="p-2 rounded-lg">
+          <button className="p-2 rounded-lg" onClick={uploadnew}>
             <AudioOutlined className="text-white text-2xl" />
           </button>
         </div>
@@ -160,7 +162,7 @@ export default function History({
               ></div>
             </div>
           </button>
-          <button className="fixed top-4 left-16 p-4 rounded-lg z-20">
+          <button className="fixed top-4 left-16 p-4 rounded-lg z-20" onClick={uploadnew}>
             <AudioOutlined className="text-gray-800 text-2xl" />
           </button>
         </>

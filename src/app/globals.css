@@ -142,3 +142,19 @@ td {
   transition: background-color 0.3s ease-in-out;
 }
 
+/* styles/globals.css */
+.peer-checked ~ div {
+  /* Ensures the sibling menu reacts to the checkbox state */
+}
+
+.fixed {
+  /* Styles for fixed positioning */
+}
+
+.transition-transform {
+  transition: transform 0.5s ease-in-out;
+}
+
+.transform {
+  /* Required for smooth toggling */
+}

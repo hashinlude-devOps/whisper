@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { UserIcon, CogIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/navigation";
+import { useSidebar } from "@/context/SidebarProvider";
 
-export default function Header({ isMenuOpen }: { isMenuOpen: boolean }) {
+export default function Header() {
   const router = useRouter();
+  const { isMenuOpen } = useSidebar(); // Access sidebar context
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userInitial, setUserInitial] = useState<string>("A");
 
@@ -20,6 +22,7 @@ export default function Header({ isMenuOpen }: { isMenuOpen: boolean }) {
   const logout = async () => {
     try {
       localStorage.removeItem("access_token");
+      localStorage.removeItem("name");
       router.push("/sign-in");
     } catch (error: any) {
       console.log(error);
@@ -28,14 +31,6 @@ export default function Header({ isMenuOpen }: { isMenuOpen: boolean }) {
 
   return (
     <header className="h-16 bg-white flex items-center px-4  justify-between">
-      {/* Logo */}
-      <p
-        className={`text-[26px] text-gray-800 font-bold hidden md:block transition-all ${
-          !isMenuOpen ? "ml-28" : ""
-        } mt-auto mb-0`} // Added mt-auto and mb-0 to align the logo at the bottom
-      >
-        WHISPER
-      </p>
 
       {/* Profile Icon */}
       <div className="relative ml-auto mt-3">

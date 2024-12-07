@@ -119,7 +119,7 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
   className="flex flex-col min-h-screen"
 >
   <div className="flex flex-col space-y-4 px-[2rem] flex-1 mb-4">
-    <div className="sticky top-0 bg-white z-10">
+    <div className=" bg-white ">
       <div className="flex items-center space-x-2 mt-2 py-4">
         <div className="flex items-center space-x-2">
           <span
