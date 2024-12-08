@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   /* config options here */
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "500Mb", // Set the body size limit to 500MB
+    },
+  },
   transpilePackages: [
     "antd",
     "@ant-design",
@@ -14,8 +19,6 @@ const nextConfig: NextConfig = {
     "rc-tree",
     "rc-table",
   ],
-  
 };
-
 
 export default nextConfig;
