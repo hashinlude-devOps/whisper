@@ -63,7 +63,6 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
     setLoading(true);
     try {
       const response = isSignin ? await signin(values) : await signup(values);
-      console.log(response);
 
       // Check the status code directly
       if (response.status === 200) {

@@ -25,13 +25,12 @@ export default function Header() {
       localStorage.removeItem("name");
       router.push("/sign-in");
     } catch (error: any) {
-      console.log(error);
+      error;
     }
   };
 
   return (
     <header className="h-16 bg-white flex items-center px-4  justify-between">
-
       {/* Profile Icon */}
       <div className="relative ml-auto mt-3">
         {/* Use ml-auto for right alignment */}

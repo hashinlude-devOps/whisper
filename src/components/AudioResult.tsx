@@ -14,7 +14,7 @@ import {
 import CalendarIcon from "@heroicons/react/20/solid/CalendarIcon";
 import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import { nullable } from "zod";
 
@@ -41,8 +41,6 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
   const router = useRouter();
   const hasFetchedAudio = useRef(false);
-
-  console.log(noOfSpeakers, "noOfSpeakers");
 
   React.useEffect(() => {
     setNoOfSpeakers(result?.speaker_list);
@@ -102,9 +100,14 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const handleSpeakerEdit = () => {
     setIsLoading(true);
     updateSpeakerNames(result?.json_file, speakerValue)
-      .then(() => {
-        fetchAudioData();
-        console.log("Speaker name updated successfully");
+      .then(async () => {
+        const response = await getTranscription(id.toString());
+        const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
+        if (fetchedResult) {
+          setResult(fetchedResult);
+        } else {
+          message.error("No results found for this transcription.");
+        }
         setIsLoading(false);
         setIsModalOpen(false);
       })
@@ -113,7 +116,6 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         setIsLoading(false);
       });
 
-    console.log(speakerValue, "speakerValue");
     setIsLoading(false);
   };
 
@@ -155,36 +157,9 @@ const AudioResultComponent = ({ id }: { id: number }) => {
       className="flex flex-col min-h-screen"
     >
       <div className="flex flex-col space-y-4 px-[2rem] flex-1 mb-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-2">
           <div className=" bg-white ">
             <div className="flex items-center space-x-2 mt-2 py-4">
-              <div className="flex items-center space-x-2">
-                <span
-                  contentEditable
-                  suppressContentEditableWarning
-                  className="text-sm text-gray-700 font-bold focus:outline-none "
-                  onKeyDown={(e) => handleFilenameChange()}
-                >
-                  {result?.recordingname ?? result?.json_file}
-                  {/* TODO : Confirm recording name is required */}
-                </span>
-                <button className="text-gray-600 hover:text-gray-800">
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1">
-                <CalendarIcon className="h-5 w-5 text-gray-500" />
-                <span className="text-sm text-gray-700">
-                  27/11/2024, 15:32:38
-                </span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <ClockIcon className="h-5 w-5 text-gray-500" />
-                <span className="text-sm text-gray-700">0:26</span>
-              </div>
-
               {!isFileNameEdit ? (
                 <span
                   className="text-sm text-gray-700 font-bold"
@@ -228,11 +203,31 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                 </>
               )}
             </div>
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
+                <CalendarIcon className="h-5 w-5 text-gray-500" />
+                <span className="text-sm text-gray-700">
+                  27/11/2024, 15:32:38
+                </span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <ClockIcon className="h-5 w-5 text-gray-500" />
+                <span className="text-sm text-gray-700">0:26</span>
+              </div>
+            </div>
           </div>
-          <div>
-            <Button className="bg-black text-white" onClick={showModal}>
-              Edit Speaker
-            </Button>
+          <div className="my-4 md:my-0">
+            <div className="flex gap-3 flex-row">
+              <Button className="bg-black text-white" onClick={showModal}>
+                Edit Speaker
+              </Button>
+              <Button
+                className="bg-black text-white"
+                onClick={() => router.push(`/result/minutes/${id}`)}
+              >
+                Meeting Minutes
+              </Button>
+            </div>
 
             <Modal
               title="Edit Speaker"
