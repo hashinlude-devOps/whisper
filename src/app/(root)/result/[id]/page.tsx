@@ -5,7 +5,7 @@ import AudioResultComponent from "@/components/AudioResult";
 import { useParams } from "next/navigation";
 
 export default function AudioResultPage() {
-  const params = useParams(); // Get dynamic route parameters
+  const params = useParams();
   const { id } = params;
 
   return (

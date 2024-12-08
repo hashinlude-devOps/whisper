@@ -88,3 +88,18 @@ export const updateRecordingName = async (
     throw error;
   }
 };
+
+export const fetchMeetingMinutes = async (id: string): Promise<Response> => {
+  try {
+    const response = await apiClient<Response>(
+      `/generate-meeting-minutes/${id}`,
+      {
+        method: "GET",
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error generating meeting minutes:", error);
+    throw error;
+  }
+};
