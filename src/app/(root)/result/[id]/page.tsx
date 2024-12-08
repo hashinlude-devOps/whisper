@@ -8,9 +8,5 @@ export default function AudioResultPage() {
   const params = useParams();
   const { id } = params;
 
-  return (
-    <div>
-      <AudioResultComponent id={Number(id)} />
-    </div>
-  );
+  return <AudioResultComponent id={Number(id)} />;
 }
