@@ -94,7 +94,7 @@ export default function History() {
               ></div>
             </div>
           </button>
-          {pathname == "/result" && (
+          {pathname !== "/" && (
             <button className="p-2 rounded-lg" onClick={uploadnew}>
               <PlusOutlined className="text-white text-2xl" />
             </button>
@@ -157,7 +157,7 @@ export default function History() {
               ></div>
             </div>
           </button>
-          {pathname == "/result" && (
+          {pathname !== "/" && (
             <button
               className="fixed top-4 left-16 p-4 rounded-lg z-20"
               onClick={uploadnew}
