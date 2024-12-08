@@ -6,11 +6,13 @@ import CustomAudioPlayer from "./CustomAudioPlayer";
 import Loader from "@/components/Loader";
 import {
   getTranscription,
+  updateRecordingName,
   updateSpeakerNames,
 } from "@/lib/services/audioService";
 import CalendarIcon from "@heroicons/react/20/solid/CalendarIcon";
 import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
-import { message } from "antd";
+import { Button, Input, message } from "antd";
+import { nullable } from "zod";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
@@ -23,6 +25,9 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     Record<string, string>
   >({});
   const [currentAudioTime, setCurrentAudioTime] = useState(0);
+  const [isFileNameEdit, setIsFileNameEdit] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string | null>(null);
+
   const hasFetchedAudio = useRef(false);
 
   const formatTime = (ms: number) => {
@@ -80,7 +85,19 @@ const AudioResultComponent = ({ id }: { id: number }) => {
       });
   };
 
-  const handleFilenameChange = () => {};
+  const handleFilenameChange = async () => {
+    if (fileName != null && fileName != "") {
+      await updateRecordingName(id.toString(), fileName);
+      const response = await getTranscription(id.toString());
+      const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
+      if (fetchedResult) {
+        setResult(fetchedResult);
+      } else {
+        message.error("No results found for this transcription.");
+      }
+      setFileName(null);
+    }
+  };
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLSpanElement>,
@@ -109,18 +126,48 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         <div className=" bg-white ">
           <div className="flex items-center space-x-2 mt-2 py-4">
             <div className="flex items-center space-x-2">
-              <span
-                contentEditable
-                suppressContentEditableWarning
-                className="text-sm text-gray-700 font-bold focus:outline-none "
-                onKeyDown={(e) => handleFilenameChange()}
-              >
-                {result?.recordingname ?? result?.json_file}
-                {/* TODO : Confirm recording name is required */}
-              </span>
-              <button className="text-gray-600 hover:text-gray-800">
-                <PencilSquareIcon className="h-5 w-5" />
-              </button>
+              {!isFileNameEdit ? (
+                <span
+                  className="text-sm text-gray-700 font-bold"
+                  onKeyDown={async (e) => await handleFilenameChange()}
+                >
+                  {result?.recordingname}
+                  {/* TODO : Confirm recording name is required */}
+                </span>
+              ) : (
+                <Input
+                  className="w-full"
+                  value={fileName ?? result?.recordingname}
+                  onChange={(e: any) => setFileName(e.target.value)}
+                />
+              )}
+              {!isFileNameEdit && (
+                <button
+                  className="text-gray-600 hover:text-gray-800"
+                  onClick={() => setIsFileNameEdit(true)}
+                >
+                  <PencilSquareIcon className="h-5 w-5" />
+                </button>
+              )}
+              {isFileNameEdit && (
+                <>
+                  <Button
+                    className="text-white  bg-blue-500"
+                    onClick={async () => {
+                      await handleFilenameChange();
+                      setIsFileNameEdit(false);
+                    }}
+                  >
+                    save
+                  </Button>
+                  <Button
+                    className="text-white  bg-red-500"
+                    onClick={() => setIsFileNameEdit(false)}
+                  >
+                    cancel
+                  </Button>
+                </>
+              )}
             </div>
           </div>
           <div className="flex items-center space-x-2">
