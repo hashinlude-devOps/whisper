@@ -116,6 +116,7 @@ export default function AudioUpload() {
                 className="w-full"
                 value={countOfSpeaker}
                 onChange={(value: any) => setCountOfSpeaker(value)}
+                min={0}
               />
             </div>
 
