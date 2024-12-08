@@ -5,20 +5,20 @@ import React from "react";
 import { message, Upload, Button, Input } from "antd";
 import { InputNumber } from "antd";
 import { updateRecordingName, uploadAudio } from "@/lib/services/audioService"; // Import the service
-import { useAudio } from "@/context/AudioContext"; // Import your context hook
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import toast from "react-hot-toast";
+import { useSidebar } from "@/context/SidebarProvider";
 
 const { Dragger } = Upload;
 
 export default function AudioUpload() {
-  const { setAudioResult } = useAudio(); // Use the global context to update audio result
   const [countOfSpeaker, setCountOfSpeaker] = React.useState<number>();
   const [fileName, setFileName] = React.useState<string>();
   const [audioFileState, setAudioFileState] = React.useState<any>();
   const [audio, setAudio] = React.useState<any>();
   const [loading, setIsLoading] = React.useState(false);
   const router = useRouter(); // Use the router for navigation
+  const { isMenuOpen, setIsMenuOpen } = useSidebar();
 
   const props = {
     name: "file",
@@ -62,8 +62,8 @@ export default function AudioUpload() {
         await updateRecordingName(fetchedResult.recording_id, fileName);
       }
 
-      setAudioResult(fetchedResult);
-      router.push("/result");
+      setIsMenuOpen(false);
+      router.push(`/result/${fetchedResult.recording_id}`);
     } catch (error) {
       console.error("Error posting data:", error);
       message.error("Failed to upload the audio.");

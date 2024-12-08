@@ -1,43 +1,28 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { getFullAudio } from "@/lib/services/audiofetchService";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import Loader from "@/components/Loader";
-import { updateSpeakerNames } from "@/lib/services/audioService";
+import {
+  getTranscription,
+  updateSpeakerNames,
+} from "@/lib/services/audioService";
 import CalendarIcon from "@heroicons/react/20/solid/CalendarIcon";
 import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
+import { message } from "antd";
 
-interface AudioResultProps {
-  result: {
-    json_file: string;
-    num_speakers: number;
-    recording_id: number;
-    result: {
-      segment_file: string;
-      speaker: string;
-      transcribed_text: string;
-      translated_text: string;
-      start_time: number;
-      end_time: number;
-    }[];
-    speaker_list: string[];
-    recordingname: string;
-    status: string;
-  };
-}
-
-const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
+const AudioResultComponent = ({ id }: { id: number }) => {
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
     null
   );
+  const [result, setResult] = useState<any>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [loadingAudio, setLoadingAudio] = useState(true);
   const [speakerNameUpdates, setSpeakerNameUpdates] = useState<
     Record<string, string>
   >({});
   const [currentAudioTime, setCurrentAudioTime] = useState(0);
-
   const hasFetchedAudio = useRef(false);
 
   const formatTime = (ms: number) => {
@@ -45,34 +30,35 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
     const hours = date.getUTCHours().toString().padStart(2, "0");
     const minutes = date.getUTCMinutes().toString().padStart(2, "0");
     const seconds = date.getUTCSeconds().toString().padStart(2, "0");
-
     return `${hours}:${minutes}:${seconds}`;
   };
 
-  useEffect(() => {
-    const fetchFullAudio = async () => {
-      if (hasFetchedAudio.current) return;
+  const fetchAudioData = async () => {
+    if (hasFetchedAudio.current) return;
 
-      setLoadingAudio(true);
-      try {
-        const url = await getFullAudio(result.recording_id.toString());
-        setAudioUrl(url);
-        hasFetchedAudio.current = true;
-      } catch (error) {
-        console.error("Error fetching full audio:", error);
-      } finally {
-        setLoadingAudio(false);
-      }
-    };
-
-    setAudioUrl(null);
     setLoadingAudio(true);
-    hasFetchedAudio.current = false;
+    try {
+      const url = await getFullAudio(id.toString());
+      setAudioUrl(url);
+      hasFetchedAudio.current = true;
 
-    if (result.recording_id) {
-      fetchFullAudio();
+      const response = await getTranscription(id.toString());
+      const fetchedResult = response.data.result;
+      if (fetchedResult) {
+        setResult(fetchedResult);
+      } else {
+        message.error("No results found for this transcription.");
+      }
+    } catch (error) {
+      console.error("Error fetching full audio:", error);
+    } finally {
+      setLoadingAudio(false);
     }
-  }, [result]);
+  };
+
+  React.useEffect(() => {
+    fetchAudioData();
+  }, []);
 
   const handleSpeakerEdit = (
     speakerIndex: number,
@@ -129,7 +115,7 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
                 className="text-sm text-gray-700 font-bold focus:outline-none "
                 onKeyDown={(e) => handleFilenameChange()}
               >
-                {result.recordingname ?? result.json_file}
+                {result?.recordingname ?? result?.json_file}
                 {/* TODO : Confirm recording name is required */}
               </span>
               <button className="text-gray-600 hover:text-gray-800">
@@ -155,7 +141,7 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
         <div className="mt-4 overflow-y-auto max-h-[calc(100vh-160px)] hide-scrollable">
           <table className="min-w-full table-auto">
             <tbody>
-              {result.result.map((segment, index) => {
+              {result?.result?.map((segment: any, index: any) => {
                 const startTime = segment.start_time;
                 const endTime = segment.end_time;
                 const elapsedTime = formatTime(index === 0 ? 0 : startTime);
@@ -208,7 +194,7 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
                               <li className="px-4 py-1 hover:bg-gray-100 border-b cursor-pointer">
                                 Speakers
                               </li>
-                              {result.speaker_list.map(
+                              {result?.speaker_list?.map(
                                 (speaker: string, speakerIndex: number) => (
                                   <li
                                     key={speakerIndex}
@@ -222,7 +208,7 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
                                         handleKeyDown(
                                           e,
                                           speakerIndex,
-                                          result.json_file
+                                          result?.json_file
                                         )
                                       }
                                     >

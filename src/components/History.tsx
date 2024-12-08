@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { getRecordings, getTranscription } from "@/lib/services/audioService"; // Import the service
 import { useRouter } from "next/navigation";
-import { useAudio } from "@/context/AudioContext";
 import message from "antd/es/message";
 import { useSidebar } from "@/context/SidebarProvider";
 import { usePathname } from "next/navigation";
@@ -15,7 +14,6 @@ export default function History() {
   const router = useRouter();
 
   // Access the context here
-  const { setAudioResult } = useAudio();
   const { isMenuOpen, setIsMenuOpen } = useSidebar(); // Access sidebar context
 
   const pathname = usePathname();
@@ -29,16 +27,7 @@ export default function History() {
     try {
       setIsLoading(true);
       setIsMenuOpen(false);
-      const response = await getTranscription(id);
-      const fetchedResult = response.data.result;
-      console.log(fetchedResult);
-      if (fetchedResult) {
-        // Now setAudioResult works as expected because it's inside the functional component
-        setAudioResult(fetchedResult);
-        router.push("/result");
-      } else {
-        message.error("No results found for this transcription.");
-      }
+      router.push(`/result/${id}`);
     } catch (error) {
       console.error("Error fetching transcription:", error);
       message.error("Failed to fetch transcription.");
