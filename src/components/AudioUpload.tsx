@@ -105,25 +105,40 @@ export default function AudioUpload() {
           </div>
         )}
 
-        <div className="mt-[1rem] flex flex-col space-y-4">
-          <div>
-            <label>Enter Number of Speakers</label>
-            <InputNumber
-              className="w-full"
-              value={countOfSpeaker}
-              onChange={(value: any) => setCountOfSpeaker(value)}
-            />
-            <label>File Name</label>
-            <Input
-              className="w-full"
-              value={fileName}
-              onChange={(e: any) => setFileName(e.target.value)}
-            />
+        <div className="mt-4 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+            {/* Number of Speakers Input */}
+            <div className="flex-1 flex flex-col">
+              <label className="text-gray-700 font-medium mb-1">
+                Enter Number of Speakers
+              </label>
+              <InputNumber
+                className="w-full"
+                value={countOfSpeaker}
+                onChange={(value: any) => setCountOfSpeaker(value)}
+              />
+            </div>
+
+            {/* File Name Input */}
+            <div className="flex-1 flex flex-col">
+              <label className="text-gray-700 font-medium mb-1">
+                File Name
+              </label>
+              <Input
+                className="w-full"
+                value={fileName}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setFileName(e.target.value)
+                }
+              />
+            </div>
           </div>
+
+          {/* Upload Button */}
           <Button
             type="primary"
             loading={loading}
-            className="bg-gray-800 w-full"
+            className="bg-gray-800 w-full sm:w-auto sm:self-center"
             onClick={handlePostRequest}
           >
             Upload
