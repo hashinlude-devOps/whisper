@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   title: "WHISPER",
   description: "WHISPER",
   icons: {
-    icon: '/icons/logo.png'
-  }
+    icon: "/icons/logo.png",
+  },
 };
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,7 +20,10 @@ export default function RootLayout({ children }: any) {
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning>
         <main>
-          <AntdRegistry><Toaster position="bottom-right" />{children}</AntdRegistry>
+          <AntdRegistry>
+            <Toaster position="bottom-right" />
+            {children}
+          </AntdRegistry>
         </main>
       </body>
     </html>

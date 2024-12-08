@@ -1,11 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { AudioOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { getRecordings, getTranscription } from "@/lib/services/audioService"; // Import the service
 import { useRouter } from "next/navigation";
 import { useAudio } from "@/context/AudioContext";
 import message from "antd/es/message";
 import { useSidebar } from "@/context/SidebarProvider";
+import { usePathname } from "next/navigation";
 
 export default function History() {
   const [historyData, setHistoryData] = useState<any[]>([]);
@@ -16,6 +17,8 @@ export default function History() {
   // Access the context here
   const { setAudioResult } = useAudio();
   const { isMenuOpen, setIsMenuOpen } = useSidebar(); // Access sidebar context
+
+  const pathname = usePathname();
 
   const handleItemClick = (id: any) => {
     setActiveItem(id); // Set the active item when clicked
@@ -102,9 +105,11 @@ export default function History() {
               ></div>
             </div>
           </button>
-          <button className="p-2 rounded-lg" onClick={uploadnew}>
-            <AudioOutlined className="text-white text-2xl" />
-          </button>
+          {pathname == "/result" && (
+            <button className="p-2 rounded-lg" onClick={uploadnew}>
+              <PlusOutlined className="text-white text-2xl" />
+            </button>
+          )}
         </div>
 
         {/* Menu Content */}
@@ -163,12 +168,14 @@ export default function History() {
               ></div>
             </div>
           </button>
-          <button
-            className="fixed top-4 left-16 p-4 rounded-lg z-20"
-            onClick={uploadnew}
-          >
-            <AudioOutlined className="text-gray-800 text-2xl" />
-          </button>
+          {pathname == "/result" && (
+            <button
+              className="fixed top-4 left-16 p-4 rounded-lg z-20"
+              onClick={uploadnew}
+            >
+              <PlusOutlined className="text-gray-800 text-2xl" />
+            </button>
+          )}
         </>
       )}
     </>

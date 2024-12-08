@@ -7,6 +7,7 @@ import { InputNumber } from "antd";
 import { updateRecordingName, uploadAudio } from "@/lib/services/audioService"; // Import the service
 import { useAudio } from "@/context/AudioContext"; // Import your context hook
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import toast from "react-hot-toast";
 
 const { Dragger } = Upload;
 
@@ -43,16 +44,24 @@ export default function AudioUpload() {
 
   const handlePostRequest = async () => {
     try {
+      if (!countOfSpeaker || countOfSpeaker < 1) {
+        toast.error("Number of speakers must be greater than or equal to 1", {
+          duration: 5000,
+        });
+        return;
+      }
       setIsLoading(true);
       const result = await uploadAudio(
         audioFileState?.originFileObj,
         countOfSpeaker
       );
+
       const fetchedResult = result.data;
 
       if (result.status == 200 && fileName != null && fileName != "") {
-        updateRecordingName(fetchedResult.recording_id, fileName);
+        await updateRecordingName(fetchedResult.recording_id, fileName);
       }
+
       setAudioResult(fetchedResult);
       router.push("/result");
     } catch (error) {

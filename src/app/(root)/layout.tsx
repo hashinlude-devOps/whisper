@@ -4,9 +4,11 @@ import History from "@/components/History";
 import Header from "@/components/Header";
 import SidebarProviderWrapper from "@/components/SidebarProviderWrapper";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-
-  
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <SidebarProviderWrapper>
       <AudioProviderWrapper>
