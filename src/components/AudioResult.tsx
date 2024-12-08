@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
+import { message, Button, Modal, Input } from "antd";
+
 import { getFullAudio } from "@/lib/services/audiofetchService";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import CustomAudioPlayer from "./CustomAudioPlayer";
@@ -10,9 +12,11 @@ import {
 } from "@/lib/services/audioService";
 import CalendarIcon from "@heroicons/react/20/solid/CalendarIcon";
 import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
-import { message } from "antd";
+import { useParams } from "next/navigation";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
+  const params = useParams();
+  const idParams = Number(params?.id);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
     null
   );
@@ -23,7 +27,31 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     Record<string, string>
   >({});
   const [currentAudioTime, setCurrentAudioTime] = useState(0);
+  const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
+  const [speakerValue, setSpeakerValue] = React.useState([{}]);
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const hasFetchedAudio = useRef(false);
+
+  console.log(noOfSpeakers, "noOfSpeakers");
+
+  React.useEffect(() => {
+    setNoOfSpeakers(result?.speaker_list);
+  }, [result]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   const formatTime = (ms: number) => {
     const date = new Date(ms * 1000);
@@ -43,7 +71,9 @@ const AudioResultComponent = ({ id }: { id: number }) => {
       hasFetchedAudio.current = true;
 
       const response = await getTranscription(id.toString());
+
       const fetchedResult = response.data.result;
+
       if (fetchedResult) {
         setResult(fetchedResult);
       } else {
@@ -60,41 +90,39 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     fetchAudioData();
   }, []);
 
-  const handleSpeakerEdit = (
-    speakerIndex: number,
-    newValue: string,
-    jsonPath: string
-  ) => {
-    const speakerKey = `speaker_${speakerIndex}`;
-    setSpeakerNameUpdates((prevUpdates) => ({
-      ...prevUpdates,
-      [speakerKey]: newValue,
-    }));
-
-    updateSpeakerNames(jsonPath, { [speakerKey]: newValue })
+  const handleSpeakerEdit = () => {
+    setIsLoading(true);
+    updateSpeakerNames(result?.json_file, speakerValue)
       .then(() => {
+        fetchAudioData();
         console.log("Speaker name updated successfully");
+        setIsLoading(false);
+        setIsModalOpen(false);
       })
       .catch((error) => {
         console.error("Error updating speaker names:", error);
+        setIsLoading(false);
       });
+
+    console.log(speakerValue, "speakerValue");
+    setIsLoading(false);
   };
 
   const handleFilenameChange = () => {};
 
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLSpanElement>,
-    speakerIndex: number,
-    jsonPath: string
-  ) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const newValue = e.currentTarget.innerText.trim();
-      if (newValue) {
-        handleSpeakerEdit(speakerIndex, newValue, jsonPath);
-      }
-    }
-  };
+  // const handleKeyDown = (
+  //   e: React.KeyboardEvent<HTMLSpanElement>,
+  //   speakerIndex: number,
+  //   jsonPath: string
+  // ) => {
+  //   if (e.key === "Enter") {
+  //     e.preventDefault();
+  //     const newValue = e.currentTarget.innerText.trim();
+  //     if (newValue) {
+  //       handleSpeakerEdit(speakerIndex, newValue, jsonPath);
+  //     }
+  //   }
+  // };
 
   const handleAudioTimeUpdate = (time: number) => {
     setCurrentAudioTime(time);
@@ -106,34 +134,81 @@ const AudioResultComponent = ({ id }: { id: number }) => {
       className="flex flex-col min-h-screen"
     >
       <div className="flex flex-col space-y-4 px-[2rem] flex-1 mb-4">
-        <div className=" bg-white ">
-          <div className="flex items-center space-x-2 mt-2 py-4">
+        <div className="flex justify-between items-center">
+          <div className=" bg-white ">
+            <div className="flex items-center space-x-2 mt-2 py-4">
+              <div className="flex items-center space-x-2">
+                <span
+                  contentEditable
+                  suppressContentEditableWarning
+                  className="text-sm text-gray-700 font-bold focus:outline-none "
+                  onKeyDown={(e) => handleFilenameChange()}
+                >
+                  {result?.recordingname ?? result?.json_file}
+                  {/* TODO : Confirm recording name is required */}
+                </span>
+                <button className="text-gray-600 hover:text-gray-800">
+                  <PencilSquareIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
             <div className="flex items-center space-x-2">
-              <span
-                contentEditable
-                suppressContentEditableWarning
-                className="text-sm text-gray-700 font-bold focus:outline-none "
-                onKeyDown={(e) => handleFilenameChange()}
-              >
-                {result?.recordingname ?? result?.json_file}
-                {/* TODO : Confirm recording name is required */}
-              </span>
-              <button className="text-gray-600 hover:text-gray-800">
-                <PencilSquareIcon className="h-5 w-5" />
-              </button>
+              <div className="flex items-center space-x-1">
+                <CalendarIcon className="h-5 w-5 text-gray-500" />
+                <span className="text-sm text-gray-700">
+                  27/11/2024, 15:32:38
+                </span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <ClockIcon className="h-5 w-5 text-gray-500" />
+                <span className="text-sm text-gray-700">0:26</span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1">
-              <CalendarIcon className="h-5 w-5 text-gray-500" />
-              <span className="text-sm text-gray-700">
-                27/11/2024, 15:32:38
-              </span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <ClockIcon className="h-5 w-5 text-gray-500" />
-              <span className="text-sm text-gray-700">0:26</span>
-            </div>
+          <div>
+            <Button className="bg-black text-white" onClick={showModal}>
+              Edit Speaker
+            </Button>
+
+            <Modal
+              title="Edit Speaker"
+              open={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+              footer={(_, { OkBtn, CancelBtn }) => (
+                <>
+                  <Button className="bg-slate-200" onClick={showModal}>
+                    Cancel
+                  </Button>
+                  <Button
+                    className="bg-black text-white"
+                    onClick={() => handleSpeakerEdit()}
+                    loading={isLoading}
+                  >
+                    Edit
+                  </Button>
+                </>
+              )}
+            >
+              <div>
+                {noOfSpeakers?.map((item: any, index: number) => (
+                  <div className="mt-[0.5rem]" key={index}>
+                    <div className="font-semibold">{item}</div>
+                    <div>
+                      <Input
+                        placeholder={`Enter ${item} name`}
+                        onChange={(e) => {
+                          setSpeakerValue((prev: any[]) => ({
+                            ...prev,
+                            [item]: e.target.value,
+                          }));
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Modal>
           </div>
         </div>
 
@@ -159,74 +234,19 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                   >
                     <td className="px-4 py-2">{elapsedTime}</td>
                     <td className="px-4 py-2">{segment.speaker}</td>
-                    <td className="px-4 py-2">
-                      {/* Dropdown for Actions */}
-                      <div
-                        className="relative"
-                        onClick={(e) => e.stopPropagation()}
+                    {/* <td className="px-4 py-2">
+                      <audio
+                        controls
+                        className="md:my-0 sm:my-[1rem] my-[1rem]"
                       >
-                        <div
-                          className="flex items-center justify-center cursor-pointer bg-gray-200 w-6 h-6 rounded-full"
-                          onClick={() =>
-                            setOpenDropdownIndex(
-                              openDropdownIndex === index ? null : index
-                            )
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 text-gray-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 10l7 7 7-7"
-                            />
-                          </svg>
-                        </div>
-                        {openDropdownIndex === index && (
-                          <div className="absolute left-0 mt-2 bg-white border border-gray-300 rounded-md shadow-lg z-10 w-48">
-                            <ul>
-                              <li className="px-4 py-1 hover:bg-gray-100 border-b cursor-pointer">
-                                Speakers
-                              </li>
-                              {result?.speaker_list?.map(
-                                (speaker: string, speakerIndex: number) => (
-                                  <li
-                                    key={speakerIndex}
-                                    className="flex items-center px-4 py-1 hover:bg-gray-100 cursor-pointer space-x-2"
-                                  >
-                                    <span
-                                      contentEditable
-                                      suppressContentEditableWarning
-                                      className="flex-1 focus:border-gray-300 focus:outline-none rounded-md p-1"
-                                      onKeyDown={(e) =>
-                                        handleKeyDown(
-                                          e,
-                                          speakerIndex,
-                                          result?.json_file
-                                        )
-                                      }
-                                    >
-                                      {speakerNameUpdates[
-                                        `speaker_${speakerIndex}`
-                                      ] || speaker}
-                                    </span>
-                                    <button className="text-gray-600 hover:text-gray-800 ml-auto">
-                                      <PencilSquareIcon className="h-4 w-4" />
-                                    </button>
-                                  </li>
-                                )
-                              )}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    </td>
+                        <source
+                          src={`http://44.223.235.101:5000/${segment?.segment_file}`}
+                          type="audio/mpeg"
+                        />
+                        Your browser does not support the audio element.
+                      </audio>
+                    </td> */}
+
                     <td className="px-4 py-2">{segment.transcribed_text}</td>
                   </tr>
                 );

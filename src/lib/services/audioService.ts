@@ -41,7 +41,7 @@ export const getRecordings = async (): Promise<Response> => {
 
 export const updateSpeakerNames = async (
   jsonPath: string,
-  speakerNameUpdates: Record<string, string>
+  speakerNameUpdates: {}
 ): Promise<Response> => {
   try {
     const response = await apiClient<Response>("/update-speaker-name", {
