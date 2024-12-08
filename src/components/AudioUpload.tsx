@@ -2,9 +2,9 @@
 "use client";
 
 import React from "react";
-import { message, Upload, Button } from "antd";
+import { message, Upload, Button, Input } from "antd";
 import { InputNumber } from "antd";
-import { uploadAudio } from "@/lib/services/audioService"; // Import the service
+import { updateRecordingName, uploadAudio } from "@/lib/services/audioService"; // Import the service
 import { useAudio } from "@/context/AudioContext"; // Import your context hook
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 
@@ -13,6 +13,7 @@ const { Dragger } = Upload;
 export default function AudioUpload() {
   const { setAudioResult } = useAudio(); // Use the global context to update audio result
   const [countOfSpeaker, setCountOfSpeaker] = React.useState<number>();
+  const [fileName, setFileName] = React.useState<string>();
   const [audioFileState, setAudioFileState] = React.useState<any>();
   const [audio, setAudio] = React.useState<any>();
   const [loading, setIsLoading] = React.useState(false);
@@ -48,7 +49,10 @@ export default function AudioUpload() {
         countOfSpeaker
       );
       const fetchedResult = result.data;
-      console.log(fetchedResult);
+
+      if (result.status == 200 && fileName != null && fileName != "") {
+        updateRecordingName(fetchedResult.recording_id, fileName);
+      }
       setAudioResult(fetchedResult);
       router.push("/result");
     } catch (error) {
@@ -99,6 +103,12 @@ export default function AudioUpload() {
               className="w-full"
               value={countOfSpeaker}
               onChange={(value: any) => setCountOfSpeaker(value)}
+            />
+            <label>File Name</label>
+            <Input
+              className="w-full"
+              value={fileName}
+              onChange={(e: any) => setFileName(e.target.value)}
             />
           </div>
           <Button

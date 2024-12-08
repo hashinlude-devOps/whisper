@@ -120,17 +120,18 @@ export default function History() {
                   <li
                     key={item.id}
                     className={`flex flex-col space-y-1 p-2 
-                      ${activeItem === item.id ? 'bg-gray-700 rounded-md' : 'hover:bg-gray-700'} 
+                      ${
+                        activeItem === item.id
+                          ? "bg-gray-700 rounded-md"
+                          : "hover:bg-gray-700"
+                      } 
                       hover:rounded-md`} // Apply hover effect and active state effect
                   >
                     <span
                       className="text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer"
                       onClick={() => handleItemClick(item.id)} // Set active on click
                     >
-                      {item.audio_file
-                        .split("/")
-                        .pop()
-                        ?.replace(/\.[^/.]+$/, "")}{" "}
+                      {item.recordingname}
                       {/* Display file name without extension */}
                     </span>
                   </li>
@@ -162,7 +163,10 @@ export default function History() {
               ></div>
             </div>
           </button>
-          <button className="fixed top-4 left-16 p-4 rounded-lg z-20" onClick={uploadnew}>
+          <button
+            className="fixed top-4 left-16 p-4 rounded-lg z-20"
+            onClick={uploadnew}
+          >
             <AudioOutlined className="text-gray-800 text-2xl" />
           </button>
         </>

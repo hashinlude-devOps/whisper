@@ -1,8 +1,8 @@
 import { apiClient } from "@/lib/apiClient";
 
 interface Response {
-    data: any; 
-    status:any;
+  data: any;
+  status: any;
 }
 
 export const uploadAudio = async (
@@ -17,28 +17,27 @@ export const uploadAudio = async (
   try {
     const response = await apiClient<Response>("/upload-audio", {
       method: "POST",
-      body: formData, 
+      body: formData,
     });
 
-    return response; 
+    return response;
   } catch (error) {
     console.error("Error uploading audio:", error);
-    throw error; 
+    throw error;
   }
 };
 
 export const getRecordings = async (): Promise<Response> => {
-    try {
-      const response = await apiClient<Response>("/get-recordings", {
-        method: "GET",
-      });
-      return (response); 
-    } catch (error) {
-      console.error("Error fetching recordings:", error);
-      throw error; 
-    }
+  try {
+    const response = await apiClient<Response>("/get-recordings", {
+      method: "GET",
+    });
+    return response;
+  } catch (error) {
+    console.error("Error fetching recordings:", error);
+    throw error;
+  }
 };
-
 
 export const updateSpeakerNames = async (
   jsonPath: string,
@@ -59,16 +58,33 @@ export const updateSpeakerNames = async (
   }
 };
 
-
-export const getTranscription = async (id: string,): Promise<Response> => {
+export const getTranscription = async (id: string): Promise<Response> => {
   try {
     const response = await apiClient<Response>(`/view-json/${id}`, {
       method: "GET",
     });
-    return (response); 
+    return response;
   } catch (error) {
     console.error("Error fetching recordings:", error);
-    throw error; 
+    throw error;
   }
 };
 
+export const updateRecordingName = async (
+  id: string,
+  recordingName: string
+): Promise<Response> => {
+  try {
+    const response = await apiClient<Response>("/update-recording-name", {
+      method: "POST",
+      body: {
+        recording_id: id,
+        new_recording_name: recordingName,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error updating recording names:", error);
+    throw error;
+  }
+};
