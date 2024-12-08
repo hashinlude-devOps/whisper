@@ -172,28 +172,16 @@ const AudioResultComponent = ({ id }: { id: number }) => {
             </div>
           </div>
 
-          <div className="flex flex-row justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1">
-                <CalendarIcon className="h-5 w-5 text-gray-500" />
-                <span className="text-sm text-gray-700">
-                  27/11/2024, 15:32:38
-                </span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <ClockIcon className="h-5 w-5 text-gray-500" />
-                <span className="text-sm text-gray-700">0:26</span>
-              </div>
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
+              <CalendarIcon className="h-5 w-5 text-gray-500" />
+              <span className="text-sm text-gray-700">
+                27/11/2024, 15:32:38
+              </span>
             </div>
-
-            <div className="cursor-pointer">
-              <Button
-                type="primary"
-                className="bg-gray-800 w-full sm:w-auto sm:self-center"
-                onClick={() => router.push(`minutes/${id}`)}
-              >
-                Meeting minutes
-              </Button>
+            <div className="flex items-center space-x-1">
+              <ClockIcon className="h-5 w-5 text-gray-500" />
+              <span className="text-sm text-gray-700">0:26</span>
             </div>
           </div>
         </div>
