@@ -8,11 +8,15 @@ import CustomAudioPlayer from "./CustomAudioPlayer";
 import Loader from "@/components/Loader";
 import {
   getTranscription,
+  updateRecordingName,
   updateSpeakerNames,
 } from "@/lib/services/audioService";
 import CalendarIcon from "@heroicons/react/20/solid/CalendarIcon";
 import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
+
 import { useParams } from "next/navigation";
+
+import { nullable } from "zod";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
   const params = useParams();
@@ -27,9 +31,13 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     Record<string, string>
   >({});
   const [currentAudioTime, setCurrentAudioTime] = useState(0);
+
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
   const [speakerValue, setSpeakerValue] = React.useState([{}]);
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const [isFileNameEdit, setIsFileNameEdit] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string | null>(null);
 
   const hasFetchedAudio = useRef(false);
 
@@ -108,7 +116,19 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     setIsLoading(false);
   };
 
-  const handleFilenameChange = () => {};
+  const handleFilenameChange = async () => {
+    if (fileName != null && fileName != "") {
+      await updateRecordingName(id.toString(), fileName);
+      const response = await getTranscription(id.toString());
+      const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
+      if (fetchedResult) {
+        setResult(fetchedResult);
+      } else {
+        message.error("No results found for this transcription.");
+      }
+      setFileName(null);
+    }
+  };
 
   // const handleKeyDown = (
   //   e: React.KeyboardEvent<HTMLSpanElement>,
@@ -163,6 +183,49 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                 <ClockIcon className="h-5 w-5 text-gray-500" />
                 <span className="text-sm text-gray-700">0:26</span>
               </div>
+
+              {!isFileNameEdit ? (
+                <span
+                  className="text-sm text-gray-700 font-bold"
+                  onKeyDown={async (e) => await handleFilenameChange()}
+                >
+                  {result?.recordingname}
+                  {/* TODO : Confirm recording name is required */}
+                </span>
+              ) : (
+                <Input
+                  className="w-full"
+                  value={fileName ?? result?.recordingname}
+                  onChange={(e: any) => setFileName(e.target.value)}
+                />
+              )}
+              {!isFileNameEdit && (
+                <button
+                  className="text-gray-600 hover:text-gray-800"
+                  onClick={() => setIsFileNameEdit(true)}
+                >
+                  <PencilSquareIcon className="h-5 w-5" />
+                </button>
+              )}
+              {isFileNameEdit && (
+                <>
+                  <Button
+                    className="text-white  bg-blue-500"
+                    onClick={async () => {
+                      await handleFilenameChange();
+                      setIsFileNameEdit(false);
+                    }}
+                  >
+                    save
+                  </Button>
+                  <Button
+                    className="text-white  bg-red-500"
+                    onClick={() => setIsFileNameEdit(false)}
+                  >
+                    cancel
+                  </Button>
+                </>
+              )}
             </div>
           </div>
           <div>
