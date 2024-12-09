@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "500Mb", // Set the body size limit to 500MB
     },
   },
+  distDir: "build",
   transpilePackages: [
     "antd",
     "@ant-design",
