@@ -7,11 +7,14 @@ import { Progress } from "@/components/ui/progress";
 const CustomAudioPlayer = ({
   audioUrl,
   onTimeUpdate,
+  audioRef,
 }: {
   audioUrl: string;
   onTimeUpdate: (currentTime: number) => void;
+  audioRef: React.RefObject<HTMLAudioElement>; // Define type for audioRef
+
 }) => {
-  const audioRef = useRef<HTMLAudioElement>(null);
+  // const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);

@@ -30,7 +30,7 @@ export default function Header() {
   };
 
   return (
-    <header className="h-16 bg-black-3 flex items-center px-4 border-b border-gray-700 justify-between">
+    <header className="h-16 bg-black-3 flex items-center px-4 border-b border-gray-700 justify-between sticky top-0 z-10">
       {/* Profile Icon */}
       <div className="relative ml-auto ">
         {/* Use ml-auto for right alignment */}

@@ -4,43 +4,32 @@ import { getFullAudio } from "@/lib/services/audiofetchService";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import Loader from "@/components/Loader";
-import { updateSpeakerNames } from "@/lib/services/audioService";
+import {
+  getTranscription,
+  updateRecordingName,
+  updateSpeakerNames,
+} from "@/lib/services/audioService";
 import CalendarIcon from "@heroicons/react/20/solid/CalendarIcon";
 import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
-import ChatBox from "./ChatBox";
+import { useRouter } from "next/navigation";
+import { Button, Input, message, Modal } from "antd";
 
-interface AudioResultProps {
-  result: {
-    json_file: string;
-    num_speakers: number;
-    recording_id: number;
-    result: {
-      segment_file: string;
-      speaker: string;
-      transcribed_text: string;
-      translated_text: string;
-      start_time: number;
-      end_time: number;
-    }[];
-    speaker_list: string[];
-    status: string;
-  };
-}
+const AudioResultComponent = ({ id }: { id: number }) => {
+  const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
+  const [speakerValue, setSpeakerValue] = React.useState([{}]);
+  const [isLoading, setIsLoading] = React.useState(false);
 
-const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
-  const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
-    null
-  );
+  const [isFileNameEdit, setIsFileNameEdit] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [loadingAudio, setLoadingAudio] = useState(true);
-  const [speakerNameUpdates, setSpeakerNameUpdates] = useState<
-    Record<string, string>
-  >({});
   const [currentAudioTime, setCurrentAudioTime] = useState(0);
   const [showTranslation, setShowTranslation] = useState(false);
-
+  const [result, setResult] = useState<any>(null);
+  const [timestamp, setTimestamp] = useState<any>(null);
 
   const hasFetchedAudio = useRef(false);
+  const router = useRouter();
 
   const formatTime = (ms: number) => {
     const date = new Date(ms * 1000);
@@ -51,69 +40,123 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
     return `${hours}:${minutes}:${seconds}`;
   };
 
-  useEffect(() => {
-    const fetchFullAudio = async () => {
-      if (hasFetchedAudio.current) return;
+  const convertTimestamp = (timestamp: string): string => {
+    const year = parseInt(timestamp.slice(0, 4), 10);
+    const month = parseInt(timestamp.slice(4, 6), 10) - 1; // Months are zero-indexed
+    const day = parseInt(timestamp.slice(6, 8), 10);
+    const hour = parseInt(timestamp.slice(8, 10), 10);
+    const minute = parseInt(timestamp.slice(10, 12), 10);
+    const second = parseInt(timestamp.slice(12, 14), 10);
 
-      setLoadingAudio(true);
-      try {
-        const url = await getFullAudio(result.recording_id.toString());
-        setAudioUrl(url);
-        hasFetchedAudio.current = true;
-      } catch (error) {
-        console.error("Error fetching full audio:", error);
-      } finally {
-        setLoadingAudio(false);
-      }
-    };
+    const date = new Date(year, month, day, hour, minute, second);
 
-    setAudioUrl(null);
+    // Format to DD/MM/YYYY, HH:MM:SS
+    const formattedDate = date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+
+    return formattedDate;
+  };
+
+  const fetchAudioData = async () => {
+    if (hasFetchedAudio.current) return;
+
     setLoadingAudio(true);
-    hasFetchedAudio.current = false;
+    try {
+      const url = await getFullAudio(id.toString());
+      setAudioUrl(url);
+      hasFetchedAudio.current = true;
 
-    if (result.recording_id) {
-      fetchFullAudio();
+      const response = await getTranscription(id.toString());
+
+      const fetchedResult = response.data?.result;
+
+      if (fetchedResult) {
+        setResult(fetchedResult);
+        setTimestamp(convertTimestamp(fetchedResult?.timestamp));
+      } else {
+        message.error("No results found for this transcription.");
+      }
+    } catch (error) {
+      console.error("Error fetching full audio:", error);
+    } finally {
+      setLoadingAudio(false);
     }
+  };
+
+  React.useEffect(() => {
+    fetchAudioData();
+  }, []);
+
+  React.useEffect(() => {
+    setNoOfSpeakers(result?.speaker_list);
   }, [result]);
 
-  const handleTextClick = () => {
-    console.log("clicked")
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const toggleTranslation = () => {
     setShowTranslation(!showTranslation); // Toggle translation visibility
   };
 
-  const handleSpeakerEdit = (
-    speakerIndex: number,
-    newValue: string,
-    jsonPath: string
-  ) => {
-    const speakerKey = `speaker_${speakerIndex}`;
-    setSpeakerNameUpdates((prevUpdates) => ({
-      ...prevUpdates,
-      [speakerKey]: newValue,
-    }));
+  const handleAudioSeek = (startTime: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = startTime; // Seek the audio to the clicked segment's start time
+      audioRef.current.play(); // Start playing the audio from the clicked segment
+    }
+  };
 
-    updateSpeakerNames(jsonPath, { [speakerKey]: newValue })
-      .then(() => {
-        console.log("Speaker name updated successfully");
+  const handleSpeakerEdit = () => {
+    setIsLoading(true);
+    updateSpeakerNames(result?.json_file, speakerValue)
+      .then(async () => {
+        const response = await getTranscription(id.toString());
+        const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
+        if (fetchedResult) {
+          setResult(fetchedResult);
+        } else {
+          message.error("No results found for this transcription.");
+        }
+        setIsLoading(false);
+        setIsModalOpen(false);
       })
       .catch((error) => {
         console.error("Error updating speaker names:", error);
+        setIsLoading(false);
       });
+
+    setIsLoading(false);
   };
 
-  const handleFilenameChange = () => {};
-
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLSpanElement>,
-    speakerIndex: number,
-    jsonPath: string
-  ) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const newValue = e.currentTarget.innerText.trim();
-      if (newValue) {
-        handleSpeakerEdit(speakerIndex, newValue, jsonPath);
+  const handleFilenameChange = async () => {
+    if (fileName != null && fileName != "") {
+      await updateRecordingName(id.toString(), fileName);
+      const response = await getTranscription(id.toString());
+      const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
+      if (fetchedResult) {
+        setResult(fetchedResult);
+      } else {
+        message.error("No results found for this transcription.");
       }
+      setFileName(null);
     }
   };
 
@@ -122,37 +165,130 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
   };
 
   return (
-    <div
-      onClick={() => setOpenDropdownIndex(null)}
-      className="flex flex-col min-h-screen lg:ml-[16rem]"
-    >
-     
+    <div className="flex flex-col min-h-screen lg:ml-[16rem]">
       <div className="flex flex-col space-y-4 px-[2rem] flex-1 mb-4">
-        <div>
+        <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-2">
           <div className="flex items-center space-x-2 mt-2 py-4">
-            <div className="flex items-center space-x-2">
+            {!isFileNameEdit ? (
               <span
-                contentEditable
-                suppressContentEditableWarning
-                className="text-sm text-gray-50 font-bold focus:outline-none "
-                onKeyDown={(e) => handleFilenameChange()}
+                className="text-sm text-white-1 font-bold"
+                onKeyDown={async (e) => await handleFilenameChange()}
               >
-                {result.json_file}
+                {result?.recordingname}
+                {/* TODO : Confirm recording name is required */}
               </span>
-              <button className="text-white-1">
+            ) : (
+              <Input
+                className="w-full border-1 border-white-1 focus:border-blue-300"
+                value={fileName ?? result?.recordingname}
+                onChange={(e: any) => setFileName(e.target.value)}
+              />
+            )}
+            {!isFileNameEdit && (
+              <button
+                className="text-white-1 hover:text-white-5"
+                onClick={() => setIsFileNameEdit(true)}
+              >
                 <PencilSquareIcon className="h-5 w-5" />
               </button>
-            </div>
+            )}
+            {isFileNameEdit && (
+              <>
+                <Button
+                  className="text-white  bg-blue-500 border-none"
+                  onClick={async () => {
+                    await handleFilenameChange();
+                    setIsFileNameEdit(false);
+                  }}
+                >
+                  save
+                </Button>
+                <Button
+                  className="text-white  bg-red-500 border-none"
+                  onClick={() => setIsFileNameEdit(false)}
+                >
+                  cancel
+                </Button>
+              </>
+            )}
           </div>
+
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-1">
               <CalendarIcon className="h-5 w-5 text-gray-50" />
-              <span className="text-sm text-gray-50">27/11/2024, 15:32:38</span>
+              <span className="text-sm text-gray-50">
+                {timestamp || "No Timestamp Available"}
+              </span>
             </div>
             <div className="flex items-center space-x-1">
               <ClockIcon className="h-5 w-5 text-gray-50" />
               <span className="text-sm text-gray-50">0:26</span>
             </div>
+          </div>
+
+          <div className="my-4 md:my-0">
+            <div className="flex gap-3 flex-row">
+              <Button
+                className="bg-orange-600 text-black-1 border-none hover:bg-orange-500"
+                onClick={showModal}
+              >
+                Edit Speaker
+              </Button>
+              <Button
+                className="bg-orange-600 text-black-1 border-none hover:bg-orange-500"
+                onClick={() => router.push(`/result/minutes/${id}`)}
+              >
+                Meeting Minutes
+              </Button>
+            </div>
+
+            <Modal
+              title={
+                <p className="text-white font-bold text-lg">Edit Speaker</p>
+              }
+              open={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+              footer={null} // Remove default footer if you want custom buttons
+            >
+              <div>
+                {noOfSpeakers?.map((item: any, index: number) => (
+                  <div className="mt-2" key={index}>
+                    <div className="font-semibold ">{item}</div>
+                    <div>
+                      <Input
+                        placeholder={`Enter ${item} name`}
+                        style={{
+                          backgroundColor: "#1A1A1A", // Black background
+                          color: "#FFF", // White text
+                        }}
+                        onChange={(e) => {
+                          setSpeakerValue((prev: any[]) => ({
+                            ...prev,
+                            [item]: e.target.value,
+                          }));
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end gap-3 mt-4">
+                <Button
+                  className="text-white  bg-red-500 border-none"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-blue-500 text-black hover:bg-blue-600 border-none"
+                  onClick={() => handleSpeakerEdit()}
+                  loading={isLoading}
+                >
+                  Edit
+                </Button>
+              </div>
+            </Modal>
           </div>
         </div>
 
@@ -160,7 +296,7 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
         <div className="mt-4 overflow-y-auto max-h-[calc(100vh-160px)] hide-scrollable">
           <table className="min-w-full table-auto">
             <tbody>
-              {result.result.map((segment, index) => {
+              {result?.result.map((segment: any, index: any) => {
                 const startTime = segment.start_time;
                 const endTime = segment.end_time;
                 const elapsedTime = formatTime(index === 0 ? 0 : startTime);
@@ -176,81 +312,24 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
                       isHighlighted ? "bg-black-2" : "hover:bg-black-2"
                     }`}
                   >
-                    <td className="px-4 py-2 text-blue-500">{elapsedTime}</td>
+                    <td className="px-4 py-2 text-blue-500">
+                      <span
+                        onClick={() => {
+                          handleAudioSeek(segment.start_time); 
+                        }}
+                        className="cursor-pointer"
+                      >
+                        {" "}
+                        {elapsedTime}
+                      </span>
+                    </td>
                     <td className="px-4 py-2 text-blue-500">
                       {segment.speaker}
                     </td>
-                    <td className="px-4 py-2">
-                      {/* Dropdown for Actions */}
-                      <div
-                        className="relative"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div
-                          className="flex items-center justify-center cursor-pointer bg-gray-200 w-6 h-6 rounded-full"
-                          onClick={() =>
-                            setOpenDropdownIndex(
-                              openDropdownIndex === index ? null : index
-                            )
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 text-gray-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 10l7 7 7-7"
-                            />
-                          </svg>
-                        </div>
-                        {openDropdownIndex === index && (
-                          <div className="absolute left-0 mt-2 text-white-1 border border-gray-300 bg-black-1 rounded-md shadow-lg z-10 w-48">
-                            <ul>
-                              <li className="px-4 py-1  border-b cursor-pointer">
-                                Speakers
-                              </li>
-                              {result.speaker_list.map(
-                                (speaker: string, speakerIndex: number) => (
-                                  <li
-                                    key={speakerIndex}
-                                    className="flex items-center px-4 py-1 hover:bg-black-2 cursor-pointer space-x-2"
-                                  >
-                                    <span
-                                      contentEditable
-                                      suppressContentEditableWarning
-                                      className="flex-1 focus:border-gray-300 focus:outline-none rounded-md p-1"
-                                      onKeyDown={(e) =>
-                                        handleKeyDown(
-                                          e,
-                                          speakerIndex,
-                                          result.json_file
-                                        )
-                                      }
-                                    >
-                                      {speakerNameUpdates[
-                                        `speaker_${speakerIndex}`
-                                      ] || speaker}
-                                    </span>
-                                    <button className="text-white-1 hover:text-white-2 ml-auto">
-                                      <PencilSquareIcon className="h-4 w-4" />
-                                    </button>
-                                  </li>
-                                )
-                              )}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    </td>
+
                     <td className="px-4 py-2 text-white-1">
                       <span
-                        onClick={handleTextClick}
+                        onClick={() => toggleTranslation()} // Pass start_time to handleTextClick
                         className="cursor-pointer"
                       >
                         {showTranslation
@@ -275,15 +354,13 @@ const AudioResultComponent: React.FC<AudioResultProps> = ({ result }) => {
               <CustomAudioPlayer
                 audioUrl={audioUrl}
                 onTimeUpdate={handleAudioTimeUpdate}
+                audioRef={audioRef}
               />
             </div>
           </div>
         )
       )}
-
-
     </div>
-    
   );
 };
 

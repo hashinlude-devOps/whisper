@@ -1,5 +1,4 @@
 import React from "react";
-import AudioProviderWrapper from "@/components/AudioProviderWrapper";
 import History from "@/components/History";
 import Header from "@/components/Header";
 import SidebarProviderWrapper from "@/components/SidebarProviderWrapper";
@@ -14,7 +13,6 @@ export default async function RootLayout({
     <>
     <ProtectedPage />
     <SidebarProviderWrapper>
-      <AudioProviderWrapper>
       
 
           <div className="flex h-screen">
@@ -29,7 +27,6 @@ export default async function RootLayout({
               </main>
             </div>
           </div>{" "}
-      </AudioProviderWrapper>
     </SidebarProviderWrapper>
     </>
   );

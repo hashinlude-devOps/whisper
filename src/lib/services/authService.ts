@@ -52,8 +52,6 @@ interface Response {
       // Retrieve the token from localStorage
 
       const token = localStorage.getItem("access_token");
-      console.log("token")
-      console.log(token)
   
       if (!token) {
         return false; // No token, user is not logged in

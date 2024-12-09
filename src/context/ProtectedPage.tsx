@@ -13,8 +13,6 @@ const ProtectedPage: React.FC = () => {
     const checkUserStatus = async () => {
 
       const user = await getLoggedInUser();
-      console.log("hekooi")
-      console.log(user)
 
       if (!user) {
         router.push('/sign-in'); // Redirect to sign-in page if not logged in

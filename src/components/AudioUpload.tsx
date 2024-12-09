@@ -2,16 +2,17 @@
 "use client";
 
 import React from "react";
-import { message, Upload, Button } from "antd";
+import { message, Upload, Button, Input } from "antd";
 import { InputNumber } from "antd";
-import { uploadAudio } from "@/lib/services/audioService"; // Import the service
-import { useAudio } from "@/context/AudioContext"; // Import your context hook
+import { updateRecordingName, uploadAudio } from "@/lib/services/audioService"; // Import the service
+// import { useAudio } from "@/context/AudioContext"; // Import your context hook
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import toast from "react-hot-toast";
 
 const { Dragger } = Upload;
 
 export default function AudioUpload() {
-  const { setAudioResult } = useAudio(); // Use the global context to update audio result
+  const [fileName, setFileName] = React.useState<string>();
   const [countOfSpeaker, setCountOfSpeaker] = React.useState<number>();
   const [audioFileState, setAudioFileState] = React.useState<any>();
   const [audio, setAudio] = React.useState<any>();
@@ -42,15 +43,25 @@ export default function AudioUpload() {
 
   const handlePostRequest = async () => {
     try {
+      if (!countOfSpeaker || countOfSpeaker < 1) {
+        toast.error("Number of speakers must be greater than or equal to 1", {
+          duration: 5000,
+        });
+        return;
+      }
       setIsLoading(true);
       const result = await uploadAudio(
         audioFileState?.originFileObj,
         countOfSpeaker
       );
+
       const fetchedResult = result.data;
-      console.log(fetchedResult);
-      setAudioResult(fetchedResult);
-      router.push("/result");
+
+      if (result.status == 200 && fileName != null && fileName != "") {
+        await updateRecordingName(fetchedResult.recording_id, fileName);
+      }
+
+      router.push(`/result/${fetchedResult.recording_id}`);
     } catch (error) {
       console.error("Error posting data:", error);
       message.error("Failed to upload the audio.");
@@ -75,7 +86,7 @@ export default function AudioUpload() {
             <div>Upload Audio File here</div>
           </div>
           <div className="h-[15rem] md:w-full">
-            <Dragger {...props}>
+            <Dragger {...props} >
               <p className="ant-upload-text text-white-1">
                 Click or drag file to this area to upload
               </p>
@@ -93,14 +104,23 @@ export default function AudioUpload() {
         )}
 
         <div className="mt-[1rem] flex flex-col space-y-4">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 w-full">
             <label className="text-white-1 whitespace-nowrap">
               Enter Number of Speakers
             </label>
             <InputNumber
-              className="bg-gray-600 bg-opacity-20 border-gray-300 text-white-1 placeholder-gray-300 focus:ring focus:ring-blue-500"
+              className="bg-gray-600 bg-opacity-20 border-gray-300 text-white-1 placeholder-gray-300 w-[20%]"
               value={countOfSpeaker}
               onChange={(value: any) => setCountOfSpeaker(value)}
+              style={{ color: "white" }} // Explicitly set the text color to white
+            />
+            <label className="text-white-1 whitespace-nowrap">File Name</label>
+            <Input
+              className="bg-gray-600 bg-opacity-20 border-gray-300 text-white-1 placeholder-gray-300 w-[80%]"
+              value={fileName}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setFileName(e.target.value)
+              }
               style={{ color: "white" }} // Explicitly set the text color to white
             />
           </div>

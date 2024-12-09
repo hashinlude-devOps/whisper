@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { AudioOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { getRecordings, getTranscription } from "@/lib/services/audioService"; // Import the service
 import { useRouter } from "next/navigation";
-import { useAudio } from "@/context/AudioContext";
+// import { useAudio } from "@/context/AudioContext";
+
 import message from "antd/es/message";
 import { useSidebar } from "@/context/SidebarProvider";
 
@@ -16,7 +17,7 @@ export default function History() {
 
 
   // Access the context here
-  const { setAudioResult } = useAudio();
+  // const { setAudioResult } = useAudio();
   const { isMenuOpen, setIsMenuOpen } = useSidebar(); // Access sidebar context
 
   const handleItemClick = (id: any) => {
@@ -49,16 +50,7 @@ export default function History() {
       if (isSmallScreen) {
         setIsMenuOpen(false);
       }
-      const response = await getTranscription(id);
-      const fetchedResult = response.data.result;
-      console.log(fetchedResult);
-      if (fetchedResult) {
-        // Now setAudioResult works as expected because it's inside the functional component
-        setAudioResult(fetchedResult);
-        router.push("/result");
-      } else {
-        message.error("No results found for this transcription.");
-      }
+      router.push(`/result/${id}`);
     } catch (error) {
       console.error("Error fetching transcription:", error);
       message.error("Failed to fetch transcription.");
@@ -130,7 +122,7 @@ export default function History() {
             </div>
           </button>
           <button className="p-2 rounded-lg" onClick={uploadnew}>
-            <AudioOutlined className="text-white-1 text-2xl" />
+            <PlusOutlined className="text-white-1 text-2xl" />
           </button>
         </div>
 
@@ -149,8 +141,8 @@ export default function History() {
                     className={`flex flex-col space-y-1 p-2 
                       ${
                         activeItem === item.id
-                          ? "bg-gray-700 rounded-md"
-                          : "hover:bg-gray-700"
+                          ? "bg-black-2 rounded-md"
+                          : "hover:bg-black-2"
                       } 
                       hover:rounded-md`} // Apply hover effect and active state effect
                   >
@@ -158,11 +150,11 @@ export default function History() {
                       className="text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer"
                       onClick={() => handleItemClick(item.id)} // Set active on click
                     >
-                      {item.audio_file
+                     {item.recordingname
                         .split("/")
                         .pop()
                         ?.replace(/\.[^/.]+$/, "")}{" "}
-                      {/* Display file name without extension */}
+                      {/* Dis play file name without extension */}
                     </span>
                   </li>
                 ))}
@@ -197,7 +189,7 @@ export default function History() {
             className="fixed left-16 p-4 rounded-lg z-20"
             onClick={uploadnew}
           >
-            <AudioOutlined className="text-white-1 text-2xl" />
+            <PlusOutlined className="text-white-1 text-2xl" />
           </button>
         </>
       )}

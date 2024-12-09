@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -242,3 +243,4 @@ audio::-ms-media-controls-panel {
   opacity: 1 !important;
   visibility: visible !important;
 }
+
