@@ -158,3 +158,87 @@ td {
 .transform {
   /* Required for smooth toggling */
 }
+
+input:-webkit-autofill {
+  background-color: rgba(31, 41, 55, 0.8) !important; /* Matches your bg-black-3 and bg-opacity-20 */
+  color: white !important; /* Ensure text color matches */
+  /* border-color: rgba(156, 163, 175, 0.25) !important; Matches border-gray-400 and border-opacity-25 */
+  -webkit-text-fill-color: white !important; /* Ensures text color consistency */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent autofill flash */
+}
+
+.ant-input-number-input {
+  color: white !important; /* Ensures text color is white */
+}
+
+
+/* Ensure the upload icon in the Dragger area is white */
+.ant-upload-drag-icon {
+  color: white !important;  /* Ensures the icon is white */
+}
+
+/* Target the file icon and name in the upload list */
+.ant-upload-list-item .ant-upload-list-item-icon {
+  color: white !important;  /* Ensures the file icon is white */
+}
+
+/* Make sure the delete button (trash icon) is white */
+.ant-upload-list-item-actions > button .anticon {
+  color: white !important; /* Ensures the delete icon is white */
+  visibility: visible !important;
+}
+
+/* Set hover state for delete button icon */
+.ant-upload-list-item-actions > button:hover .anticon {
+  color: white !important; /* Light gray on hover */
+}
+
+/* File name text color in upload list */
+.ant-upload-list-item-name {
+  color: white !important; /* Make file name white */
+}
+
+/* Ensure the text in the upload button is white */
+.ant-upload-text {
+  color: white !important; /* Text in the upload area */
+}
+
+/* Ensure icon color in input number is white */
+.ant-input-number-input {
+  color: white !important; /* Ensures text color in input is white */
+}
+
+/* Hover state for file icon */
+.ant-upload-list-item:hover .ant-upload-list-item-icon {
+  color: white !important; /* Light gray on hover */
+}
+
+.anticon {
+  color: white !important;
+}
+
+/* Make the audio controls background transparent */
+audio::-webkit-media-controls {
+  background-color: transparent !important;
+}
+
+/* For Firefox */
+audio {
+  background-color: transparent !important;
+}
+
+/* Optionally, remove the border or background color for controls */
+audio::-webkit-media-controls-panel {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+/* For IE/Edge support (if needed) */
+audio::-ms-media-controls-panel {
+  background-color: transparent !important;
+}
+
+.ant-upload-list-item-actions {
+  opacity: 1 !important;
+  visibility: visible !important;
+}

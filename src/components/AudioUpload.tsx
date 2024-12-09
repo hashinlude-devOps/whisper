@@ -68,15 +68,15 @@ export default function AudioUpload() {
   }, [audio]);
 
   return (
-    <div className="flex justify-center items-center h-full px-[2rem] py-[2rem]">
+    <div className="flex justify-center items-center h-full px-[2rem] py-[2rem] ">
       <div className="flex flex-col justify-center w-full md:w-3/4 lg:w-1/2">
         <div>
-          <div className="flex justify-between items-center my-[1rem]">
+          <div className="flex justify-between items-center my-[1rem] text-white-1">
             <div>Upload Audio File here</div>
           </div>
           <div className="h-[15rem] md:w-full">
             <Dragger {...props}>
-              <p className="ant-upload-text">
+              <p className="ant-upload-text text-white-1">
                 Click or drag file to this area to upload
               </p>
             </Dragger>
@@ -84,7 +84,7 @@ export default function AudioUpload() {
         </div>
 
         {audio && (
-          <div className="mt-[3rem]">
+          <div className="mt-[3rem] text-white-1">
             <audio controls className="w-full">
               <source src={audio} type="audio/mpeg" />
               Your browser does not support the audio element.
@@ -93,18 +93,22 @@ export default function AudioUpload() {
         )}
 
         <div className="mt-[1rem] flex flex-col space-y-4">
-          <div>
-            <label>Enter Number of Speakers</label>
+          <div className="flex items-center space-x-4">
+            <label className="text-white-1 whitespace-nowrap">
+              Enter Number of Speakers
+            </label>
             <InputNumber
-              className="w-full"
+              className="bg-gray-600 bg-opacity-20 border-gray-300 text-white-1 placeholder-gray-300 focus:ring focus:ring-blue-500"
               value={countOfSpeaker}
               onChange={(value: any) => setCountOfSpeaker(value)}
+              style={{ color: "white" }} // Explicitly set the text color to white
             />
           </div>
+
           <Button
             type="primary"
             loading={loading}
-            className="bg-gray-800 w-full"
+            className="bg-orange-1 w-full"
             onClick={handlePostRequest}
           >
             Upload

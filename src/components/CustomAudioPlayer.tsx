@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
@@ -99,8 +99,8 @@ const CustomAudioPlayer = ({
   };
 
   return (
-    <div className="sticky bottom-0 left-0 flex size-full flex-col bg-white">
-      <Progress value={progressValue} className="w-full bg-gray-300" />
+    <div className="sticky bottom-0 left-0 flex size-full flex-col bg-black-3">
+      <Progress value={progressValue} className="w-full" />
 
       <section className="glassmorphism-black flex h-[112px] w-full items-center justify-between px-4 md:px-12">
         <audio
@@ -109,7 +109,7 @@ const CustomAudioPlayer = ({
           onEnded={handleAudioEnded}
         />
         <div className="flex items-center gap-2">
-          <h2 className="text-16 font-normal text-white-2">
+          <h2 className="text-16 font-normal text-white-1">
             {formatTime(currentTime)} / {formatTime(duration)}
           </h2>
         </div>
@@ -123,7 +123,7 @@ const CustomAudioPlayer = ({
               alt="Rewind"
               onClick={rewind}
             />
-            <h2 className="text-12 font-bold text-white-4">-5</h2>
+            <h2 className="text-12 font-bold text-white-1">-5</h2>
           </div>
           <Image
             src={isPlaying ? "/icons/Pause.svg" : "/icons/Play.svg"}
@@ -133,7 +133,7 @@ const CustomAudioPlayer = ({
             onClick={togglePlayPause}
           />
           <div className="flex items-center gap-1.5">
-            <h2 className="text-12 font-bold text-white-4">+5</h2>
+            <h2 className="text-12 font-bold text-white-1">+5</h2>
             <Image
               src={"/icons/forward.svg"}
               width={24}

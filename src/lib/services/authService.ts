@@ -47,3 +47,22 @@ interface Response {
     }
   };
 
+  export const getLoggedInUser = async () => {
+    try {
+      // Retrieve the token from localStorage
+
+      const token = localStorage.getItem("access_token");
+      console.log("token")
+      console.log(token)
+  
+      if (!token) {
+        return false; // No token, user is not logged in
+      }
+      return true;
+      
+    } catch (error) {
+      console.error("Error validating user:", error);
+      return false; // Treat as not logged in on error
+    }
+  };
+  

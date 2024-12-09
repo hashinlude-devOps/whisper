@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
     "rc-tree",
     "rc-table",
   ],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '100mb', 
+    },
+  },
   
 };
 

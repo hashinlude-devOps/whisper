@@ -102,10 +102,10 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
   return (
     <div className="relative">
       {loading && <Loader />} {/* This will display the loader */}
-      <div className="w-full max-w-lg bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border border-gray-400 border-opacity-25 rounded-lg p-8 shadow-lg">
+      <div className="w-full max-w-lg bg-black-3 bg-opacity-10 backdrop-filter backdrop-blur-lg border border-gray-50 border-opacity-25 rounded-lg p-8 shadow-lg">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <h1 className="text-2xl font-bold text-center mb-4 text-black">
+            <h1 className="text-2xl font-bold text-center mb-4 text-white-1">
               {isSignin ? "Log In" : "Sign Up"}
             </h1>
 
@@ -115,11 +115,11 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-black">Name</FormLabel>
+                    <FormLabel className="text-white-1">Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        className="bg-white bg-opacity-20 border-gray-400 border-opacity-25 text-black placeholder-gray-300"
+                        className="bg-gray-600 bg-opacity-20 border-gray-300 text-white-1 placeholder-gray-300 focus:ring focus:ring-blue-500"
                       />
                     </FormControl>
                     <FormMessage className="text-red-600" />
@@ -133,12 +133,12 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-black">Email</FormLabel>
+                  <FormLabel className="text-white-1">Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       type="email"
-                      className="bg-white bg-opacity-20 border-gray-400 border-opacity-25 text-black placeholder-gray-300"
+                      className="bg-gray-600 bg-opacity-20 border-gray-300 text-white-1 placeholder-gray-300 focus:ring focus:ring-blue-500"
                     />
                   </FormControl>
                   <FormMessage className="text-red-600" />
@@ -151,12 +151,12 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-black">Password</FormLabel>
+                  <FormLabel className="text-white-1">Password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       type="password"
-                      className="bg-white bg-opacity-20 border-gray-400 border-opacity-25 text-black placeholder-gray-300"
+                      className="bg-gray-600 bg-opacity-20 border-gray-300 text-white-1 placeholder-gray-300 focus:ring focus:ring-blue-500"
                     />
                   </FormControl>
                   <FormMessage className="text-red-600" />
@@ -170,14 +170,14 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
                 name="confirm_password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-black">
+                    <FormLabel className="text-white-1">
                       Confirm Password
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="password"
-                        className="bg-white bg-opacity-20 border-gray-400 border-opacity-25 text-black placeholder-gray-300"
+                        className="bg-gray-600 bg-opacity-20 border-gray-300 text-white-1 placeholder-gray-300 focus:ring focus:ring-blue-500"
                       />
                     </FormControl>
                     <FormMessage className="text-red-600" />
@@ -186,18 +186,15 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
               />
             )}
 
-            <Button
-              type="submit"
-              className="w-full bg-gray-700 hover:bg-gray-800 text-white"
-            >
+            <Button type="submit" className="w-full bg-orange-1 text-white-1">
               {isSignin ? "Log In" : "Sign Up"}
             </Button>
 
-            <p className="text-gray-500 text-center">
+            <p className="text-gray-50 text-center">
               {isSignin ? "Don't have an account?" : "Already have an account?"}
               <Link
                 href={isSignin ? "/sign-up" : "/sign-in"}
-                className="ml-2 text-gray-700 hover:text-gray-800"
+                className="ml-2 text-blue-600 hover:text-blue-700"
               >
                 {isSignin ? "Sign Up" : "Log In"}
               </Link>

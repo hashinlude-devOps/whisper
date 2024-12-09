@@ -1,9 +1,12 @@
 import AudioUpload from "@/components/AudioUpload";
-import { redirect } from "next/navigation";
+import ProtectedPage from "@/context/ProtectedPage";
 
-export default function HomePage() {
+
+export default async function HomePage() {
+  
   return (
     <>
+    <ProtectedPage />
       <AudioUpload />
     </>
   );
