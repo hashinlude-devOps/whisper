@@ -293,7 +293,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         </div>
 
         {/* Table Container with Scrollable Content */}
-        <div className="mt-4 overflow-y-auto max-h-[calc(100vh-160px)] hide-scrollable">
+        <div className="mt-4 overflow-y-auto max-h-[calc(100vh-160px-80px)] hide-scrollable">
           <table className="min-w-full table-auto">
             <tbody>
               {result?.result.map((segment: any, index: any) => {
@@ -349,7 +349,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         <Loader />
       ) : (
         audioUrl && (
-          <div className="sticky bottom-0 w-full text-white-1 shadow-lg">
+          <div className="sticky bottom-0 w-full text-white-1 shadow-lg h-28">
             <div className="max-w-full w-full">
               <CustomAudioPlayer
                 audioUrl={audioUrl}
