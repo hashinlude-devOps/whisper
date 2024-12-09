@@ -31,6 +31,8 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     Record<string, string>
   >({});
   const [currentAudioTime, setCurrentAudioTime] = useState(0);
+  const [showTranslation, setShowTranslation] = useState(false);
+
 
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
   const [speakerValue, setSpeakerValue] = React.useState([{}]);
@@ -146,6 +148,11 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   //     }
   //   }
   // };
+
+  const handleTextClick = () => {
+    console.log("clicked")
+    setShowTranslation(!showTranslation); // Toggle translation visibility
+  };
 
   const handleAudioTimeUpdate = (time: number) => {
     setCurrentAudioTime(time);
@@ -306,7 +313,14 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                       </audio>
                     </td> */}
 
-                    <td className="px-4 py-2">{segment.transcribed_text}</td>
+                    <td className="px-4 py-2"><span
+                        onClick={handleTextClick}
+                        className="cursor-pointer"
+                      >
+                        {showTranslation
+                          ? segment.translated_text
+                          : segment.transcribed_text}
+                      </span></td>
                   </tr>
                 );
               })}
