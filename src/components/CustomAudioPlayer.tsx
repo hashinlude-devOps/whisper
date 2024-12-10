@@ -12,7 +12,6 @@ const CustomAudioPlayer = ({
   audioUrl: string;
   onTimeUpdate: (currentTime: number) => void;
   audioRef: React.RefObject<HTMLAudioElement>; // Define type for audioRef
-
 }) => {
   // const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -21,15 +20,14 @@ const CustomAudioPlayer = ({
   const [isMuted, setIsMuted] = useState(false);
 
   const togglePlayPause = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (audio.paused) {
-      audio.play();
-      setIsPlaying(true);
-    } else {
-      audio.pause();
-      setIsPlaying(false);
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false); // Pause the audio and update the state
+      } else {
+        audioRef.current.play();
+        setIsPlaying(true); // Start playing the audio and update the state
+      }
     }
   };
 
@@ -108,6 +106,8 @@ const CustomAudioPlayer = ({
       <section className="glassmorphism-black flex h-[112px] w-full items-center justify-between px-4 md:px-12">
         <audio
           ref={audioRef}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleAudioEnded}
         />

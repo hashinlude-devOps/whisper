@@ -50,10 +50,15 @@ export default function AudioUpload() {
   const handleUpload = async () => {
     if (!audioFile) {
       setUploadStatus("No file to upload");
+      toast.error("No file to upload", {
+        duration: 5000,
+      });
+      return;
       return;
     }
 
     if (!speakers || speakers < 1) {
+      setUploadStatus("Number of speakers must be greater than or equal to 1");
       toast.error("Number of speakers must be greater than or equal to 1", {
         duration: 5000,
       });

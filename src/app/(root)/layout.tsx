@@ -22,7 +22,7 @@ export default async function RootLayout({
             {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
               <Header />
-              <main className="flex-1 h-[calc(100vh-4rem)] bg-black-3">
+              <main className="flex-1 h-[calc(100vh-4rem)] bg-black-3 ">
                 {children}
               </main>
             </div>

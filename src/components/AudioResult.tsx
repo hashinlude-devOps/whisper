@@ -27,6 +27,8 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const [showTranslation, setShowTranslation] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [timestamp, setTimestamp] = useState<any>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
 
   const hasFetchedAudio = useRef(false);
   const router = useRouter();
@@ -113,16 +115,19 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   };
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const handleAudioSeek = (startTime: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = startTime; 
+      audioRef.current.play(); 
+      setIsPlaying(true);   
+    }
+  };
+
   const toggleTranslation = () => {
     setShowTranslation(!showTranslation); // Toggle translation visibility
   };
 
-  const handleAudioSeek = (startTime: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = startTime; // Seek the audio to the clicked segment's start time
-      audioRef.current.play(); // Start playing the audio from the clicked segment
-    }
-  };
+  
 
   const handleSpeakerEdit = () => {
     setIsLoading(true);
@@ -293,7 +298,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         </div>
 
         {/* Table Container with Scrollable Content */}
-        <div className="mt-4 overflow-y-auto max-h-[calc(100vh-160px-80px)] hide-scrollable">
+        <div className="mt-4 overflow-y-auto max-h-[calc(100vh-160px-132px)] hide-scrollable">
           <table className="min-w-full table-auto">
             <tbody>
               {result?.result.map((segment: any, index: any) => {
@@ -349,7 +354,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         <Loader />
       ) : (
         audioUrl && (
-          <div className="sticky bottom-0 w-full text-white-1 shadow-lg h-28">
+          <div className="sticky bottom-0 w-full text-white-1 shadow-lg ">
             <div className="max-w-full w-full">
               <CustomAudioPlayer
                 audioUrl={audioUrl}

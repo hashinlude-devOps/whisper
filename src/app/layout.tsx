@@ -29,7 +29,7 @@ export default function RootLayout({ children }: any) {
 
   return (
     <html lang="en">
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning >
         <main>
           <AntdRegistry>
             <ConfigProvider theme={themeConfig}>

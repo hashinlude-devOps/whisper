@@ -39,7 +39,7 @@ const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected, onSpeakersChang
 
     if (value === "") {
       setSpeakers(0); // Set to default value or handle as needed
-      onSpeakersChange(1); // Notify parent with default value
+      onSpeakersChange(0); // Notify parent with default value
     } else {
       const numericValue = parseInt(value, 10);
       setSpeakers(numericValue);
