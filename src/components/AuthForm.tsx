@@ -58,6 +58,8 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
     setLoading(true);
@@ -84,12 +86,13 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
         );
         setTimeout(() => router.push(isSignin ? "/" : "/sign-in"));
       } else {
-        toast.error("Something went wrong. Please try again.", {
+        setUploadStatus(response.data?.error)
+        toast.error(`${response.data?.error}`, {
           duration: 5000,
         });
       }
     } catch (error: any) {
-      console.error("Error:", error.message);
+      console.error("Error:");
       toast.error(error.message || "Error occurred", {
         duration: 5000,
       });
@@ -185,9 +188,12 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
               />
             )}
 
-            <Button type="submit" className="w-full bg-orange-1 text-white-1">
+            <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white-1">
               {isSignin ? "Log In" : "Sign Up"}
             </Button>
+            {uploadStatus && (
+                <p className="mt-4 text-sm text-red-600">{uploadStatus}</p>
+              )}
 
             <p className="text-gray-50 text-center">
               {isSignin ? "Don't have an account?" : "Already have an account?"}

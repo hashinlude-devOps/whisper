@@ -13,6 +13,7 @@ import CalendarIcon from "@heroicons/react/20/solid/CalendarIcon";
 import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
 import { useRouter } from "next/navigation";
 import { Button, Input, message, Modal } from "antd";
+import SpeakerCarousel from "./SpeakerCarousel";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
@@ -185,11 +186,6 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
         if (fetchedResult) {
           setResult(fetchedResult);
-
-          // Play audio for each updated speaker
-          Object.keys(speakerValue).forEach((speaker) => {
-            handleSpeakerAudioPlay(speaker);
-          });
         } else {
           message.error("No results found for this transcription.");
         }
@@ -290,7 +286,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                 className="bg-orange-600 text-black-1 border-none hover:bg-orange-500"
                 onClick={showModal}
               >
-                Edit Speaker
+                Update Speaker
               </Button>
               <Button
                 className="bg-orange-600 text-black-1 border-none hover:bg-orange-500"
@@ -302,55 +298,34 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
             <Modal
               title={
-                <p className="text-white font-bold text-lg">Edit Speaker</p>
+                <p className="text-white font-bold text-lg border-b">
+                  Update Speaker
+                </p>
               }
               open={isModalOpen}
               onOk={handleOk}
               onCancel={handleCancel}
               footer={null} // Remove default footer if you want custom buttons
             >
-              <div>
-                {noOfSpeakers?.map((item: any, index: number) => (
-                  <div className="mt-2" key={index}>
-                    <div className="flex items-center space-x-4">
-                      <div className="font-semibold">{item}</div>
-                      <Input
-                        placeholder={`Enter ${item} name`}
-                        style={{
-                          backgroundColor: "#1A1A1A", // Black background
-                          color: "#FFF", // White text
-                        }}
-                        onChange={(e) => {
-                          setSpeakerValue((prev: any[]) => ({
-                            ...prev,
-                            [item]: e.target.value,
-                          }));
-                        }}
-                      />
-                      <Button
-                        className="bg-blue-500 text-black hover:bg-blue-600 border-none"
-                        onClick={() => handleSpeakerAudioPlay(item)}
-                      >
-                        Play Audio
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <SpeakerCarousel
+                noOfSpeakers={noOfSpeakers}
+                setSpeakerValue={setSpeakerValue}
+                handleSpeakerAudioPlay={handleSpeakerAudioPlay}
+              />
 
               <div className="flex justify-end gap-3 mt-4">
                 <Button
-                  className="text-white  bg-red-500 border-none"
+                  className="text-white-1  bg-red-500 hover:bg-red-600 border-none"
                   onClick={handleCancel}
                 >
                   Cancel
                 </Button>
                 <Button
-                  className="bg-blue-500 text-black hover:bg-blue-600 border-none"
+                  className="bg-blue-500 text-white-1 hover:bg-blue-600 border-none"
                   onClick={() => handleSpeakerEdit()}
                   loading={isLoading}
                 >
-                  Edit
+                  Update
                 </Button>
               </div>
             </Modal>
