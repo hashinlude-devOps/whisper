@@ -29,7 +29,6 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const [timestamp, setTimestamp] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-
   const hasFetchedAudio = useRef(false);
   const router = useRouter();
 
@@ -117,9 +116,9 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
   const handleAudioSeek = (startTime: number) => {
     if (audioRef.current) {
-      audioRef.current.currentTime = startTime; 
-      audioRef.current.play(); 
-      setIsPlaying(true);   
+      audioRef.current.currentTime = startTime;
+      audioRef.current.play();
+      setIsPlaying(true);
     }
   };
 
@@ -127,16 +126,70 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     setShowTranslation(!showTranslation); // Toggle translation visibility
   };
 
-  
+  // const handleSpeakerEdit = () => {
+  //   setIsLoading(true);
+  //   updateSpeakerNames(result?.json_file, speakerValue)
+  //     .then(async () => {
+  //       const response = await getTranscription(id.toString());
+  //       const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
+  //       if (fetchedResult) {
+  //         setResult(fetchedResult);
+  //       } else {
+  //         message.error("No results found for this transcription.");
+  //       }
+  //       setIsLoading(false);
+  //       setIsModalOpen(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error updating speaker names:", error);
+  //       setIsLoading(false);
+  //     });
+
+  //   setIsLoading(false);
+  // };
+
+  const handleSpeakerAudioPlay = (speaker: string) => {
+    if (!result?.result || !audioRef.current) return;
+
+    const speakerSegment = result.result.find(
+      (segment: any) => segment.speaker === speaker
+    );
+
+    if (speakerSegment) {
+      const { start_time, end_time } = speakerSegment;
+      const duration = (end_time - start_time) * 1000; // Convert to milliseconds
+
+      audioRef.current.currentTime = start_time;
+      audioRef.current.play();
+      setIsPlaying(true);
+
+      // Stop the audio after the snippet's duration
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = start_time; // Reset to start of snippet
+          setIsPlaying(false);
+        }
+      }, duration);
+    } else {
+      message.error("Audio segment for this speaker not found.");
+    }
+  };
 
   const handleSpeakerEdit = () => {
     setIsLoading(true);
+
     updateSpeakerNames(result?.json_file, speakerValue)
       .then(async () => {
         const response = await getTranscription(id.toString());
         const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
         if (fetchedResult) {
           setResult(fetchedResult);
+
+          // Play audio for each updated speaker
+          Object.keys(speakerValue).forEach((speaker) => {
+            handleSpeakerAudioPlay(speaker);
+          });
         } else {
           message.error("No results found for this transcription.");
         }
@@ -259,8 +312,8 @@ const AudioResultComponent = ({ id }: { id: number }) => {
               <div>
                 {noOfSpeakers?.map((item: any, index: number) => (
                   <div className="mt-2" key={index}>
-                    <div className="font-semibold ">{item}</div>
-                    <div>
+                    <div className="flex items-center space-x-4">
+                      <div className="font-semibold">{item}</div>
                       <Input
                         placeholder={`Enter ${item} name`}
                         style={{
@@ -274,10 +327,17 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                           }));
                         }}
                       />
+                      <Button
+                        className="bg-blue-500 text-black hover:bg-blue-600 border-none"
+                        onClick={() => handleSpeakerAudioPlay(item)}
+                      >
+                        Play Audio
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
+
               <div className="flex justify-end gap-3 mt-4">
                 <Button
                   className="text-white  bg-red-500 border-none"
@@ -320,7 +380,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                     <td className="px-4 py-2 text-blue-500">
                       <span
                         onClick={() => {
-                          handleAudioSeek(segment.start_time); 
+                          handleAudioSeek(segment.start_time);
                         }}
                         className="cursor-pointer"
                       >

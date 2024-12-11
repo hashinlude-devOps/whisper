@@ -19,24 +19,20 @@ export default function AudioUpload() {
 
   const handleFileSelected = async (file: File | Blob) => {
     try {
-      // Convert the file to WAV format
       const convertedFile = await convertToWav(file);
 
-      // Determine file name: Use original file name or set a default
       const originalFileName =
         file instanceof File ? file.name : "recorded_audio";
       const fileNameWithoutExtension = originalFileName.replace(
         /\.[^/.]+$/,
         ""
-      ); // Remove existing extension
+      ); 
       const finalFileName = `${fileNameWithoutExtension}.wav`;
 
-      // Wrap the converted Blob into a File with the desired name
       const finalFile = new File([convertedFile], finalFileName, {
         type: "audio/wav",
       });
 
-      // Set the processed file in state
       setAudioFile(finalFile);
     } catch (error) {
       console.error("Error converting to WAV:", error);
@@ -54,7 +50,6 @@ export default function AudioUpload() {
         duration: 5000,
       });
       return;
-      return;
     }
 
     if (!speakers || speakers < 1) {
@@ -67,7 +62,6 @@ export default function AudioUpload() {
     setIsLoading(true);
 
     try {
-      // Use the audioFile as is since it's already processed and named
       const result = await uploadAudio(audioFile, speakers);
       const fetchedResult = result.data;
       if (result.status == 200) {
@@ -79,8 +73,6 @@ export default function AudioUpload() {
     } catch (error) {
       setUploadStatus("Error uploading file");
       console.error("Upload error:", error);
-    }finally{
-      setIsLoading(false);
     }
   };
 
