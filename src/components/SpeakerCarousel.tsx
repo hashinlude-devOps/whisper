@@ -1,3 +1,4 @@
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { Carousel, Input, Button } from "antd";
 import { useRef, useState } from "react";
 
@@ -66,27 +67,35 @@ const SpeakerCarousel = ({
         ))}
       </Carousel>
       <div className="flex justify-between mt-4">
-        <Button
-          className="text-white-1 hover:text-white-2 border-none"
-          style={{
-            display: currentIndex === 1 ? "none" : "", // Hide button when on the first speaker
-          }}
-          onClick={handlePrev}
-          disabled={currentIndex === 1} // Disable if on the first speaker
-        >
-          Previous
-        </Button>
+        {/* Previous Button */}
+        <div className="flex-1">
+          <Button
+            className="text-white-1 hover:text-white-2 border-none w-full"
+            style={{
+              display: currentIndex === 1 ? "none" : "block", // Hide "Previous" when on the first speaker
+            }}
+            onClick={handlePrev}
+            disabled={currentIndex === 1} // Disable if on the first speaker
+          >
+            <ChevronLeftIcon className="h-5 w-5" /> {/* Left Arrow Icon */}
+          </Button>
+        </div>
 
-        <Button
-          className="text-white-1 hover:text-white-2 border-none"
-          style={{
-            display: currentIndex === noOfSpeakers.length ? "none" : "", // Hide button when on the last speaker
-          }}
-          onClick={handleNext}
-          disabled={currentIndex === noOfSpeakers.length} // Disable if on the last speaker
-        >
-          Next
-        </Button>
+        {/* Next Button */}
+        <div className="flex-1 text-right">
+          <Button
+            className="text-white-1 hover:text-white-2 border-none w-full"
+            style={{
+              display: currentIndex === noOfSpeakers.length ? "none" : "block", // Hide "Next" when on the last speaker
+            }}
+            onClick={handleNext}
+            disabled={currentIndex === noOfSpeakers.length} // Disable if on the last speaker
+          >
+            <div className="flex justify-end w-full">
+              <ChevronRightIcon className="h-5 w-5" /> {/* Right Arrow Icon */}
+            </div>
+          </Button>
+        </div>
       </div>
     </div>
   );
