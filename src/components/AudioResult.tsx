@@ -18,12 +18,11 @@ import SpeakerCarousel from "./SpeakerCarousel";
 const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
   const [speakerValue, setSpeakerValue] = React.useState([{}]);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [loading, setIsLoading] = React.useState(false);
 
   const [isFileNameEdit, setIsFileNameEdit] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [loadingAudio, setLoadingAudio] = useState(true);
   const [currentAudioTime, setCurrentAudioTime] = useState(0);
   const [showTranslation, setShowTranslation] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -69,7 +68,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const fetchAudioData = async () => {
     if (hasFetchedAudio.current) return;
 
-    setLoadingAudio(true);
+    setIsLoading(true);
     try {
       const url = await getFullAudio(id.toString());
       setAudioUrl(url);
@@ -88,7 +87,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     } catch (error) {
       console.error("Error fetching full audio:", error);
     } finally {
-      setLoadingAudio(false);
+      setIsLoading(false);
     }
   };
 
@@ -127,28 +126,6 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     setShowTranslation(!showTranslation); // Toggle translation visibility
   };
 
-  // const handleSpeakerEdit = () => {
-  //   setIsLoading(true);
-  //   updateSpeakerNames(result?.json_file, speakerValue)
-  //     .then(async () => {
-  //       const response = await getTranscription(id.toString());
-  //       const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
-  //       if (fetchedResult) {
-  //         setResult(fetchedResult);
-  //       } else {
-  //         message.error("No results found for this transcription.");
-  //       }
-  //       setIsLoading(false);
-  //       setIsModalOpen(false);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error updating speaker names:", error);
-  //       setIsLoading(false);
-  //     });
-
-  //   setIsLoading(false);
-  // };
-
   const handleSpeakerAudioPlay = (speaker: string) => {
     if (!result?.result || !audioRef.current) return;
 
@@ -178,8 +155,8 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   };
 
   const handleSpeakerEdit = () => {
+    setIsModalOpen(false);
     setIsLoading(true);
-
     updateSpeakerNames(result?.json_file, speakerValue)
       .then(async () => {
         const response = await getTranscription(id.toString());
@@ -190,14 +167,11 @@ const AudioResultComponent = ({ id }: { id: number }) => {
           message.error("No results found for this transcription.");
         }
         setIsLoading(false);
-        setIsModalOpen(false);
       })
       .catch((error) => {
         console.error("Error updating speaker names:", error);
         setIsLoading(false);
       });
-
-    setIsLoading(false);
   };
 
   const handleFilenameChange = async () => {
@@ -220,6 +194,10 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
   return (
     <div className="flex flex-col min-h-screen lg:ml-[16rem]">
+      {loading ? (
+      <Loader /> // Display loader for the entire component
+    ) : (
+      <>
       <div className="flex flex-col space-y-4 px-[2rem] flex-1 mb-4">
         <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-2">
           <div className="flex items-center space-x-2 mt-2 py-4">
@@ -323,7 +301,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                 <Button
                   className="text-white-1 border-none bg-blue-600 hover:bg-blue-700"
                   onClick={() => handleSpeakerEdit()}
-                  loading={isLoading}
+                  loading={loading}
                 >
                   Update
                 </Button>
@@ -385,10 +363,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         </div>
       </div>
 
-      {loadingAudio ? (
-        <Loader />
-      ) : (
-        audioUrl && (
+      {audioUrl && (
           <div className="sticky bottom-0 w-full text-white-1 shadow-lg ">
             <div className="max-w-full w-full">
               <CustomAudioPlayer
@@ -398,10 +373,11 @@ const AudioResultComponent = ({ id }: { id: number }) => {
               />
             </div>
           </div>
-        )
-      )}
-    </div>
-  );
-};
+        )}
+      </>
+    )}
+  </div>
+);
+}
 
 export default AudioResultComponent;
