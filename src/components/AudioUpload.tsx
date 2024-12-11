@@ -195,7 +195,7 @@ export default function AudioUpload() {
                   <ProgressBar currentStep={currentStep} />
                 </div>
               )}
-               {audioFile && <AudioPlayer audioFile={audioFile} />}
+               {/* {audioFile && <AudioPlayer audioFile={audioFile} />} */}
 
 
               {/* Upload button visible only when isButtonVisible is true */}
