@@ -39,6 +39,18 @@ export const getRecordings = async (): Promise<Response> => {
     }
 };
 
+export const getRecordingUploadStatus = async (id: string,): Promise<Response> => {
+  try {
+    const response = await apiClient<Response>(`/get-recording-status/${id}`, {
+      method: "GET",
+    });
+    return (response); 
+  } catch (error) {
+    console.error("Error fetching recordings:", error);
+    throw error; 
+  }
+};
+
 
 export const updateSpeakerNames = async (
   jsonPath: string,
@@ -118,3 +130,6 @@ export const viewMeetingMinutes = async (id: string,): Promise<Response> => {
     throw error; 
   }
 };
+
+
+

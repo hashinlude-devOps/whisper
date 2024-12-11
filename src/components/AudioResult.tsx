@@ -249,7 +249,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
             {isFileNameEdit && (
               <>
                 <Button
-                  className="text-white  bg-blue-500 border-none"
+                  className="text-white  bg-blue-600 hover:bg-blue-700 border-none"
                   onClick={async () => {
                     await handleFilenameChange();
                     setIsFileNameEdit(false);
@@ -258,7 +258,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                   save
                 </Button>
                 <Button
-                  className="text-white  bg-red-500 border-none"
+                  className="text-white  bg-red-600 hover:bg-red-700 border-none"
                   onClick={() => setIsFileNameEdit(false)}
                 >
                   cancel
@@ -283,13 +283,13 @@ const AudioResultComponent = ({ id }: { id: number }) => {
           <div className="my-4 md:my-0">
             <div className="flex gap-3 flex-row">
               <Button
-                className="bg-orange-600 text-black-1 border-none hover:bg-orange-500"
+                className=" text-white-1 border-none bg-blue-600 hover:bg-blue-700"
                 onClick={showModal}
               >
                 Update Speaker
               </Button>
               <Button
-                className="bg-orange-600 text-black-1 border-none hover:bg-orange-500"
+                className="text-white-1 border-none bg-blue-600 hover:bg-blue-700"
                 onClick={() => router.push(`/result/minutes/${id}`)}
               >
                 Meeting Minutes
@@ -315,13 +315,13 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
               <div className="flex justify-end gap-3 mt-4">
                 <Button
-                  className="text-white-1  bg-red-500 hover:bg-red-600 border-none"
+                  className="text-white-1 border-none bg-red-600 hover:bg-red-700"
                   onClick={handleCancel}
                 >
                   Cancel
                 </Button>
                 <Button
-                  className="bg-blue-500 text-white-1 hover:bg-blue-600 border-none"
+                  className="text-white-1 border-none bg-blue-600 hover:bg-blue-700"
                   onClick={() => handleSpeakerEdit()}
                   loading={isLoading}
                 >

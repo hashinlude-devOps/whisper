@@ -1,6 +1,8 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import { Carousel, Input, Button } from "antd";
+import { Carousel, Button } from "antd";
 import { useRef, useState } from "react";
+import { Input } from "@/components/ui/input";
+
 
 const SpeakerCarousel = ({
   noOfSpeakers,
@@ -42,13 +44,7 @@ const SpeakerCarousel = ({
           <div key={index} className="flex flex-col items-center space-y-4">
             <div className="flex items-center space-x-4 w-full justify-center">
               <Input
-                value={`${item}` || ""} // Pre-fill with the current value for the speaker, or empty string if not set
                 placeholder={`Enter ${item} name`}
-                style={{
-                  backgroundColor: "#1A1A1A",
-                  color: "#FFF",
-                  border: "none",
-                }}
                 onChange={(e) => {
                   setSpeakerValue((prev: any[]) => ({
                     ...prev,
@@ -57,7 +53,7 @@ const SpeakerCarousel = ({
                 }}
               />
               <Button
-                className="bg-blue-500 text-white-1 hover:bg-blue-600 border-none"
+                className="text-white-1 border-none bg-blue-600 hover:bg-blue-700"
                 onClick={() => handleSpeakerAudioPlay(item)}
               >
                 Play Audio

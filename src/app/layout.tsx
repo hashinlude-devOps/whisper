@@ -20,7 +20,7 @@ export default function RootLayout({ children }: any) {
     token: {
       colorPrimary: "#000000", // Orange primary color (example customization)
       colorTextBase: "#FFFFFF", // White text
-      colorBgBase: "#000000", // Black background
+      colorBgBase: "#15171C", // Black background
       colorLink: "#1E90FF",     // Blue color for links (this will apply for hover as well)
       colorBorder: "#FFFFFF",
     },

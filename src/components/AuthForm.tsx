@@ -188,7 +188,7 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
               />
             )}
 
-            <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white-1">
+            <Button type="submit" className="w-full text-white-1 border-none bg-blue-600 hover:bg-blue-700">
               {isSignin ? "Log In" : "Sign Up"}
             </Button>
             {uploadStatus && (

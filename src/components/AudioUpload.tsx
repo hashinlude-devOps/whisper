@@ -4,11 +4,15 @@
 import React, { useState } from "react";
 import { Button } from "antd";
 import AudioInput from "./AudioInput";
-import { uploadAudio } from "@/lib/services/audioService";
+import {
+  getRecordingUploadStatus,
+  uploadAudio,
+} from "@/lib/services/audioService";
 import { convertToWav } from "@/lib/audioutils";
 import toast from "react-hot-toast";
 import Loader from "./Loader";
 import { useRouter } from "next/navigation";
+import ProgressBar from "@/components/ui/progressbar";
 
 export default function AudioUpload() {
   const [audioFile, setAudioFile] = useState<File | Blob | null | any>(null);
@@ -16,9 +20,17 @@ export default function AudioUpload() {
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [loading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [currentStep, setCurrentStep] = React.useState(0);
+  const [isProgressVisible, setIsProgressVisible] = useState(false);
+  const [isButtonVisible, setIsButtonVisible] = useState(true);
 
   const handleFileSelected = async (file: File | Blob) => {
     try {
+      setIsProgressVisible(true);
+      setIsButtonVisible(false);
+      setUploadStatus("Converting file...");
+      setCurrentStep(1);
+      setCurrentStep(2);
       const convertedFile = await convertToWav(file);
 
       const originalFileName =
@@ -26,16 +38,25 @@ export default function AudioUpload() {
       const fileNameWithoutExtension = originalFileName.replace(
         /\.[^/.]+$/,
         ""
-      ); 
+      );
+      setCurrentStep(3);
       const finalFileName = `${fileNameWithoutExtension}.wav`;
-
+      console.log("coverted");
       const finalFile = new File([convertedFile], finalFileName, {
         type: "audio/wav",
       });
-
+      setCurrentStep(4);
       setAudioFile(finalFile);
+      setIsProgressVisible(false);
+      setIsButtonVisible(true);
+      setUploadStatus("File ready for upload!");
+      setCurrentStep(0);
     } catch (error) {
       console.error("Error converting to WAV:", error);
+      setIsProgressVisible(false);
+      setIsButtonVisible(true);
+      setUploadStatus("Error during conversion.");
+      setCurrentStep(0);
     }
   };
 
@@ -45,10 +66,9 @@ export default function AudioUpload() {
 
   const handleUpload = async () => {
     if (!audioFile) {
+      console.log("no file");
       setUploadStatus("No file to upload");
-      toast.error("No file to upload", {
-        duration: 5000,
-      });
+      toast.error("No file to upload", { duration: 5000 });
       return;
     }
 
@@ -59,26 +79,105 @@ export default function AudioUpload() {
       });
       return;
     }
+
+    // Show progress bar and hide button when the upload starts
+    setIsProgressVisible(true);
+    setIsButtonVisible(false);
     setIsLoading(true);
+    setUploadStatus("Uploading...");
+    setCurrentStep(1);
 
     try {
       const result = await uploadAudio(audioFile, speakers);
       const fetchedResult = result.data;
-      if (result.status == 200) {
-        router.push(`/result/${fetchedResult.recording_id}`);
-      }
-      else{
+
+      if (result.status === 202) {
+        setCurrentStep(2);
+        setUploadStatus(
+          "Uploaded, Your audio has been processing, This may take a while."
+        );
+        const statusResponse = await getRecordingUploadStatus(
+          fetchedResult.recording_id
+        );
+
+        if (statusResponse.status === 200) {
+          const recordingStatus =
+            statusResponse.data.recording_status.toLowerCase();
+
+          if (recordingStatus === "completed") {
+            setCurrentStep(4);
+            router.push(`/result/${statusResponse.data.recording_id}`);
+            // Hide progress bar and show button after process is complete
+            setIsProgressVisible(false);
+            setIsButtonVisible(true);
+            setIsLoading(false);
+          } else if (recordingStatus === "failed") {
+            setUploadStatus("Upload failed. Please reupload the file.");
+            setCurrentStep(0);
+            // Hide progress bar and show button after process is complete
+            setIsProgressVisible(false);
+            setIsButtonVisible(true);
+            setIsLoading(false);
+          } else if (recordingStatus === "pending") {
+            setCurrentStep(3);
+
+            const checkStatusInterval = setInterval(async () => {
+              const retryStatusResponse = await getRecordingUploadStatus(
+                fetchedResult.recording_id
+              );
+              if (retryStatusResponse.status === 200) {
+                const retryRecordingStatus =
+                  retryStatusResponse.data.recording_status.toLowerCase();
+
+                if (retryRecordingStatus === "completed") {
+                  clearInterval(checkStatusInterval);
+                  setCurrentStep(4);
+                  router.push(
+                    `/result/${retryStatusResponse.data.recording_id}`
+                  );
+                  // Hide progress bar and show button after process is complete
+                  setIsProgressVisible(false);
+                  setIsButtonVisible(true);
+                  setIsLoading(false);
+                } else if (retryRecordingStatus === "failed") {
+                  clearInterval(checkStatusInterval);
+                  setUploadStatus("Upload failed. Please reupload the file.");
+                  setCurrentStep(0);
+                  // Hide progress bar and show button after process is complete
+                  setIsProgressVisible(false);
+                  setIsButtonVisible(true);
+                  setIsLoading(false);
+                }
+              }
+            }, 15000); // Poll every 2 seconds
+          }
+        } else {
+          setUploadStatus(`Error fetching status: ${statusResponse.status}`);
+          // Hide progress bar and show button after process is complete
+          setIsProgressVisible(false);
+          setIsButtonVisible(true);
+          setIsLoading(false);
+        }
+      } else {
         setUploadStatus(`Error: ${fetchedResult.error}`);
+        // Hide progress bar and show button after process is complete
+        setIsProgressVisible(false);
+        setIsButtonVisible(true);
+        setIsLoading(false);
       }
     } catch (error) {
       setUploadStatus("Error uploading file");
       console.error("Upload error:", error);
+      // Hide progress bar and show button after process is complete
+      setIsProgressVisible(false);
+      setIsButtonVisible(true);
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex justify-center items-center h-full px-[2rem] py-[2rem] ">
-      {loading && <Loader />}
+      {/* {loading && <Loader />} */}
       <div className="flex flex-col justify-center w-full md:w-3/4 lg:w-1/2">
         <div className="min-h-screen flex items-center justify-center bg-black">
           <div className="container p-4 max-w-md  rounded-lg shadow-lg">
@@ -90,12 +189,21 @@ export default function AudioUpload() {
                 onFileSelected={handleFileSelected}
                 onSpeakersChange={handleSpeakersChange}
               />
-              <Button
-                onClick={handleUpload}
-                className="w-full bg-orange-600 hover:bg-orange-700 border-none text-white-1"
-              >
-                Upload Audio
-              </Button>
+              {isProgressVisible && (
+                <div className="flex items-center justify-between w-full">
+                  <ProgressBar currentStep={currentStep} />
+                </div>
+              )}
+
+              {/* Upload button visible only when isButtonVisible is true */}
+              {isButtonVisible && (
+                <Button
+                  onClick={handleUpload}
+                  className="w-full bg-blue-600 hover:bg-blue-700 border-none text-white-1"
+                >
+                  Upload Audio
+                </Button>
+              )}
               {uploadStatus && (
                 <p className="mt-4 text-sm text-gray-300">{uploadStatus}</p>
               )}
@@ -107,132 +215,4 @@ export default function AudioUpload() {
   );
 }
 
-// const handlePostRequest = async () => {
-//   try {
-//     if (!countOfSpeaker || countOfSpeaker < 1) {
-//       toast.error("Number of speakers must be greater than or equal to 1", {
-//         duration: 5000,
-//       });
-//       return;
-//     }
-//     setIsLoading(true);
-//     const result = await uploadAudio(
-//       audioFileState?.originFileObj,
-//       countOfSpeaker
-//     );
-
-//     const fetchedResult = result.data;
-
-//     if (result.status == 200 && fileName != null && fileName != "") {
-//       await updateRecordingName(fetchedResult.recording_id, fileName);
-//     }
-
-//     router.push(`/result/${fetchedResult.recording_id}`);
-//   } catch (error) {
-//     console.error("Error posting data:", error);
-//     message.error("Failed to upload the audio.");
-//   } finally {
-//     setIsLoading(false);
-//   }
-// };
-
-{
-  /* <div>
-          <div className="flex justify-between items-center my-[1rem] text-white-1">
-            <div>Upload Audio File here</div>
-          </div>
-          <div className="h-[15rem] md:w-full">
-            <Dragger {...props} >
-              <p className="ant-upload-text text-white-1">
-                Click or drag file to this area to upload
-              </p>
-            </Dragger>
-          </div>
-        </div>
-
-        {audio && (
-          <div className="mt-[3rem] text-white-1">
-            <audio controls className="w-full">
-              <source src={audio} type="audio/mpeg" />
-              Your browser does not support the audio element.
-            </audio>
-          </div>
-        )}
-
-        <div className="mt-[1rem] flex flex-col space-y-4">
-          <div className="flex items-center space-x-4 w-full">
-            <label className="text-white-1 whitespace-nowrap">
-              Enter Number of Speakers
-            </label>
-            <InputNumber
-              className="bg-gray-600 bg-opacity-20 border-gray-300 text-white-1 placeholder-gray-300 w-[20%]"
-              value={countOfSpeaker}
-              onChange={(value: any) => setCountOfSpeaker(value)}
-              style={{ color: "white" }} // Explicitly set the text color to white
-            />
-            <label className="text-white-1 whitespace-nowrap">File Name</label>
-            <Input
-              className="bg-gray-600 bg-opacity-20 border-gray-300 text-white-1 placeholder-gray-300 w-[80%]"
-              value={fileName}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setFileName(e.target.value)
-              }
-              style={{ color: "white" }} // Explicitly set the text color to white
-            />
-          </div>
-
-          <Button
-            type="primary"
-            loading={loading}
-            className="bg-orange-1 w-full"
-            onClick={handlePostRequest}
-          >
-            Upload
-          </Button>
-        </div> */
-}
-
-// const props = {
-//   name: "file",
-//   accept: "audio/*",
-//   action: undefined, // Disable automatic upload
-//   beforeUpload: (file: any) => {
-//     const isAudio = file.type.startsWith("audio/");
-//     if (!isAudio) {
-//       message.error("You can only upload audio files!");
-//       return false; // Prevent the file from being uploaded
-//     }
-//     return true; // Allow upload if it's an audio file
-//   },
-//   onChange(info: any) {
-//     const { status, originFileObj } = info.file;
-//     if (status !== "uploading" && originFileObj) {
-//       setAudioFileState(info.file);
-//       const fileUrl = URL.createObjectURL(originFileObj);
-//       setAudio(fileUrl);
-//     }
-//   },
-// };
-
-// React.useEffect(() => {
-//   return () => {
-//     if (audio) {
-//       URL.revokeObjectURL(audio);
-//     }
-//   };
-// }, [audio]);
-
-//       const [fileName, setFileName] = React.useState<string>();
-// const [countOfSpeaker, setCountOfSpeaker] = React.useState<number>();
-// const [audioFileState, setAudioFileState] = React.useState<any>();
-// const [audio, setAudio] = React.useState<any>();
-// const [loading, setIsLoading] = React.useState(false);
-// const router = useRouter(); // Use the router for navigation
-
-// import { InputNumber } from "antd";
-// import { updateRecordingName, uploadAudio } from "@/lib/services/audioService"; // Import the service
-// import { useAudio } from "@/context/AudioContext"; // Import your context hook
-// import { useRouter } from "next/navigation"; // Import useRouter for navigation
-// import toast from "react-hot-toast";
-
-// const { Dragger } = Upload;
+// {audioFile && <AudioPlayer audioFile={audioFile} />}
