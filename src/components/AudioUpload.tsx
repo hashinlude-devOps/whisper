@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import Loader from "./Loader";
 import { useRouter } from "next/navigation";
 import ProgressBar from "@/components/ui/progressbar";
+import AudioPlayer from "./AudioPlayer";
 
 export default function AudioUpload() {
   const [audioFile, setAudioFile] = useState<File | Blob | null | any>(null);
@@ -194,6 +195,8 @@ export default function AudioUpload() {
                   <ProgressBar currentStep={currentStep} />
                 </div>
               )}
+               {audioFile && <AudioPlayer audioFile={audioFile} />}
+
 
               {/* Upload button visible only when isButtonVisible is true */}
               {isButtonVisible && (
@@ -215,4 +218,3 @@ export default function AudioUpload() {
   );
 }
 
-// {audioFile && <AudioPlayer audioFile={audioFile} />}
