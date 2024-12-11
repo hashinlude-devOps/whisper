@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   fetchMeetingMinutes,
   viewMeetingMinutes,
@@ -15,6 +15,8 @@ export default function MeetingMinutes() {
   const params = useParams();
   const { id } = params;
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
 
   const fetchMeetingMinutesData = async () => {
     try {
@@ -78,7 +80,27 @@ export default function MeetingMinutes() {
       ) : (
         result && (
           <div className="flex flex-col space-y-4 p-6 flex-1 mb-4 bg-black text-white-1 lg:ml-[16rem] h-full overflow-y-auto">
-            <div>{result?.file_path}</div>
+            <div><button 
+          onClick={() => router.push(
+            `/result/${result?.recording_id}`
+          )}
+          className="text-white-1 hover:text-blue-500"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            className="h-5 w-5"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth="2" 
+              d="M15 19l-7-7 7-7" 
+            />
+          </svg>
+        </button></div>
             <div>
               Number of speakers
               <span className="m-5 font-bold text-2xl text-blue-500">

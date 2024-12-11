@@ -94,7 +94,7 @@ export default function AudioUpload() {
       if (result.status === 202) {
         setCurrentStep(2);
         setUploadStatus(
-          "Uploaded, Your audio has been processing, This may take a while."
+          "Uploaded, Your audio is being processed, This may take a while."
         );
         const statusResponse = await getRecordingUploadStatus(
           fetchedResult.recording_id
