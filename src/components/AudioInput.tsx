@@ -14,7 +14,7 @@ interface AudioInputProps {
 const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected, onSpeakersChange }) => {
   const [isRecording, setIsRecording] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
-  const [speakers, setSpeakers] = useState(1)
+  const [speakers, setSpeakers] = useState<string>("")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,15 +35,16 @@ const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected, onSpeakersChang
   }
 
   const handleSpeakersChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value; // Get the raw input value as a string
+    const value = event.target.value
 
+    // Update state and notify parent only if input is valid
     if (value === "") {
-      setSpeakers(0); // Set to default value or handle as needed
-      onSpeakersChange(0); // Notify parent with default value
-    } else {
-      const numericValue = parseInt(value, 10);
-      setSpeakers(numericValue);
-      onSpeakersChange(numericValue);
+      setSpeakers("") // Clear input
+      onSpeakersChange(0) // Notify parent with default value
+    } else if (!isNaN(Number(value))) {
+      const numericValue = parseInt(value, 10)
+      setSpeakers(value)
+      onSpeakersChange(numericValue)
     }
   }
 
@@ -73,7 +74,7 @@ const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected, onSpeakersChang
           />
           <button
             onClick={handleClick}
-            className="p-2 rounded-full hover:bg-gray-700 focus:outline-none text-white-1  focus:ring-2 focus:ring-gray-600 ml-1"
+            className="p-2 rounded-full hover:bg-gray-700 focus:outline-none text-white-1 focus:ring-2 focus:ring-gray-600 ml-1"
             aria-label="Upload audio file"
           >
             <Upload className="w-5 h-5" />
@@ -86,9 +87,10 @@ const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected, onSpeakersChang
           id="speakers"
           type="number"
           min="1"
-          value={speakers || ""}
+          value={speakers}
           onChange={handleSpeakersChange}
           className="mt-1 bg-black-1 text-white border-gray-700 text-white-1 focus:ring-gray-600"
+          placeholder="Enter number of speakers"
         />
       </div>
     </div>
@@ -96,4 +98,3 @@ const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected, onSpeakersChang
 }
 
 export default AudioInput
-
