@@ -11,10 +11,11 @@ export default function History() {
   const [groupedHistory, setGroupedHistory] = useState<Record<string, any[]>>(
     {}
   );
+  const { refreshKey, isMenuOpen, setIsMenuOpen } = useSidebar();
+
   const [activeItem, setActiveItem] = useState(null);
   const router = useRouter();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const { isMenuOpen, setIsMenuOpen } = useSidebar();
 
   const checkScreenSize = () => {
     setIsSmallScreen(window.innerWidth < 768);
@@ -53,7 +54,7 @@ export default function History() {
     };
 
     fetchHistory();
-  }, []);
+  }, [refreshKey]);
 
   const categorizeRecordings = (recordings: any[]) => {
     const today = new Date();

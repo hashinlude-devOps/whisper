@@ -12,12 +12,15 @@ import { convertToWav } from "@/lib/audioutils";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import ProgressBar from "@/components/ui/progressbar";
+import { useSidebar } from "@/context/SidebarProvider";
 
 export default function AudioUpload() {
   const [audioFile, setAudioFile] = useState<File | Blob | null | any>(null);
   const [speakers, setSpeakers] = useState<number>(1);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [loading, setIsLoading] = useState(false);
+  const { refreshHistory } = useSidebar();
+
   const router = useRouter();
   const [currentStep, setCurrentStep] = React.useState(0);
   const [isProgressVisible, setIsProgressVisible] = useState(false);
@@ -79,7 +82,6 @@ export default function AudioUpload() {
       return;
     }
 
-    // Show progress bar and hide button when the upload starts
     setIsProgressVisible(true);
     setIsButtonVisible(false);
     setIsLoading(true);
@@ -91,6 +93,7 @@ export default function AudioUpload() {
       const fetchedResult = result.data;
 
       if (result.status === 202) {
+        refreshHistory();
         setCurrentStep(2);
         setUploadStatus(
           "Uploaded, Your audio is being processed, This may take a while."
@@ -105,21 +108,22 @@ export default function AudioUpload() {
 
           if (recordingStatus === "completed") {
             setCurrentStep(4);
+
             router.push(`/result/${statusResponse.data.recording_id}`);
-            // Hide progress bar and show button after process is complete
+            refreshHistory();
             setIsProgressVisible(false);
             setIsButtonVisible(true);
             setIsLoading(false);
           } else if (recordingStatus === "failed") {
             setUploadStatus("Upload failed. Please reupload the file.");
             setCurrentStep(0);
-            // Hide progress bar and show button after process is complete
+            refreshHistory();
             setIsProgressVisible(false);
             setIsButtonVisible(true);
             setIsLoading(false);
           } else if (recordingStatus === "pending") {
             setCurrentStep(3);
-
+            refreshHistory();
             const checkStatusInterval = setInterval(async () => {
               const retryStatusResponse = await getRecordingUploadStatus(
                 fetchedResult.recording_id
@@ -131,10 +135,10 @@ export default function AudioUpload() {
                 if (retryRecordingStatus === "completed") {
                   clearInterval(checkStatusInterval);
                   setCurrentStep(4);
+                  refreshHistory();
                   router.push(
                     `/result/${retryStatusResponse.data.recording_id}`
                   );
-                  // Hide progress bar and show button after process is complete
                   setIsProgressVisible(false);
                   setIsButtonVisible(true);
                   setIsLoading(false);
@@ -142,24 +146,24 @@ export default function AudioUpload() {
                   clearInterval(checkStatusInterval);
                   setUploadStatus("Upload failed. Please reupload the file.");
                   setCurrentStep(0);
-                  // Hide progress bar and show button after process is complete
+                  refreshHistory();
                   setIsProgressVisible(false);
                   setIsButtonVisible(true);
                   setIsLoading(false);
                 }
               }
-            }, 15000); // Poll every 2 seconds
+            }, 15000);
           }
         } else {
           setUploadStatus(`Error fetching status: ${statusResponse.status}`);
-          // Hide progress bar and show button after process is complete
+          refreshHistory();
           setIsProgressVisible(false);
           setIsButtonVisible(true);
           setIsLoading(false);
         }
       } else {
         setUploadStatus(`Error: ${fetchedResult.error}`);
-        // Hide progress bar and show button after process is complete
+        refreshHistory();
         setIsProgressVisible(false);
         setIsButtonVisible(true);
         setIsLoading(false);
@@ -167,7 +171,7 @@ export default function AudioUpload() {
     } catch (error) {
       setUploadStatus("Error uploading file");
       console.error("Upload error:", error);
-      // Hide progress bar and show button after process is complete
+      refreshHistory();
       setIsProgressVisible(false);
       setIsButtonVisible(true);
       setIsLoading(false);
@@ -211,4 +215,3 @@ export default function AudioUpload() {
     </div>
   );
 }
-
