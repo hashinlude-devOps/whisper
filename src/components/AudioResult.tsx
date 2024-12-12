@@ -69,13 +69,10 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     if (hasFetchedAudio.current) return;
 
     setIsLoading(true);
+
     try {
-      const url = await getFullAudio(id.toString());
-      setAudioUrl(url);
-      hasFetchedAudio.current = true;
-
+      // Fetch transcription data first
       const response = await getTranscription(id.toString());
-
       const fetchedResult = response.data?.result;
 
       if (fetchedResult) {
@@ -84,10 +81,17 @@ const AudioResultComponent = ({ id }: { id: number }) => {
       } else {
         message.error("No results found for this transcription.");
       }
-    } catch (error) {
-      console.error("Error fetching full audio:", error);
-    } finally {
+
+      // Disable loader after transcription fetch
       setIsLoading(false);
+
+      // Fetch audio in the background
+      const url = await getFullAudio(id.toString());
+      setAudioUrl(url);
+      hasFetchedAudio.current = true;
+    } catch (error) {
+      console.error("Error fetching transcription or audio:", error);
+      setIsLoading(false); // Ensure loader is disabled on error
     }
   };
 
@@ -195,189 +199,195 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   return (
     <div className="flex flex-col min-h-screen lg:ml-[16rem]">
       {loading ? (
-      <Loader /> // Display loader for the entire component
-    ) : (
-      <>
-      <div className="flex flex-col space-y-4 px-[2rem] flex-1 mb-4">
-        <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-2">
-          <div className="flex items-center space-x-2 mt-2 py-4">
-            {!isFileNameEdit ? (
-              <span
-                className="text-sm text-white-1 font-bold"
-                onKeyDown={async (e) => await handleFilenameChange()}
-              >
-                {result?.recordingname}
-                {/* TODO : Confirm recording name is required */}
-              </span>
-            ) : (
-              <Input
-                className="w-full border-1 border-white-1 focus:border-blue-300"
-                value={fileName ?? result?.recordingname}
-                onChange={(e: any) => setFileName(e.target.value)}
-              />
-            )}
-            {!isFileNameEdit && (
-              <button
-                className="text-white-1 hover:text-white-5"
-                onClick={() => setIsFileNameEdit(true)}
-              >
-                <PencilSquareIcon className="h-5 w-5" />
-              </button>
-            )}
-            {isFileNameEdit && (
-              <>
-                <Button
-                  className="text-white  bg-blue-600 hover:bg-blue-700 border-none"
-                  onClick={async () => {
-                    await handleFilenameChange();
-                    setIsFileNameEdit(false);
-                  }}
-                >
-                  save
-                </Button>
-                <Button
-                  className="text-white  bg-red-600 hover:bg-red-700 border-none"
-                  onClick={() => setIsFileNameEdit(false)}
-                >
-                  cancel
-                </Button>
-              </>
-            )}
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1">
-              <CalendarIcon className="h-5 w-5 text-gray-50" />
-              <span className="text-sm text-gray-50">
-                {timestamp || "No Timestamp Available"}
-              </span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <ClockIcon className="h-5 w-5 text-gray-50" />
-              <span className="text-sm text-gray-50">0:26</span>
-            </div>
-          </div>
-
-          <div className="my-4 md:my-0">
-            <div className="flex gap-3 flex-row">
-              <Button
-                className=" text-white-1 border-none bg-blue-600 hover:bg-blue-700"
-                onClick={showModal}
-              >
-                Update Speaker
-              </Button>
-              <Button
-                className="text-white-1 border-none bg-blue-600 hover:bg-blue-700"
-                onClick={() => router.push(`/result/minutes/${id}`)}
-              >
-                Meeting Minutes
-              </Button>
-            </div>
-
-            <Modal
-              title={
-                <p className="text-white font-bold text-lg border-b">
-                  Update Speaker
-                </p>
-              }
-              open={isModalOpen}
-              onOk={handleOk}
-              onCancel={handleCancel}
-              footer={null} // Remove default footer if you want custom buttons
-            >
-              <SpeakerCarousel
-                noOfSpeakers={noOfSpeakers}
-                setSpeakerValue={setSpeakerValue}
-                handleSpeakerAudioPlay={handleSpeakerAudioPlay}
-              />
-
-              <div className="flex justify-end gap-3 mt-4">
-                <Button
-                  className="text-white-1 border-none bg-red-600 hover:bg-red-700"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="text-white-1 border-none bg-blue-600 hover:bg-blue-700"
-                  onClick={() => handleSpeakerEdit()}
-                  loading={loading}
-                >
-                  Update
-                </Button>
-              </div>
-            </Modal>
-          </div>
-        </div>
-
-        {/* Table Container with Scrollable Content */}
-        <div className="mt-4 overflow-y-auto max-h-[calc(100vh-160px-132px)] hide-scrollable">
-          <table className="min-w-full table-auto">
-            <tbody>
-              {result?.result.map((segment: any, index: any) => {
-                const startTime = segment.start_time;
-                const endTime = segment.end_time;
-                const elapsedTime = formatTime(index === 0 ? 0 : startTime);
-                const bufferTime = 0.3; // Add a small buffer time (in seconds)
-                const isHighlighted =
-                  currentAudioTime >= startTime - bufferTime &&
-                  currentAudioTime <= endTime + bufferTime;
-
-                return (
-                  <tr
-                    key={index}
-                    className={`table-row transition-colors duration-300 ${
-                      isHighlighted ? "bg-black-2" : "hover:bg-black-2"
-                    }`}
+        <Loader /> // Display loader for the entire component
+      ) : (
+        <>
+          <div className="flex flex-col space-y-4 px-[2rem] flex-1 mb-4">
+            <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-2">
+              <div className="flex items-center space-x-2 mt-2 py-4">
+                {!isFileNameEdit ? (
+                  <span
+                    className="text-sm text-white-1 font-bold"
+                    onKeyDown={async (e) => await handleFilenameChange()}
                   >
-                    <td className="px-4 py-2 text-blue-500">
-                      <span
-                        onClick={() => {
-                          handleAudioSeek(segment.start_time);
-                        }}
-                        className="cursor-pointer"
-                      >
-                        {" "}
-                        {elapsedTime}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2 text-blue-500">
-                      {segment.speaker}
-                    </td>
+                    {result?.recordingname}
+                    {/* TODO : Confirm recording name is required */}
+                  </span>
+                ) : (
+                  <Input
+                    className="w-full border-1 border-white-1 focus:border-blue-300"
+                    value={fileName ?? result?.recordingname}
+                    onChange={(e: any) => setFileName(e.target.value)}
+                  />
+                )}
+                {!isFileNameEdit && (
+                  <button
+                    className="text-white-1 hover:text-white-5"
+                    onClick={() => setIsFileNameEdit(true)}
+                  >
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                )}
+                {isFileNameEdit && (
+                  <>
+                    <Button
+                      className="text-white  bg-blue-600 hover:bg-blue-700 border-none"
+                      onClick={async () => {
+                        await handleFilenameChange();
+                        setIsFileNameEdit(false);
+                      }}
+                    >
+                      save
+                    </Button>
+                    <Button
+                      className="text-white  bg-red-600 hover:bg-red-700 border-none"
+                      onClick={() => setIsFileNameEdit(false)}
+                    >
+                      cancel
+                    </Button>
+                  </>
+                )}
+              </div>
 
-                    <td className="px-4 py-2 text-white-1">
-                      <span
-                        onClick={() => toggleTranslation()} // Pass start_time to handleTextClick
-                        className="cursor-pointer"
-                      >
-                        {showTranslation
-                          ? segment.translated_text
-                          : segment.transcribed_text}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
+                  <CalendarIcon className="h-5 w-5 text-gray-50" />
+                  <span className="text-sm text-gray-50">
+                    {timestamp || "No Timestamp Available"}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <ClockIcon className="h-5 w-5 text-gray-50" />
+                  <span className="text-sm text-gray-50">0:26</span>
+                </div>
+              </div>
 
-      {audioUrl && (
-          <div className="sticky bottom-0 w-full text-white-1 shadow-lg ">
-            <div className="max-w-full w-full">
-              <CustomAudioPlayer
-                audioUrl={audioUrl}
-                onTimeUpdate={handleAudioTimeUpdate}
-                audioRef={audioRef}
-              />
+              <div className="my-4 md:my-0">
+                <div className="flex gap-3 flex-row">
+                  <Button
+                    className=" text-white-1 border-none bg-blue-600 hover:bg-blue-700"
+                    onClick={showModal}
+                  >
+                    Update Speaker
+                  </Button>
+                  <Button
+                    className="text-white-1 border-none bg-blue-600 hover:bg-blue-700"
+                    onClick={() => router.push(`/result/minutes/${id}`)}
+                  >
+                    Meeting Minutes
+                  </Button>
+                </div>
+
+                <Modal
+                  title={
+                    <p className="text-white font-bold text-lg border-b">
+                      Update Speaker
+                    </p>
+                  }
+                  open={isModalOpen}
+                  onOk={handleOk}
+                  onCancel={handleCancel}
+                  footer={null} // Remove default footer if you want custom buttons
+                >
+                  <SpeakerCarousel
+                    noOfSpeakers={noOfSpeakers}
+                    setSpeakerValue={setSpeakerValue}
+                    handleSpeakerAudioPlay={handleSpeakerAudioPlay}
+                  />
+
+                  <div className="flex justify-end gap-3 mt-4">
+                    <Button
+                      className="text-white-1 border-none bg-red-600 hover:bg-red-700"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="text-white-1 border-none bg-blue-600 hover:bg-blue-700"
+                      onClick={() => handleSpeakerEdit()}
+                      loading={loading}
+                    >
+                      Update
+                    </Button>
+                  </div>
+                </Modal>
+              </div>
+            </div>
+
+            {/* Table Container with Scrollable Content */}
+            <div className="mt-4 overflow-y-auto max-h-[calc(100vh-160px-132px)] hide-scrollable">
+              <table className="min-w-full table-auto">
+                <tbody>
+                  {result?.result.map((segment: any, index: any) => {
+                    const startTime = segment.start_time;
+                    const endTime = segment.end_time;
+                    const elapsedTime = formatTime(index === 0 ? 0 : startTime);
+                    const bufferTime = 0.3; // Add a small buffer time (in seconds)
+                    const isHighlighted =
+                      currentAudioTime >= startTime - bufferTime &&
+                      currentAudioTime <= endTime + bufferTime;
+
+                    return (
+                      <tr
+                        key={index}
+                        className={`table-row transition-colors duration-300 ${
+                          isHighlighted ? "bg-black-2" : "hover:bg-black-2"
+                        }`}
+                      >
+                        <td className="px-4 py-2 text-blue-500">
+                          <span
+                            onClick={() => {
+                              handleAudioSeek(segment.start_time);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            {" "}
+                            {elapsedTime}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 text-blue-500">
+                          {segment.speaker}
+                        </td>
+
+                        <td className="px-4 py-2 text-white-1">
+                          <span
+                            onClick={() => toggleTranslation()} // Pass start_time to handleTextClick
+                            className="cursor-pointer"
+                          >
+                            {showTranslation
+                              ? segment.translated_text
+                              : segment.transcribed_text}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
-        )}
-      </>
-    )}
-  </div>
-);
-}
+
+          {audioUrl ? (
+            <div className="sticky bottom-0 w-full text-white-1 shadow-lg">
+              <div className="max-w-full w-full">
+                <CustomAudioPlayer
+                  audioUrl={audioUrl}
+                  onTimeUpdate={handleAudioTimeUpdate}
+                  audioRef={audioRef}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="sticky bottom-0 w-full text-center h-[112px]  text-white py-4">
+              <span className="loading-text">
+                Downloading audio<span className="dot-animate">...</span>
+              </span>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
 
 export default AudioResultComponent;

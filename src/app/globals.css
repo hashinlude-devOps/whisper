@@ -247,3 +247,30 @@ audio::-ms-media-controls-panel {
   visibility: visible !important;
 }
 
+
+.loading-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.dot-animate::after {
+  content: '.';
+  animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+  0% {
+    content: '';
+  }
+  33% {
+    content: '.';
+  }
+  66% {
+    content: '..';
+  }
+  100% {
+    content: '...';
+  }
+}
+

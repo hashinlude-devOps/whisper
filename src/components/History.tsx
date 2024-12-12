@@ -1,40 +1,25 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import { getRecordings, getTranscription } from "@/lib/services/audioService"; // Import the service
+import { getRecordings } from "@/lib/services/audioService";
 import { useRouter } from "next/navigation";
-// import { useAudio } from "@/context/AudioContext";
-
+import { format, isToday, subDays } from "date-fns";
 import message from "antd/es/message";
 import { useSidebar } from "@/context/SidebarProvider";
 
 export default function History() {
-  const [historyData, setHistoryData] = useState<any[]>([]);
+  const [groupedHistory, setGroupedHistory] = useState<Record<string, any[]>>(
+    {}
+  );
   const [activeItem, setActiveItem] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const [isSmallScreen, setIsSmallScreen] = useState(false); // State to track screen size
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const { isMenuOpen, setIsMenuOpen } = useSidebar();
 
-
-  // Access the context here
-  // const { setAudioResult } = useAudio();
-  const { isMenuOpen, setIsMenuOpen } = useSidebar(); // Access sidebar context
-
-  const handleItemClick = (id: any) => {
-    setActiveItem(id); // Set the active item when clicked
-    handleHistoryClick(id); // Call the external handler
-  };
-
-  // Function to handle window resizing and check screen size
   const checkScreenSize = () => {
-    if (window.innerWidth < 768) {
-      setIsSmallScreen(true);
-    } else {
-      setIsSmallScreen(false);
-    }
+    setIsSmallScreen(window.innerWidth < 768);
   };
 
-  // Set up listener for screen size changes on mount
   useEffect(() => {
     checkScreenSize();
     window.addEventListener("resize", checkScreenSize);
@@ -46,44 +31,64 @@ export default function History() {
 
   const handleHistoryClick = async (id: string) => {
     try {
-      setIsLoading(true);
-      if (isSmallScreen) {
-        setIsMenuOpen(false);
-      }
+      if (isSmallScreen) setIsMenuOpen(false);
       router.push(`/result/${id}`);
     } catch (error) {
       console.error("Error fetching transcription:", error);
       message.error("Failed to fetch transcription.");
-    } finally {
-      setIsLoading(false);
     }
   };
-  
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        setIsLoading(true);
         const response = await getRecordings();
-        const fetchedHistory = response.data.recordings;
-        setHistoryData(fetchedHistory);
+        const recordings = response.data.recordings;
+
+        const categorized = categorizeRecordings(recordings);
+        setGroupedHistory(categorized);
       } catch (error) {
         console.error("Failed to fetch recordings:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchHistory();
-  }, [setIsLoading]);
+  }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen((prev: any) => !prev);
+  const categorizeRecordings = (recordings: any[]) => {
+    const today = new Date();
+    const weekAgo = subDays(today, 7);
+    const monthAgo = subDays(today, 30);
+
+    const categories: Record<string, any[]> = {
+      Today: [],
+      "Previous 7 Days": [],
+      "Previous 30 Days": [],
+    };
+
+    recordings.forEach((recording) => {
+      const date = new Date(recording.timestamp);
+
+      if (isToday(date)) {
+        categories["Today"].push(recording);
+      } else if (date > weekAgo) {
+        categories["Previous 7 Days"].push(recording);
+      } else if (date > monthAgo) {
+        categories["Previous 30 Days"].push(recording);
+      } else {
+        const monthYear = format(date, "MMMM yyyy");
+        if (!categories[monthYear]) {
+          categories[monthYear] = [];
+        }
+        categories[monthYear].push(recording);
+      }
+    });
+
+    return categories;
   };
 
-  const uploadnew = () => {
-    router.push("/"); // Redirect to the home page
-  };
+  const toggleMenu = () => setIsMenuOpen((prev: any) => !prev);
+  const uploadnew = () => router.push("/");
 
   return (
     <>
@@ -102,10 +107,10 @@ export default function History() {
             isMenuOpen ? "opacity-100" : "opacity-0"
           }`}
         >
-          {/* Close Icon, show only on small screens */}
+          {/* Close Icon */}
           <button
             onClick={toggleMenu}
-            className="p-2 rounded-lg block sm:hidden" // Hide on large screens (above 768px)
+            className="p-2 rounded-lg block sm:hidden"
           >
             <div className="w-6 h-6 flex flex-col justify-between items-center space-y-1">
               <div
@@ -113,7 +118,6 @@ export default function History() {
                   isMenuOpen ? "rotate-45 translate-y-2" : ""
                 }`}
               ></div>
-
               <div
                 className={`w-full h-1 bg-white-1 rounded transition-all duration-300 ${
                   isMenuOpen ? "-rotate-45 -translate-y-2" : ""
@@ -127,42 +131,40 @@ export default function History() {
         </div>
 
         {/* Menu Content */}
-        <div
-          className={`overflow-y-auto transition-all duration-500 ease-in-out ${
-            isMenuOpen ? "h-full opacity-100" : "h-0 opacity-0"
-          }`}
-        >
-          <div className="h-full max-h-[calc(100vh-4rem)] overflow-y-auto hide-scrollable ">
-            {historyData.length > 0 ? (
-              <ul className="space-y-2 p-4">
-                {historyData.map((item) => (
-                  <li
-                    key={item.id}
-                    className={`flex flex-col space-y-1 p-2 
-                      ${
+        <div className="overflow-y-auto h-full max-h-[calc(100vh-4rem)] p-4 hide-scrollable">
+          {Object.keys(groupedHistory).length > 0 ? (
+            Object.keys(groupedHistory).map((category) => (
+              <div key={category} className="mb-4">
+                <p className="text-gray-300 text-sm font-bold mb-2">
+                  {category}
+                </p>
+                <ul className="space-y-2">
+                  {groupedHistory[category].map((item) => (
+                    <li
+                      key={item.id}
+                      className={`flex flex-col space-y-1 p-2 ${
                         activeItem === item.id
                           ? "bg-black-2 rounded-md"
                           : "hover:bg-black-2"
-                      } 
-                      hover:rounded-md`} // Apply hover effect and active state effect
-                  >
-                    <span
-                      className="text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer"
-                      onClick={() => handleItemClick(item.id)} // Set active on click
+                      } hover:rounded-md`}
                     >
-                     {item.recordingname
-                        .split("/")
-                        .pop()
-                        ?.replace(/\.[^/.]+$/, "")}{" "}
-                      {/* Dis play file name without extension */}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-400 p-4">No history available</p>
-            )}
-          </div>
+                      <span
+                        className="text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer"
+                        onClick={() => handleHistoryClick(item.id)}
+                      >
+                        {item.recordingname
+                          .split("/")
+                          .pop()
+                          ?.replace(/\.[^/.]+$/, "")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-400">No history available</p>
+          )}
         </div>
       </div>
 
@@ -171,18 +173,12 @@ export default function History() {
         <>
           <button
             onClick={toggleMenu}
-            className="fixed  left-4 p-4 rounded-lg z-20 transition-all duration-300 ease-in-out"
+            className="fixed left-4 p-4 rounded-lg z-20 transition-all duration-300 ease-in-out"
           >
             <div className="w-6 h-6 flex flex-col justify-between items-center space-y-2">
-              <div
-                className={`w-full h-1 bg-white-1 rounded transition-all duration-300`}
-              ></div>
-              <div
-                className={`w-full h-1 bg-white-1 rounded transition-all duration-300`}
-              ></div>
-              <div
-                className={`w-full h-1 bg-white-1 rounded transition-all duration-300`}
-              ></div>
+              <div className={`w-full h-1 bg-white-1 rounded`}></div>
+              <div className={`w-full h-1 bg-white-1 rounded`}></div>
+              <div className={`w-full h-1 bg-white-1 rounded`}></div>
             </div>
           </button>
           <button
