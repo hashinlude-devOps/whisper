@@ -11,23 +11,21 @@ export default async function RootLayout({
 }) {
   return (
     <>
-    <ProtectedPage />
-    <SidebarProviderWrapper>
-      
+      <ProtectedPage />
+      <SidebarProviderWrapper>
+        <div className="flex h-screen">
+          {/* Sidebar/History */}
+          <History />
 
-          <div className="flex h-screen">
-            {/* Sidebar/History */}
-            <History />
-
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <Header />
-              <main className="flex-1 h-[calc(100vh-4rem)] bg-black-3 ">
-                {children}
-              </main>
-            </div>
-          </div>{" "}
-    </SidebarProviderWrapper>
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <Header />
+            <main className="flex-1 h-[calc(100vh-4rem)] bg-black-3 ">
+              {children}
+            </main>
+          </div>
+        </div>{" "}
+      </SidebarProviderWrapper>
     </>
   );
 }
