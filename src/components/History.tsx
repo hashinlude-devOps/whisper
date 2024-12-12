@@ -149,8 +149,15 @@ export default function History() {
                       } hover:rounded-md`}
                     >
                       <span
-                        className="text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer"
-                        onClick={() => handleHistoryClick(item.id)}
+                        className={`text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer ${
+                          activeItem === item.id
+                            ? "text-gray-100 font-semibold"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          setActiveItem(item.id); 
+                          handleHistoryClick(item.id); 
+                        }}
                       >
                         {item.recordingname
                           .split("/")
