@@ -6,7 +6,7 @@ export interface ProgressBarProps {
 }
 
 const ProgressBar = ({ currentStep }: { currentStep: number }) => {
-    const steps = ["Initiated", "Uploading", "Processing", "Completed"];
+    const steps = [ "Uploading", "Processing", "Completed"];
   
     return (
       <div className="w-full">

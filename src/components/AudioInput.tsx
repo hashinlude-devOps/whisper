@@ -3,18 +3,15 @@
 import React, { useState, useRef } from 'react'
 import { Upload } from 'lucide-react'
 import AudioRecorder from './AudioRecorder'
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+
 
 interface AudioInputProps {
   onFileSelected: (file: File | Blob) => void
-  onSpeakersChange: (speakers: number) => void
 }
 
-const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected, onSpeakersChange }) => {
+const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected }) => {
   const [isRecording, setIsRecording] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
-  const [speakers, setSpeakers] = useState<string>("")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,19 +31,7 @@ const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected, onSpeakersChang
     fileInputRef.current?.click()
   }
 
-  const handleSpeakersChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-
-    // Update state and notify parent only if input is valid
-    if (value === "") {
-      setSpeakers("") // Clear input
-      onSpeakersChange(0) // Notify parent with default value
-    } else if (!isNaN(Number(value))) {
-      const numericValue = parseInt(value, 10)
-      setSpeakers(value)
-      onSpeakersChange(numericValue)
-    }
-  }
+  
 
   return (
     <div className="space-y-4">
@@ -81,18 +66,7 @@ const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected, onSpeakersChang
           </button>
         </div>
       </div>
-      <div>
-        <Label htmlFor="speakers" className="text-white-1">Number of Speakers</Label>
-        <Input
-          id="speakers"
-          type="number"
-          min="1"
-          value={speakers}
-          onChange={handleSpeakersChange}
-          className="mt-1 bg-black-1 text-white border-gray-700 text-white-1 focus:ring-gray-600"
-          placeholder="Enter number of speakers"
-        />
-      </div>
+     
     </div>
   )
 }

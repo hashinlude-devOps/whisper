@@ -274,3 +274,28 @@ audio::-ms-media-controls-panel {
   }
 }
 
+.tooltip {
+  position: relative;
+  cursor: pointer;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 150px;
+  background-color: #15171C;
+  color: #fff;
+  text-align: left;
+  border-radius: 5px;
+  padding: 5px;
+  position: absolute;
+  bottom: 120%; /* Adjust this value to change the position */
+  left: 50%;
+  margin-left: -100px; /* Center the tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

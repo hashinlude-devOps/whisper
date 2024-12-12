@@ -57,7 +57,7 @@ export default function History() {
 
     const intervalId = setInterval(() => {
       fetchHistory();
-    }, 60000); 
+    }, 60000);
 
     return () => clearInterval(intervalId);
   }, [refreshKey]);
@@ -161,20 +161,20 @@ export default function History() {
                         className={`flex flex-col space-y-1 p-2 ${
                           activeItem === item.id
                             ? "bg-black-2 rounded-md"
-                            : item.recording_status !== "Pending" &&
+                            : item.recording_status === "Completed" &&
                               "hover:bg-black-2"
                         } hover:rounded-md`}
                       >
                         <div className="relative">
                           <span
                             key={item.id}
-                            className={`text-gray-300 text-sm font-medium cursor-pointer ${
+                            className={`text-sm font-medium cursor-pointer ${
                               activeItem === item.id
                                 ? "text-gray-100 font-semibold"
                                 : "hover:text-gray-200"
                             }`}
                             onClick={() => {
-                              if (item.recording_status !== "Pending") {
+                              if (item.recording_status === "Completed") {
                                 setActiveItem(item.id);
                                 handleHistoryClick(item.id);
                               }
@@ -185,9 +185,21 @@ export default function History() {
                               .pop()
                               ?.replace(/\.[^/.]+$/, "")}
                           </span>
+
+                          {item.recording_status === "Failed" && (
+                            <>
+                              <div className="text-xs text-red-500 font-medium absolute bottom-[-9px] right-0 tooltip">
+                                Failed!
+                                <div className="tooltip-text">
+                                  Please reupload
+                                </div>
+                              </div>
+                            </>
+                          )}
+
                           {item.recording_status === "Pending" && (
                             <div className="absolute bottom-[-8px] right-0 w-[80%]">
-                              <div className="w-full bg-gray-600 rounded h-1  mt-2">
+                              <div className="w-full bg-gray-600 rounded h-1 mt-2">
                                 <div
                                   className="bg-green-500 h-1 rounded"
                                   style={{ width: "70%" }}

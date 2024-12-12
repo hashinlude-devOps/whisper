@@ -21,6 +21,8 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const [speakerValue, setSpeakerValue] = React.useState([{}]);
   const [loading, setIsLoading] = React.useState(false);
   const { setActiveItem } = useSidebar();
+  const [speakers, setSpeakers] = useState<string>("")
+
 
   const [isFileNameEdit, setIsFileNameEdit] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string | null>(null);
