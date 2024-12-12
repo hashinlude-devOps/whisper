@@ -11,9 +11,8 @@ export default function History() {
   const [groupedHistory, setGroupedHistory] = useState<Record<string, any[]>>(
     {}
   );
-  const { refreshKey, isMenuOpen, setIsMenuOpen } = useSidebar();
+  const { activeItem, setActiveItem , refreshKey, isMenuOpen, setIsMenuOpen } = useSidebar();
 
-  const [activeItem, setActiveItem] = useState(null);
   const router = useRouter();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -157,6 +156,7 @@ export default function History() {
                       >
                         <div className="relative">
                           <span
+                            key={item.id}
                             className={`text-gray-300 text-sm font-medium cursor-pointer ${
                               activeItem === item.id
                                 ? "text-gray-100 font-semibold"
@@ -164,8 +164,8 @@ export default function History() {
                             }`}
                             onClick={() => {
                               if (item.recording_status !== "Pending") {
-                                setActiveItem(item.id);
-                                handleHistoryClick(item.id);
+                                setActiveItem(item.id); // Update the active item state
+                                handleHistoryClick(item.id); // Perform additional actions
                               }
                             }}
                           >

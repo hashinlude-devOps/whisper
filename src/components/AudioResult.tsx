@@ -14,11 +14,13 @@ import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
 import { useRouter } from "next/navigation";
 import { Button, Input, message, Modal } from "antd";
 import SpeakerCarousel from "./SpeakerCarousel";
+import { useSidebar } from "@/context/SidebarProvider";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
   const [speakerValue, setSpeakerValue] = React.useState([{}]);
   const [loading, setIsLoading] = React.useState(false);
+  const { setActiveItem } = useSidebar();
 
   const [isFileNameEdit, setIsFileNameEdit] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -64,7 +66,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
       hasFetchedAudio.current = true;
     } catch (error) {
       console.error("Error fetching transcription or audio:", error);
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -75,6 +77,13 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   React.useEffect(() => {
     setNoOfSpeakers(result?.speaker_list);
   }, [result]);
+
+  React.useEffect(() => {
+    setActiveItem(id);
+    return () => {
+      setActiveItem(null);
+    };
+  }, [id, setActiveItem]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 

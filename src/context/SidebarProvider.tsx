@@ -4,9 +4,14 @@ const SidebarContext = createContext<any>(null);
 
 export const useSidebar = () => useContext(SidebarContext);
 
-export const SidebarProvider = ({ children }: { children: React.ReactNode }) => {
+export const SidebarProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(true);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [activeItem, setActiveItem] = useState<number | null>(null);
 
   const checkScreenSize = () => {
     if (window.innerWidth < 768) {
@@ -31,7 +36,14 @@ export const SidebarProvider = ({ children }: { children: React.ReactNode }) => 
 
   return (
     <SidebarContext.Provider
-      value={{ isMenuOpen, setIsMenuOpen, refreshHistory, refreshKey }}
+      value={{
+        isMenuOpen,
+        setIsMenuOpen,
+        refreshHistory,
+        refreshKey,
+        activeItem,
+        setActiveItem, 
+      }}
     >
       {children}
     </SidebarContext.Provider>
