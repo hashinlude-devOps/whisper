@@ -136,7 +136,7 @@ export default function MeetingMinutes() {
                       (date: string, index: number) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-yellow-500 text-white-1 text-sm font-medium rounded"
+                          className="px-3 py-1 bg-yellow-500 text-black-1 text-sm font-medium rounded"
                         >
                           {date}
                         </span>
