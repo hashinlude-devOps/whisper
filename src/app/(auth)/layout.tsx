@@ -1,10 +1,16 @@
+"use client"
 import AuthForm from "@/components/AuthForm";
+import { redirect } from "next/navigation";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isLoggedIn = typeof window !== "undefined" && localStorage.getItem("isLoggedIn");
+  if (isLoggedIn) {
+    redirect("/sign-in")
+  }
   return (
     <main className="relative h-screen w-full overflow-hidden flex flex-col justify-between bg-black-3">
       {/* Hide the logo on small screens and show it on medium screens and up */}

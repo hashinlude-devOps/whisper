@@ -3,12 +3,20 @@ import History from "@/components/History";
 import Header from "@/components/Header";
 import SidebarProviderWrapper from "@/components/SidebarProviderWrapper";
 import ProtectedPage from "@/context/ProtectedPage";
+import { redirect } from "next/navigation";
+
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // const loggedIn = await getLoggedInUser();
+
+  // if (!loggedIn) {
+  //   // Redirect to sign-in page if not logged in
+  //   return redirect('/sign-in');
+  // }
   return (
     <>
       <ProtectedPage />
