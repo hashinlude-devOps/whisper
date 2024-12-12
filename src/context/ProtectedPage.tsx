@@ -7,7 +7,7 @@ import React from "react";
 
 const ProtectedPage: React.FC = () => {
   const router = useRouter();
-  const [loggedIn, setLoggedIn] = React.useState<boolean | null>(null); // Add state for loggedIn
+  const [loggedIn, setLoggedIn] = React.useState<boolean | null>(null); 
 
   useEffect(() => {
     const checkUserStatus = async () => {
@@ -15,7 +15,7 @@ const ProtectedPage: React.FC = () => {
       const user = await getLoggedInUser();
 
       if (!user) {
-        router.push('/sign-in'); // Redirect to sign-in page if not logged in
+        router.push('/sign-in'); 
       }
     };
     checkUserStatus();

@@ -89,7 +89,10 @@ export default function History() {
   };
 
   const toggleMenu = () => setIsMenuOpen((prev: any) => !prev);
-  const uploadnew = () => router.push("/");
+  const uploadnew = () => {
+    setActiveItem(null);
+    router.push("/");
+  };
 
   return (
     <>
@@ -134,42 +137,59 @@ export default function History() {
         {/* Menu Content */}
         <div className="overflow-y-auto h-full max-h-[calc(100vh-4rem)] p-4 hide-scrollable">
           {Object.keys(groupedHistory).length > 0 ? (
-            Object.keys(groupedHistory).map((category) => (
-              <div key={category} className="mb-4">
-                <p className="text-gray-300 text-sm font-bold mb-2">
-                  {category}
-                </p>
-                <ul className="space-y-2">
-                  {groupedHistory[category].map((item) => (
-                    <li
-                      key={item.id}
-                      className={`flex flex-col space-y-1 p-2 ${
-                        activeItem === item.id
-                          ? "bg-black-2 rounded-md"
-                          : "hover:bg-black-2"
-                      } hover:rounded-md`}
-                    >
-                      <span
-                        className={`text-gray-300 text-sm hover:text-gray-200 font-medium cursor-pointer ${
+            Object.keys(groupedHistory)
+              .filter((category) => groupedHistory[category].length > 0) // Filter out empty categories
+              .map((category) => (
+                <div key={category} className="mb-4">
+                  <p className="text-gray-300 text-sm font-bold mb-2">
+                    {category}
+                  </p>
+                  <ul className="space-y-2">
+                    {groupedHistory[category].map((item) => (
+                      <li
+                        key={item.id}
+                        className={`flex flex-col space-y-1 p-2 ${
                           activeItem === item.id
-                            ? "text-gray-100 font-semibold"
-                            : ""
-                        }`}
-                        onClick={() => {
-                          setActiveItem(item.id); 
-                          handleHistoryClick(item.id); 
-                        }}
+                            ? "bg-black-2 rounded-md"
+                            : item.recording_status !== "Pending" &&
+                              "hover:bg-black-2"
+                        } hover:rounded-md`}
                       >
-                        {item.recordingname
-                          .split("/")
-                          .pop()
-                          ?.replace(/\.[^/.]+$/, "")}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
+                        <div className="relative">
+                          <span
+                            className={`text-gray-300 text-sm font-medium cursor-pointer ${
+                              activeItem === item.id
+                                ? "text-gray-100 font-semibold"
+                                : "hover:text-gray-200"
+                            }`}
+                            onClick={() => {
+                              if (item.recording_status !== "Pending") {
+                                setActiveItem(item.id);
+                                handleHistoryClick(item.id);
+                              }
+                            }}
+                          >
+                            {item.recordingname
+                              .split("/")
+                              .pop()
+                              ?.replace(/\.[^/.]+$/, "")}
+                          </span>
+                          {item.recording_status === "Pending" && (
+                            <div className="absolute bottom-[-8px] right-0 w-[80%]">
+                              <div className="w-full bg-gray-600 rounded h-1  mt-2">
+                                <div
+                                  className="bg-green-500 h-1 rounded"
+                                  style={{ width: "70%" }}
+                                ></div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
           ) : (
             <p className="text-gray-400">No history available</p>
           )}
