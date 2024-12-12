@@ -41,57 +41,30 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     return `${hours}:${minutes}:${seconds}`;
   };
 
-  const convertTimestamp = (timestamp: string): string => {
-    const year = parseInt(timestamp.slice(0, 4), 10);
-    const month = parseInt(timestamp.slice(4, 6), 10) - 1; // Months are zero-indexed
-    const day = parseInt(timestamp.slice(6, 8), 10);
-    const hour = parseInt(timestamp.slice(8, 10), 10);
-    const minute = parseInt(timestamp.slice(10, 12), 10);
-    const second = parseInt(timestamp.slice(12, 14), 10);
-
-    const date = new Date(year, month, day, hour, minute, second);
-
-    // Format to DD/MM/YYYY, HH:MM:SS
-    const formattedDate = date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-
-    return formattedDate;
-  };
-
   const fetchAudioData = async () => {
     if (hasFetchedAudio.current) return;
 
     setIsLoading(true);
 
     try {
-      // Fetch transcription data first
       const response = await getTranscription(id.toString());
       const fetchedResult = response.data?.result;
 
       if (fetchedResult) {
         setResult(fetchedResult);
-        setTimestamp(convertTimestamp(fetchedResult?.timestamp));
+        setTimestamp(fetchedResult?.timestamp);
       } else {
         message.error("No results found for this transcription.");
       }
 
-      // Disable loader after transcription fetch
       setIsLoading(false);
 
-      // Fetch audio in the background
       const url = await getFullAudio(id.toString());
       setAudioUrl(url);
       hasFetchedAudio.current = true;
     } catch (error) {
       console.error("Error fetching transcription or audio:", error);
-      setIsLoading(false); // Ensure loader is disabled on error
+      setIsLoading(false); 
     }
   };
 
