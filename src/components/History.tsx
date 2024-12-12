@@ -11,7 +11,8 @@ export default function History() {
   const [groupedHistory, setGroupedHistory] = useState<Record<string, any[]>>(
     {}
   );
-  const { activeItem, setActiveItem , refreshKey, isMenuOpen, setIsMenuOpen } = useSidebar();
+  const { activeItem, setActiveItem, refreshKey, isMenuOpen, setIsMenuOpen } =
+    useSidebar();
 
   const router = useRouter();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -53,6 +54,12 @@ export default function History() {
     };
 
     fetchHistory();
+
+    const intervalId = setInterval(() => {
+      fetchHistory();
+    }, 60000); 
+
+    return () => clearInterval(intervalId);
   }, [refreshKey]);
 
   const categorizeRecordings = (recordings: any[]) => {
@@ -66,7 +73,11 @@ export default function History() {
       "Previous 30 Days": [],
     };
 
-    recordings.forEach((recording) => {
+    const sortedRecordings = recordings.sort((a, b) => {
+      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    });
+
+    sortedRecordings.forEach((recording) => {
       const date = new Date(recording.timestamp);
 
       if (isToday(date)) {
@@ -137,7 +148,7 @@ export default function History() {
         <div className="overflow-y-auto h-full max-h-[calc(100vh-4rem)] p-4 hide-scrollable">
           {Object.keys(groupedHistory).length > 0 ? (
             Object.keys(groupedHistory)
-              .filter((category) => groupedHistory[category].length > 0) // Filter out empty categories
+              .filter((category) => groupedHistory[category].length > 0)
               .map((category) => (
                 <div key={category} className="mb-4">
                   <p className="text-gray-300 text-sm font-bold mb-2">
@@ -164,8 +175,8 @@ export default function History() {
                             }`}
                             onClick={() => {
                               if (item.recording_status !== "Pending") {
-                                setActiveItem(item.id); // Update the active item state
-                                handleHistoryClick(item.id); // Perform additional actions
+                                setActiveItem(item.id);
+                                handleHistoryClick(item.id);
                               }
                             }}
                           >
