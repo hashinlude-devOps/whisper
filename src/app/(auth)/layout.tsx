@@ -1,15 +1,18 @@
-"use client"
-import AuthForm from "@/components/AuthForm";
-import { redirect } from "next/navigation";
 
-export default function RootLayout({
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/pages/api/auth/[...nextauth]"; 
+
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isLoggedIn = typeof window !== "undefined" && localStorage.getItem("isLoggedIn");
-  if (isLoggedIn) {
-    redirect("/sign-in")
+  const session = await getServerSession(authOptions);
+
+  if (session) {
+    redirect("/");
   }
   return (
     <main className="relative h-screen w-full overflow-hidden flex flex-col justify-between bg-black-3">

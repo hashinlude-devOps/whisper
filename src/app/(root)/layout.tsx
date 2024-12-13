@@ -2,21 +2,22 @@ import React from "react";
 import History from "@/components/History";
 import Header from "@/components/Header";
 import SidebarProviderWrapper from "@/components/SidebarProviderWrapper";
-import ProtectedPage from "@/context/ProtectedPage";
+import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
-
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import ProtectedPage from "@/context/ProtectedPage";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // const loggedIn = await getLoggedInUser();
+  const session = await getServerSession(authOptions);
 
-  // if (!loggedIn) {
-  //   // Redirect to sign-in page if not logged in
-  //   return redirect('/sign-in');
-  // }
+  if (!session) {
+    // If no session exists, redirect to the sign-in page
+    redirect("/sign-in");
+  }
   return (
     <>
       <ProtectedPage />

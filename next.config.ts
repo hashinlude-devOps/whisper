@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 const withLess = require("next-with-less");
 
 const nextConfig: NextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   transpilePackages: [
     "antd",
     "@ant-design",

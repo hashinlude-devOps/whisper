@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/apiClient';
-
+import { getSession ,signOut} from "next-auth/react";
 
 interface SigninPayload {
   email: string;
@@ -47,20 +47,28 @@ interface Response {
     }
   };
 
-  export const getLoggedInUser = async () => {
+  export const getLoggedInUser = async (): Promise<boolean> => {
     try {
-      // Retrieve the token from localStorage
-
-      const token = localStorage.getItem("access_token");
+      const session = await getSession();
   
-      if (!token) {
-        return false; // No token, user is not logged in
+      if (!session?.accessToken) {
+        return false; 
       }
-      return true;
-      
+  
+      return true; 
     } catch (error) {
       console.error("Error validating user:", error);
-      return false; // Treat as not logged in on error
+      return false; 
     }
   };
   
+
+
+export const logout = async () => {
+  try {
+    // Call signOut with the callback URL
+    await signOut({ redirect: true, callbackUrl: "/sign-in" });
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+};

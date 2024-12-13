@@ -7,6 +7,8 @@ import * as z from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { signIn } from "next-auth/react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -60,42 +62,40 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
 
-
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
     setLoading(true);
+
     try {
-      const response = isSignin ? await signin(values) : await signup(values);
-
-      // Check the status code directly
-      if (response.status === 200) {
-        // Handle successful response
-        let access_token = response.data?.access_token;
-        let name = response.data?.name;
-
-        // Store the access token (or handle other logic)
-        if (access_token) {
-          localStorage.setItem("access_token", access_token);
-          localStorage.setItem("name", name);
-        }
-
-        toast.success(
-          isSignin ? "Login successful!" : "Registration successful!",
-          {
-            duration: 5000,
-          }
-        );
-        setTimeout(() => router.push(isSignin ? "/" : "/sign-in"));
-      } else {
-        setUploadStatus(response.data?.error)
-        toast.error(`${response.data?.error}`, {
-          duration: 5000,
+      if (isSignin) {
+        const result = await signIn("credentials", {
+          redirect: false,
+          email: values.email,
+          password: values.password,
         });
+
+        if (result?.error) {
+          setUploadStatus("Incorrect email or password.");
+          toast.error(result.error);
+        } else {
+          toast.success("Login successful!");
+          console.log(result);
+          router.push("/");
+        }
+      } else {
+        const response = await signup(values);
+
+        if (response.status === 200) {
+          toast.success("Registration successful! Please log in.");
+          router.push("/sign-in");
+        } else {
+          setUploadStatus(response.data?.error);
+          toast.error(`${response.data?.error}`, {
+            duration: 5000,
+          });
+        }
       }
     } catch (error: any) {
-      console.error("Error:");
-      toast.error(error.message || "Error occurred", {
-        duration: 5000,
-      });
+      toast.error(error.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -188,12 +188,15 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
               />
             )}
 
-            <Button type="submit" className="w-full text-white-1 border-none bg-blue-600 hover:bg-blue-700">
+            <Button
+              type="submit"
+              className="w-full text-white-1 border-none bg-blue-600 hover:bg-blue-700"
+            >
               {isSignin ? "Log In" : "Sign Up"}
             </Button>
             {uploadStatus && (
-                <p className="mt-4 text-sm text-red-600">{uploadStatus}</p>
-              )}
+              <p className="mt-4 text-sm text-red-600">{uploadStatus}</p>
+            )}
 
             <p className="text-gray-50 text-center">
               {isSignin ? "Don't have an account?" : "Already have an account?"}

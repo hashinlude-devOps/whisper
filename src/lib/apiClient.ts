@@ -1,3 +1,6 @@
+import { getSession } from "next-auth/react";
+import { logout } from "./services/authService";
+
 type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 interface ApiOptions {
@@ -17,7 +20,8 @@ export const apiClient = async <T>(
   // Add params to the URL if present
   Object.keys(params).forEach(key => url.searchParams.append(key, String(params[key])));
 
-  const accessToken = localStorage.getItem("access_token");
+  const session = await getSession();
+  const accessToken = session?.accessToken; // Extract the access token from the session
 
   if (accessToken && !endpoint.includes("/login") && !endpoint.includes("/signup")) {
     headers["Authorization"] = `Bearer ${accessToken}`;
@@ -42,8 +46,8 @@ export const apiClient = async <T>(
   try {
     const response = await fetch(url.toString(), options);
     if (response.status === 401) {
-        window.location.href = '/sign-in';  
-        return { status: 401, data: {} as T }; 
+      await logout(); // Call centralized logout function
+      return { status: 401, data: {} as T };
     }
     // If the response is a binary file (audio, for example), return the blob directly
     if (response.headers.get("Content-Type")?.startsWith("audio")) {

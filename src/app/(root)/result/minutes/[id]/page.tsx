@@ -13,7 +13,7 @@ export default function MeetingMinutes() {
   const [result, setResult] = React.useState<any>(null);
 
   const params = useParams();
-  const { id } = params;
+  const id = params?.id;
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -30,7 +30,7 @@ export default function MeetingMinutes() {
           if (viewResponse.status == 200) {
             setResult(fetchedResult);
             setLoading(false);
-            return;
+          return;
           }
         } catch (viewError: any) {
           // If viewMeetingMinutes throws a 404 error, proceed to fetchMeetingMinutes
