@@ -161,7 +161,7 @@ export default function AudioUpload() {
                   setIsLoading(false);
                 }
               }
-            }, 15000);
+            }, 10000);
           }
         } else {
           seterrorStatus(`Error fetching status: ${statusResponse.status}`);

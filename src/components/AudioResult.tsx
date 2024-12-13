@@ -21,8 +21,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const [speakerValue, setSpeakerValue] = React.useState([{}]);
   const [loading, setIsLoading] = React.useState(false);
   const { setActiveItem } = useSidebar();
-  const [speakers, setSpeakers] = useState<string>("")
-
+  const { refreshHistory } = useSidebar();
 
   const [isFileNameEdit, setIsFileNameEdit] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -164,15 +163,20 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
   const handleFilenameChange = async () => {
     if (fileName != null && fileName != "") {
+      setIsLoading(true);
       await updateRecordingName(id.toString(), fileName);
       const response = await getTranscription(id.toString());
-      const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
+      const fetchedResult = response.data.result;
       if (fetchedResult) {
         setResult(fetchedResult);
+        refreshHistory();
+        setIsLoading(false);
       } else {
         message.error("No results found for this transcription.");
+        setIsLoading(false);
       }
       setFileName(null);
+      setIsLoading(false);
     }
   };
 
@@ -215,16 +219,16 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                 {isFileNameEdit && (
                   <>
                     <Button
-                      className="text-white  bg-blue-600 hover:bg-blue-700 border-none"
+                      className="text-white-1  bg-blue-600 hover:bg-blue-700 border-none"
                       onClick={async () => {
                         await handleFilenameChange();
                         setIsFileNameEdit(false);
                       }}
                     >
-                      save
+                      Update
                     </Button>
                     <Button
-                      className="text-white  bg-red-600 hover:bg-red-700 border-none"
+                      className="text-white-1  bg-red-600 hover:bg-red-700 border-none"
                       onClick={() => setIsFileNameEdit(false)}
                     >
                       cancel
