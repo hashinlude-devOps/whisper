@@ -1,37 +1,36 @@
-'use client'
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react'
-import { Upload } from 'lucide-react'
-import AudioRecorder from './AudioRecorder'
-import { useSidebar } from '@/context/ContextProvider'
+import React, { useState, useRef, useEffect } from "react";
+import { Upload } from "lucide-react";
+import AudioRecorder from "./AudioRecorder";
+import { useSidebar } from "@/context/ContextProvider";
 
 interface AudioInputProps {
-  onFileSelected: (file: File | Blob) => void
-  resetKey: number;
+  onFileSelected: (file: File | Blob) => void;
 }
 
 const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected }) => {
-  const [isRecording, setIsRecording] = useState(false)
-  const [fileName, setFileName] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isRecording, setIsRecording] = useState(false);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { resetKey } = useSidebar();
-  
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
-      setFileName(file.name)
-      onFileSelected(file)
+      setFileName(file.name);
+      onFileSelected(file);
     }
-  }
+  };
 
   const handleRecordingComplete = (blob: Blob) => {
-    setFileName('recorded_audio.wav')
-    onFileSelected(blob)
-  }
+    setFileName("recorded_audio.wav");
+    onFileSelected(blob);
+  };
 
   const handleClick = () => {
-    fileInputRef.current?.click()
-  }
+    fileInputRef.current?.click();
+  };
 
   useEffect(() => {
     setFileName(null);
@@ -52,7 +51,7 @@ const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected }) => {
           className="flex-grow p-2 text-left overflow-hidden whitespace-nowrap text-white-1 text-ellipsis hover:bg-gray-700"
           aria-label="Choose audio file"
         >
-          {fileName || 'Choose audio file'}
+          {fileName || "Choose audio file"}
         </button>
         <div className="flex items-center px-2 border-l border-gray-700">
           <AudioRecorder
@@ -70,9 +69,8 @@ const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected }) => {
           </button>
         </div>
       </div>
-     
     </div>
-  )
-}
+  );
+};
 
-export default AudioInput
+export default AudioInput;

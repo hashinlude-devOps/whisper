@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react'
 import { Mic, Square } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface AudioRecorderProps {
   onRecordingComplete: (blob: Blob) => void
@@ -56,7 +57,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
       mediaRecorder.current.start()
       startRecording()
     } catch (error) {
-      console.error('Error accessing microphone:', error)
+      toast.error("Error accessing microphone:", { duration: 5000 });
     }
   }
 

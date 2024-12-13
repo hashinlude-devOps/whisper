@@ -78,7 +78,6 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
           toast.error(result.error);
         } else {
           toast.success("Login successful!");
-          console.log(result);
           router.push("/");
         }
       } else {

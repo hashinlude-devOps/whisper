@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { Button, Input, message, Modal } from "antd";
 import SpeakerCarousel from "./SpeakerCarousel";
 import { useSidebar } from "@/context/ContextProvider";
+import toast from "react-hot-toast";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
@@ -66,7 +67,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
       setAudioUrl(url);
       hasFetchedAudio.current = true;
     } catch (error) {
-      console.error("Error fetching transcription or audio:", error);
+      toast.error("Error fetching transcription or audio", { duration: 5000 });
       setIsLoading(false);
     }
   };
@@ -156,7 +157,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error("Error updating speaker names:", error);
+        toast.error("Error updating speaker names", { duration: 5000 });
         setIsLoading(false);
       });
   };

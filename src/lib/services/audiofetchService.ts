@@ -2,15 +2,9 @@ import { apiClient } from "../apiClient";
 
 export const getSegmentAudio = async (segmentUrl: string): Promise<string> => {
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-  
-      // Ensure the base URL ends with a single slash and the segment URL starts cleanly
-      const fullUrl = new URL(segmentUrl, `${API_BASE_URL}/`).toString();
-  
-      // Retrieve the access token
-      const accessToken = localStorage.getItem("access_token");
-  
-      // Prepare headers with the authorization token
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL  
+      const fullUrl = new URL(segmentUrl, `${API_BASE_URL}/`).toString();  
+      const accessToken = localStorage.getItem("access_token");  
       const headers: HeadersInit = {};
       if (accessToken) {
         headers["Authorization"] = `Bearer ${accessToken}`;
@@ -23,9 +17,7 @@ export const getSegmentAudio = async (segmentUrl: string): Promise<string> => {
   
       if (!response.ok) {
         throw new Error(`Failed to fetch audio from ${fullUrl}`);
-      }
-  
-      // Convert response to a Blob
+      }  
       const blob = await response.blob();
       return URL.createObjectURL(blob); 
     } catch (error) {
@@ -36,7 +28,7 @@ export const getSegmentAudio = async (segmentUrl: string): Promise<string> => {
 
   export const getFullAudio = async (id: string): Promise<string> => {
     try {
-      const endpoint = `/download-audio/${id}`; // Adjust the endpoint if needed
+      const endpoint = `/download-audio/${id}`; 
       const response = await apiClient<string>(endpoint, {
         method: "GET",
       });

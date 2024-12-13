@@ -10,7 +10,6 @@ export default function Header() {
   const [userInitial, setUserInitial] = useState<string>("");
 
   useEffect(() => {
-    // Fetch the session to get the user's name
     const fetchUserName = async () => {
       try {
         const session = await getSession();
@@ -19,7 +18,6 @@ export default function Header() {
           setUserInitial(name.charAt(0).toUpperCase());
         }
       } catch (error) {
-        console.error("Error fetching session:", error);
       }
     };
 

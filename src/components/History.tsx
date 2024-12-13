@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { format, isToday, subDays } from "date-fns";
 import message from "antd/es/message";
 import { useSidebar } from "@/context/ContextProvider";
+import toast from "react-hot-toast";
 
 export default function History() {
   const router = useRouter();
@@ -41,30 +42,22 @@ export default function History() {
       if (isSmallScreen) setIsMenuOpen(false);
       router.push(`/result/${id}`);
     } catch (error) {
-      console.error("Error fetching transcription:", error);
-      message.error("Failed to fetch transcription.");
+      toast.error("Error fetching transcription", { duration: 5000 });
     }
   };
-  useEffect(() => {
-    console.log(groupedHistory); // Logs the updated groupedHistory after state change
-  }, [groupedHistory]);
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
         const response = await getRecordings();
         const recordings = response.data.recordings;
-
         const categorized = categorizeRecordings(recordings);
         setGroupedHistory(categorized);
-        console.log(groupedHistory);
       } catch (error) {
-        console.error("Failed to fetch recordings:", error);
+        
       }
     };
-
     fetchHistory();
-
     const intervalId = setInterval(() => {
       fetchHistory();
     }, 60000);
@@ -114,7 +107,7 @@ export default function History() {
   const toggleMenu = () => setIsMenuOpen((prev: any) => !prev);
   const uploadnew = () => {
     setActiveItem(null);
-    setResetKey((prevKey:any) => prevKey + 1);
+    setResetKey((prevKey: any) => prevKey + 1);
     router.push("/");
   };
 

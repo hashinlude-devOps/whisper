@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import AudioInput from '@/components/AudioInput'
 import { Button } from "@/components/ui/button"
 import { uploadAudio } from '@/lib/actions'
+import toast from 'react-hot-toast'
 
 export default function AudioRecorderUploader() {
   const [audioFile, setAudioFile] = useState<File | Blob | null>(null)
@@ -27,7 +28,8 @@ export default function AudioRecorderUploader() {
       setUploadStatus(`File uploaded successfully: ${result.path}`)
     } catch (error) {
       setUploadStatus('Error uploading file')
-      console.error('Upload error:', error)
+      toast.error("Error uploading file", { duration: 5000 });
+
     }
   }
 
@@ -35,9 +37,7 @@ export default function AudioRecorderUploader() {
     <div className="container mx-auto p-4 max-w-md">
       <h1 className="text-2xl font-bold mb-4">Audio Recorder and Uploader</h1>
       <div className="space-y-4">
-        <AudioInput onFileSelected={handleFileSelected} onSpeakersChange={function (speakers: number): void {
-                  throw new Error('Function not implemented.')
-              } } />
+        <AudioInput onFileSelected={handleFileSelected} />
         <Button onClick={handleUpload} className="w-full">
           Upload Audio
         </Button>

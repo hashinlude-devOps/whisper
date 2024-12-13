@@ -44,7 +44,6 @@ export default function AudioUpload() {
         ""
       );
       const finalFileName = `${fileNameWithoutExtension}.wav`;
-      console.log("coverted");
       const finalFile = new File([convertedFile], finalFileName, {
         type: "audio/wav",
       });
@@ -56,7 +55,7 @@ export default function AudioUpload() {
         duration: 5000,
       });
     } catch (error) {
-      console.error("Error converting to WAV:", error);
+      toast.error("Error converting to WAV", { duration: 5000 });
       setIsButtonVisible(true);
       setprocessStatus(null);
       seterrorStatus("Error during conversion.");
@@ -85,7 +84,6 @@ export default function AudioUpload() {
 
   const handleUpload = async () => {
     if (!audioFile) {
-      console.log("no file");
       setprocessStatus(null);
       seterrorStatus("No file to upload");
       toast.error("No file to upload", { duration: 5000 });
@@ -196,7 +194,7 @@ export default function AudioUpload() {
     } catch (error) {
       setprocessStatus(null);
       seterrorStatus("Error uploading file");
-      console.error("Upload error:", error);
+      toast.error("Error uploading file", { duration: 5000 });
       refreshHistory();
       setIsProgressVisible(false);
       setIsButtonVisible(true);
