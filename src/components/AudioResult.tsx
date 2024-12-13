@@ -14,7 +14,7 @@ import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
 import { useRouter } from "next/navigation";
 import { Button, Input, message, Modal } from "antd";
 import SpeakerCarousel from "./SpeakerCarousel";
-import { useSidebar } from "@/context/SidebarProvider";
+import { useSidebar } from "@/context/ContextProvider";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
@@ -71,15 +71,15 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchAudioData();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setNoOfSpeakers(result?.speaker_list);
   }, [result]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setActiveItem(id);
     return () => {
       setActiveItem(null);
@@ -147,7 +147,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     updateSpeakerNames(result?.json_file, speakerValue)
       .then(async () => {
         const response = await getTranscription(id.toString());
-        const fetchedResult = response.data.result; // TODO : REFACTOR REFETCH
+        const fetchedResult = response.data.result; 
         if (fetchedResult) {
           setResult(fetchedResult);
         } else {
@@ -187,7 +187,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   return (
     <div className="flex flex-col min-h-screen lg:ml-[16rem]">
       {loading ? (
-        <Loader /> // Display loader for the entire component
+        <Loader /> 
       ) : (
         <>
           <div className="flex flex-col space-y-4 px-[2rem] flex-1 mb-4">
@@ -199,7 +199,6 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                     onKeyDown={async (e) => await handleFilenameChange()}
                   >
                     {result?.recordingname}
-                    {/* TODO : Confirm recording name is required */}
                   </span>
                 ) : (
                   <Input
@@ -275,7 +274,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                   open={isModalOpen}
                   onOk={handleOk}
                   onCancel={handleCancel}
-                  footer={null} // Remove default footer if you want custom buttons
+                  footer={null} 
                 >
                   <SpeakerCarousel
                     noOfSpeakers={noOfSpeakers}
@@ -302,7 +301,6 @@ const AudioResultComponent = ({ id }: { id: number }) => {
               </div>
             </div>
 
-            {/* Table Container with Scrollable Content */}
             <div className="mt-4 overflow-y-auto max-h-[calc(100vh-160px-132px)] hide-scrollable">
               <table className="min-w-full table-auto">
                 <tbody>
@@ -310,7 +308,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                     const startTime = segment.start_time;
                     const endTime = segment.end_time;
                     const elapsedTime = formatTime(index === 0 ? 0 : startTime);
-                    const bufferTime = 0.3; // Add a small buffer time (in seconds)
+                    const bufferTime = 0.3; 
                     const isHighlighted =
                       currentAudioTime >= startTime - bufferTime &&
                       currentAudioTime <= endTime + bufferTime;
@@ -339,7 +337,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
                         <td className="px-4 py-2 text-white-1">
                           <span
-                            onClick={() => toggleTranslation()} // Pass start_time to handleTextClick
+                            onClick={() => toggleTranslation()} 
                             className="cursor-pointer"
                           >
                             {showTranslation

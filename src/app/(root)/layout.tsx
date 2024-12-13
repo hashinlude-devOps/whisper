@@ -1,7 +1,7 @@
 import React from "react";
 import History from "@/components/History";
 import Header from "@/components/Header";
-import SidebarProviderWrapper from "@/components/SidebarProviderWrapper";
+import SidebarProviderWrapper from "@/components/ContextProviderWrapper";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";

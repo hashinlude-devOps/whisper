@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-const SidebarContext = createContext<any>(null);
+const Context = createContext<any>(null);
 
-export const useSidebar = () => useContext(SidebarContext);
+export const useSidebar = () => useContext(Context);
 
-export const SidebarProvider = ({
+export const ContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
@@ -12,6 +12,7 @@ export const SidebarProvider = ({
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(true);
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeItem, setActiveItem] = useState<number | null>(null);
+  const [resetKey, setResetKey] = useState(0);
 
   const checkScreenSize = () => {
     if (window.innerWidth < 768) {
@@ -35,17 +36,19 @@ export const SidebarProvider = ({
   }, []);
 
   return (
-    <SidebarContext.Provider
+    <Context.Provider
       value={{
         isMenuOpen,
         setIsMenuOpen,
         refreshHistory,
         refreshKey,
         activeItem,
-        setActiveItem, 
+        setActiveItem,
+        resetKey,
+        setResetKey,
       }}
     >
       {children}
-    </SidebarContext.Provider>
+    </Context.Provider>
   );
 };

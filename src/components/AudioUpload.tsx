@@ -1,7 +1,7 @@
 //src/components/AudioUploadComponent.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "antd";
 import AudioInput from "./AudioInput";
 import {
@@ -12,7 +12,7 @@ import { convertToWav } from "@/lib/audioutils";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import ProgressBar from "@/components/ui/progressbar";
-import { useSidebar } from "@/context/SidebarProvider";
+import { useSidebar } from "@/context/ContextProvider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -22,7 +22,7 @@ export default function AudioUpload() {
   const [processStatus, setprocessStatus] = useState<string | null>(null);
   const [errorStatus, seterrorStatus] = useState<string | null>(null);
   const [loading, setIsLoading] = useState(false);
-  const { refreshHistory } = useSidebar();
+  const { refreshHistory,resetKey } = useSidebar();
 
   const router = useRouter();
   const [currentStep, setCurrentStep] = React.useState(0);
@@ -33,6 +33,7 @@ export default function AudioUpload() {
     try {
       setIsButtonVisible(false);
       setAudioFile(null);
+      seterrorStatus(null)
       setprocessStatus("Compressing selected audio file");
       const convertedFile = await convertToWav(file);
 
@@ -49,28 +50,35 @@ export default function AudioUpload() {
       });
       setAudioFile(finalFile);
       setIsButtonVisible(true);
+      seterrorStatus(null)
       setprocessStatus(null);
-      toast.success(
-        "File successfully compressed.",
-        {
-          duration: 5000,
-        }
-      );
+      toast.success("File successfully compressed.", {
+        duration: 5000,
+      });
     } catch (error) {
       console.error("Error converting to WAV:", error);
       setIsButtonVisible(true);
+      setprocessStatus(null);
       seterrorStatus("Error during conversion.");
     }
   };
 
+  useEffect(() => {
+    setAudioFile(null);
+    setSpeakers("");
+    setIsButtonVisible(false);
+    setprocessStatus(null);
+    seterrorStatus(null);
+    setIsProgressVisible(false);
+  }, [resetKey]);
+
   const handleSpeakersChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.trim();
-
-    // Allow only positive whole numbers or an empty field
     if (value === "" || /^[1-9]\d*$/.test(value)) {
       setSpeakers(value);
-      seterrorStatus(null); // Clear any previous error message
+      seterrorStatus(null); 
     } else {
+      setprocessStatus(null);
       seterrorStatus("Please enter a valid whole number greater than 0.");
     }
   };
@@ -78,12 +86,14 @@ export default function AudioUpload() {
   const handleUpload = async () => {
     if (!audioFile) {
       console.log("no file");
+      setprocessStatus(null);
       seterrorStatus("No file to upload");
       toast.error("No file to upload", { duration: 5000 });
       return;
     }
 
     if (!speakers || parseInt(speakers, 10) < 1) {
+      setprocessStatus(null);
       seterrorStatus("Number of speakers must be greater than or equal to 1");
       toast.error("Number of speakers must be greater than or equal to 1", {
         duration: 5000,
@@ -94,6 +104,7 @@ export default function AudioUpload() {
     setIsProgressVisible(true);
     setIsButtonVisible(false);
     setIsLoading(true);
+    seterrorStatus(null)
     setprocessStatus("Please wait, Uploading");
     setCurrentStep(1);
 
@@ -104,8 +115,9 @@ export default function AudioUpload() {
       if (result.status === 202) {
         refreshHistory();
         setCurrentStep(2);
+        seterrorStatus(null)
         setprocessStatus(
-          "Your audio is being processed, This may take a while"
+          "You can continue with other tasks. Your audio is being processed in the background."
         );
         const statusResponse = await getRecordingUploadStatus(
           fetchedResult.recording_id
@@ -124,6 +136,7 @@ export default function AudioUpload() {
             setIsButtonVisible(true);
             setIsLoading(false);
           } else if (recordingStatus === "failed") {
+            setprocessStatus(null);
             seterrorStatus("Upload failed. Please reupload the file.");
             setCurrentStep(0);
             refreshHistory();
@@ -153,6 +166,7 @@ export default function AudioUpload() {
                   setIsLoading(false);
                 } else if (retryRecordingStatus === "failed") {
                   clearInterval(checkStatusInterval);
+                  setprocessStatus(null);
                   seterrorStatus("Upload failed. Please reupload the file.");
                   setCurrentStep(0);
                   refreshHistory();
@@ -164,6 +178,7 @@ export default function AudioUpload() {
             }, 10000);
           }
         } else {
+          setprocessStatus(null);
           seterrorStatus(`Error fetching status: ${statusResponse.status}`);
           refreshHistory();
           setIsProgressVisible(false);
@@ -171,6 +186,7 @@ export default function AudioUpload() {
           setIsLoading(false);
         }
       } else {
+        setprocessStatus(null);
         seterrorStatus(`Error: ${fetchedResult.error}`);
         refreshHistory();
         setIsProgressVisible(false);
@@ -178,6 +194,7 @@ export default function AudioUpload() {
         setIsLoading(false);
       }
     } catch (error) {
+      setprocessStatus(null);
       seterrorStatus("Error uploading file");
       console.error("Upload error:", error);
       refreshHistory();
@@ -197,7 +214,7 @@ export default function AudioUpload() {
               Audio Recorder and Uploader
             </h1>
             <div className="space-y-4">
-              <AudioInput onFileSelected={handleFileSelected} />
+              <AudioInput onFileSelected={handleFileSelected} resetKey={resetKey}/>
               {audioFile && (
                 <>
                   <div>

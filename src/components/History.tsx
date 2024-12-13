@@ -5,16 +5,22 @@ import { getRecordings } from "@/lib/services/audioService";
 import { useRouter } from "next/navigation";
 import { format, isToday, subDays } from "date-fns";
 import message from "antd/es/message";
-import { useSidebar } from "@/context/SidebarProvider";
+import { useSidebar } from "@/context/ContextProvider";
 
 export default function History() {
+  const router = useRouter();
   const [groupedHistory, setGroupedHistory] = useState<Record<string, any[]>>(
     {}
   );
-  const { activeItem, setActiveItem, refreshKey, isMenuOpen, setIsMenuOpen } =
-    useSidebar();
+  const {
+    setResetKey,
+    activeItem,
+    setActiveItem,
+    refreshKey,
+    isMenuOpen,
+    setIsMenuOpen,
+  } = useSidebar();
 
-  const router = useRouter();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   const checkScreenSize = () => {
@@ -51,7 +57,7 @@ export default function History() {
 
         const categorized = categorizeRecordings(recordings);
         setGroupedHistory(categorized);
-        console.log(groupedHistory)
+        console.log(groupedHistory);
       } catch (error) {
         console.error("Failed to fetch recordings:", error);
       }
@@ -70,20 +76,20 @@ export default function History() {
     const today = new Date();
     const weekAgo = subDays(today, 7);
     const monthAgo = subDays(today, 30);
-  
+
     const categories: Record<string, any[]> = {
       Today: [],
       "Previous 7 Days": [],
       "Previous 30 Days": [],
     };
-  
+
     const sortedRecordings = recordings.sort((a, b) => {
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     });
-  
+
     sortedRecordings.forEach((recording) => {
       const date = new Date(recording.timestamp);
-  
+
       if (isToday(date)) {
         categories["Today"].push(recording);
       } else if (date > weekAgo) {
@@ -98,17 +104,17 @@ export default function History() {
         categories[monthYear].push(recording);
       }
     });
-  
+
     // Filter out empty categories
     return Object.fromEntries(
       Object.entries(categories).filter(([key, value]) => value.length > 0)
     );
   };
-  
 
   const toggleMenu = () => setIsMenuOpen((prev: any) => !prev);
   const uploadnew = () => {
     setActiveItem(null);
+    setResetKey((prevKey:any) => prevKey + 1);
     router.push("/");
   };
 

@@ -1,19 +1,21 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Upload } from 'lucide-react'
 import AudioRecorder from './AudioRecorder'
-
+import { useSidebar } from '@/context/ContextProvider'
 
 interface AudioInputProps {
   onFileSelected: (file: File | Blob) => void
+  resetKey: number;
 }
 
 const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected }) => {
   const [isRecording, setIsRecording] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
+  const { resetKey } = useSidebar();
+  
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
@@ -31,7 +33,9 @@ const AudioInput: React.FC<AudioInputProps> = ({ onFileSelected }) => {
     fileInputRef.current?.click()
   }
 
-  
+  useEffect(() => {
+    setFileName(null);
+  }, [resetKey]);
 
   return (
     <div className="space-y-4">

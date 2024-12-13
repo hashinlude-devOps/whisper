@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   fetchMeetingMinutes,
@@ -8,9 +8,11 @@ import {
 } from "@/lib/services/audioService";
 import { message } from "antd";
 import Loader from "@/components/Loader";
+import toast from "react-hot-toast";
 
 export default function MeetingMinutes() {
   const [result, setResult] = React.useState<any>(null);
+  const [isDataFetched, setIsDataFetched] = useState(false);
 
   const params = useParams();
   const id = params?.id;
@@ -19,59 +21,37 @@ export default function MeetingMinutes() {
 
 
   const fetchMeetingMinutesData = async () => {
+    if (!id || isDataFetched) return; 
+
+    setLoading(true); 
     try {
-      if (id != null) {
-        try {
-          setLoading(true);
-          const viewResponse = await viewMeetingMinutes(id.toString());
+      const viewResponse = await viewMeetingMinutes(id.toString());
+      if (viewResponse.status === 200 && viewResponse.data) {
+        setResult(viewResponse.data);
+        setIsDataFetched(true);
+        setLoading(false);
+        return;
+      }
 
-          const fetchedResult = viewResponse.data;
-
-          if (viewResponse.status == 200) {
-            setResult(fetchedResult);
-            setLoading(false);
-          return;
-          }
-        } catch (viewError: any) {
-          // If viewMeetingMinutes throws a 404 error, proceed to fetchMeetingMinutes
-          if (viewError.response?.status === 404) {
-            console.log("Meeting minutes not found. Proceeding to fetch...");
-          } else {
-            console.error(
-              "Error checking meeting minutes availability:",
-              viewError
-            );
-            message.error(
-              "An error occurred while checking meeting minutes availability."
-            );
-            return; // Exit the function on unexpected error
-          }
-        }
-
-        // Call fetchMeetingMinutes if not already fetched
-        const response = await fetchMeetingMinutes(id.toString());
-        const fetchedResult = response.data;
-
-        if (fetchedResult) {
-          setResult(fetchedResult);
-          setLoading(false);
-        } else {
-          message.error("No results found for this transcription.");
-          setLoading(false);
-        }
+      const response = await fetchMeetingMinutes(id.toString());
+      if (response.data) {
+        setResult(response.data);
+        setIsDataFetched(true);
+      } else {
+        toast.error("No results found for this transcription.", { duration: 5000 });
+        message.error("No results found for this transcription.");
       }
     } catch (error) {
-      console.error("Error fetching Meeting minutes:", error);
+      toast.error("An error occurred while fetching meeting minutes.", { duration: 5000 });
       message.error("An error occurred while fetching meeting minutes.");
-      setLoading(false);
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchMeetingMinutesData();
-  }, [id]);
+  }, [id]); 
 
   return (
     <>
@@ -79,7 +59,7 @@ export default function MeetingMinutes() {
         <Loader />
       ) : (
         result && (
-          <div className="flex flex-col space-y-4 p-6 flex-1 mb-4 bg-black text-white-1 lg:ml-[16rem] h-full overflow-y-auto">
+          <div className="flex flex-col space-y-4 p-6 flex-1 mb-4 bg-black text-white-1 lg:ml-[16rem] h-full overflow-y-auto hide-scrollable ">
             <div><button 
           onClick={() => router.push(
             `/result/${result?.recording_id}`

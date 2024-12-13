@@ -2,13 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { UserIcon, CogIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
-import { useSidebar } from "@/context/SidebarProvider";
 import { getSession } from "next-auth/react";
 import { logout } from "@/lib/services/authService";
 
-
 export default function Header() {
-  const { isMenuOpen } = useSidebar(); // Access sidebar context
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userInitial, setUserInitial] = useState<string>("");
 
@@ -29,8 +26,6 @@ export default function Header() {
     fetchUserName();
   }, []);
 
-
-
   return (
     <header className="h-16 bg-black-3 flex items-center px-4 border-b border-gray-700 justify-between sticky top-0 z-10">
       {/* Profile Icon */}
@@ -46,17 +41,11 @@ export default function Header() {
         {dropdownOpen && (
           <div className="absolute right-0 mt-2 w-48 text-white-1 border bg-black-1 border-gray-300 rounded shadow-lg">
             <ul className="py-1">
-              <li
-                className="px-4 py-2 text-sm text-white-1 hover:bg-black-2 cursor-pointer relative flex items-center space-x-2"
-                
-              >
+              <li className="px-4 py-2 text-sm text-white-1 hover:bg-black-2 cursor-pointer relative flex items-center space-x-2">
                 <UserIcon className="h-5 w-5 text-white-1" />
                 <span>Profile</span>
               </li>
-              <li
-                className="px-4 py-2 text-sm text-white-1 hover:bg-black-2 cursor-pointer relative flex items-center space-x-2"
-                
-              >
+              <li className="px-4 py-2 text-sm text-white-1 hover:bg-black-2 cursor-pointer relative flex items-center space-x-2">
                 <CogIcon className="h-5 w-5 text-white-1" />
                 <span>Settings</span>
               </li>
