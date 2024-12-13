@@ -59,7 +59,7 @@ export default function MeetingMinutes() {
         <Loader />
       ) : (
         result && (
-          <div className="flex flex-col space-y-4 p-6 flex-1 mb-4 bg-black text-white-1 lg:ml-[16rem] h-full overflow-y-auto hide-scrollable ">
+          <div className="flex flex-col space-y-4 p-6 flex-1 mb-4 bg-black text-white-1 lg:ml-[16rem] h-full overflow-y-auto .hide-scrollable ">
             <div><button 
           onClick={() => router.push(
             `/result/${result?.recording_id}`
