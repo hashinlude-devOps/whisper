@@ -148,7 +148,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     updateSpeakerNames(result?.json_file, speakerValue)
       .then(async () => {
         const response = await getTranscription(id.toString());
-        const fetchedResult = response.data.result; 
+        const fetchedResult = response.data.result;
         if (fetchedResult) {
           setResult(fetchedResult);
         } else {
@@ -188,7 +188,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   return (
     <div className="flex flex-col min-h-screen lg:ml-[16rem]">
       {loading ? (
-        <Loader /> 
+        <Loader />
       ) : (
         <>
           <div className="flex flex-col space-y-4 px-[2rem] flex-1 mb-4">
@@ -275,7 +275,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                   open={isModalOpen}
                   onOk={handleOk}
                   onCancel={handleCancel}
-                  footer={null} 
+                  footer={null}
                 >
                   <SpeakerCarousel
                     noOfSpeakers={noOfSpeakers}
@@ -309,7 +309,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                     const startTime = segment.start_time;
                     const endTime = segment.end_time;
                     const elapsedTime = formatTime(index === 0 ? 0 : startTime);
-                    const bufferTime = 0.3; 
+                    const bufferTime = 0.3;
                     const isHighlighted =
                       currentAudioTime >= startTime - bufferTime &&
                       currentAudioTime <= endTime + bufferTime;
@@ -338,7 +338,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
                         <td className="px-4 py-2 text-white-1">
                           <span
-                            onClick={() => toggleTranslation()} 
+                            onClick={() => toggleTranslation()}
                             className="cursor-pointer"
                           >
                             {showTranslation
@@ -354,23 +354,23 @@ const AudioResultComponent = ({ id }: { id: number }) => {
             </div>
           </div>
 
-          {audioUrl ? (
-            <div className="sticky bottom-0 w-full text-white-1 shadow-lg">
-              <div className="max-w-full w-full">
-                <CustomAudioPlayer
-                  audioUrl={audioUrl}
-                  onTimeUpdate={handleAudioTimeUpdate}
-                  audioRef={audioRef}
-                />
-              </div>
+          <div className="sticky bottom-0 w-full text-white-1 shadow-lg">
+            <div className="max-w-full w-full">
+              <CustomAudioPlayer
+                audioUrl={audioUrl} 
+                onTimeUpdate={handleAudioTimeUpdate}
+                audioRef={audioRef}
+                isReady={!!audioUrl} 
+                onPlayAttempt={() => {
+                  if (!audioUrl) {
+                    toast.error("Audio is still downloading. Please wait.", {
+                      duration: 3000,
+                    });
+                  }
+                }}
+              />
             </div>
-          ) : (
-            <div className="sticky bottom-0 w-full text-center h-[112px]  text-white py-4">
-              <span className="loading-text">
-                Downloading audio<span className="dot-animate">...</span>
-              </span>
-            </div>
-          )}
+          </div>
         </>
       )}
     </div>

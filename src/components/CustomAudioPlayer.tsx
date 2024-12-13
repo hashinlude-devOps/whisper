@@ -8,25 +8,32 @@ const CustomAudioPlayer = ({
   audioUrl,
   onTimeUpdate,
   audioRef,
+  isReady,
+  onPlayAttempt,
 }: {
-  audioUrl: string;
+  audioUrl: string | null;
   onTimeUpdate: (currentTime: number) => void;
-  audioRef: React.RefObject<HTMLAudioElement>; // Define type for audioRef
+  audioRef: React.RefObject<HTMLAudioElement>;
+  isReady: boolean;
+  onPlayAttempt?: () => void;
 }) => {
-  // const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
 
   const togglePlayPause = () => {
+    if (!isReady) {
+      onPlayAttempt?.();
+      return;
+    }
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
-        setIsPlaying(false); // Pause the audio and update the state
+        setIsPlaying(false);
       } else {
         audioRef.current.play();
-        setIsPlaying(true); // Start playing the audio and update the state
+        setIsPlaying(true);
       }
     }
   };
@@ -101,8 +108,10 @@ const CustomAudioPlayer = ({
 
   return (
     <div className="sticky bottom-0 left-0 flex size-full flex-col bg-black-3">
-      <Progress value={progressValue} className="w-full" />
-
+      <Progress
+        value={isReady ? progressValue : 0}
+        className={`w-full ${!isReady ? "bg-gray-300" : ""}`}
+      />
       <section className="glassmorphism-black flex h-[112px] w-full items-center justify-between px-4 md:px-12">
         <audio
           ref={audioRef}
@@ -124,16 +133,22 @@ const CustomAudioPlayer = ({
               width={24}
               height={24}
               alt="Rewind"
-              onClick={rewind}
+              onClick={isReady ? rewind : undefined}
+              className={
+                !isReady ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+              }
             />
             <h2 className="text-12 font-bold text-white-1">-5</h2>
           </div>
           <Image
-            src={isPlaying ? "/icons/Pause.svg" : "/icons/Play.svg"}
+            src={isPlaying && isReady ? "/icons/Pause.svg" : "/icons/Play.svg"}
             width={30}
             height={30}
             alt="Play/Pause"
             onClick={togglePlayPause}
+            className={
+              !isReady ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+            }
           />
           <div className="flex items-center gap-1.5">
             <h2 className="text-12 font-bold text-white-1">+5</h2>
@@ -142,7 +157,10 @@ const CustomAudioPlayer = ({
               width={24}
               height={24}
               alt="Forward"
-              onClick={forward}
+              onClick={isReady ? forward : undefined}
+              className={
+                !isReady ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+              }
             />
           </div>
         </div>
