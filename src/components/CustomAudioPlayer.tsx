@@ -10,12 +10,14 @@ const CustomAudioPlayer = ({
   audioRef,
   isReady,
   onPlayAttempt,
+  onDurationUpdate,
 }: {
   audioUrl: string | null;
   onTimeUpdate: (currentTime: number) => void;
   audioRef: React.RefObject<HTMLAudioElement>;
   isReady: boolean;
   onPlayAttempt?: () => void;
+  onDurationUpdate?: (duration: number) => void;
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -90,6 +92,9 @@ const CustomAudioPlayer = ({
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
+      if (onDurationUpdate) {
+        onDurationUpdate(audioRef.current.duration);
+      }
     }
   };
 

@@ -11,11 +11,13 @@ import {
 } from "@/lib/services/audioService";
 import CalendarIcon from "@heroicons/react/20/solid/CalendarIcon";
 import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
+import { HiDownload } from "react-icons/hi";
 import { useRouter } from "next/navigation";
-import { Button, Input, message, Modal } from "antd";
+import { Button, Input, message, Modal, Tooltip } from "antd";
 import SpeakerCarousel from "./SpeakerCarousel";
 import { useSidebar } from "@/context/ContextProvider";
 import toast from "react-hot-toast";
+import { generatePDFs } from "@/lib/utils/pdfgenutils";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
@@ -32,6 +34,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const [result, setResult] = useState<any>(null);
   const [timestamp, setTimestamp] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [totalDuration, setTotalDuration] = useState<string>("0:00");
 
   const hasFetchedAudio = useRef(false);
   const router = useRouter();
@@ -191,6 +194,12 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     setCurrentAudioTime(time);
   };
 
+  const handleDurationUpdate = (durationInSeconds: number) => {
+    const minutes = Math.floor(durationInSeconds / 60);
+    const seconds = Math.floor(durationInSeconds % 60);
+    setTotalDuration(`${minutes}:${seconds.toString().padStart(2, "0")}`);
+  };
+
   return (
     <div className="flex flex-col min-h-screen lg:ml-[16rem]">
       {loading ? (
@@ -219,7 +228,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                     className="text-white-1 hover:text-white-5"
                     onClick={() => setIsFileNameEdit(true)}
                   >
-                    <PencilSquareIcon className="h-5 w-5" />
+                    <PencilSquareIcon className="h-7 W-7" />
                   </button>
                 )}
                 {isFileNameEdit && (
@@ -245,14 +254,14 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
               <div className="flex items-center space-x-2">
                 <div className="flex items-center space-x-1">
-                  <CalendarIcon className="h-5 w-5 text-gray-50" />
+                  <CalendarIcon className="h-7 w-7 text-gray-50" />
                   <span className="text-sm text-gray-50">
                     {timestamp || "No Timestamp Available"}
                   </span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <ClockIcon className="h-5 w-5 text-gray-50" />
-                  <span className="text-sm text-gray-50">0:26</span>
+                  <ClockIcon className="h-7 w-7 text-gray-50" />
+                  <span className="text-sm text-gray-50">{totalDuration}</span>
                 </div>
               </div>
 
@@ -270,6 +279,14 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                   >
                     Meeting Minutes
                   </Button>
+                  <Tooltip title="Download" overlayStyle={{ backgroundColor: '#000000', color: 'black' }}>
+                  <div
+                    className="flex items-center space-x-1 "
+                    onClick={() => generatePDFs(result, timestamp)}
+                  >
+                    <HiDownload className="h-7 w-7 text-gray-50" />
+                  </div>
+                  </Tooltip>
                 </div>
 
                 <Modal
@@ -374,6 +391,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                     });
                   }
                 }}
+                onDurationUpdate={handleDurationUpdate}
               />
             </div>
           </div>

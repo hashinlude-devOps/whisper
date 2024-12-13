@@ -4,7 +4,6 @@
 
 @layer base {
   :root {
-    /* Set default background to black for the light theme */
     --background: 0 0% 0%; /* Black */
     --foreground: 0 0% 98%; /* Adjust foreground for visibility on black */
     --card: 0 0% 9%; /* Optional: Slightly lighter black for card elements */
@@ -75,20 +74,17 @@
   overflow: hidden;
 }
 
-/* Hide scrollbar but keep scrolling functionality */
 .hide-scrollable {
-  -ms-overflow-style: none;  /* Hide scrollbar in IE */
-  scrollbar-width: none;      /* Hide scrollbar in Firefox */
+  -ms-overflow-style: none;  
+  scrollbar-width: none;     
 }
 
 .hide-scrollable::-webkit-scrollbar {
-  display: none; /* Hide scrollbar in webkit browsers */
+  display: none; 
 }
 
-
-/* Custom Styles for the Audio Player */
 .audio {
-  display: none; /* Hide the default audio controls */
+  display: none; 
 }
 
 .input[type="range"] {
@@ -113,46 +109,36 @@
   outline: none;
 }
 
-/* Add these styles in your global CSS or module styles */
 .table-container {
-  overflow-x: auto; /* Allow horizontal scrolling when necessary */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
-  position: relative; /* Ensure it’s positioned */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; 
+  position: relative;
  
 }
 
 table {
-  width: 100%; /* Ensure the table takes full width of the container */
-  table-layout: auto; /* Allow the table to resize dynamically based on content */
-  border-collapse: collapse; /* Collapse table borders for a cleaner look */
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse; 
 }
 
 td, th {
-  padding: 12px; /* Adjust padding as needed */
-  word-wrap: break-word; /* Allow long words to break and wrap onto the next line */
+  padding: 12px; 
+  word-wrap: break-word; 
 }
 
 @media (max-width: 768px) {
   table {
-    min-width: 600px; /* Set a minimum width to prevent squishing on smaller screens */
+    min-width: 600px;
   }
 }
 
 td {
-  vertical-align: top; /* Align content to the top-left */
+  vertical-align: top;
 }
 
 .table-row {
   transition: background-color 0.3s ease-in-out;
-}
-
-/* styles/globals.css */
-.peer-checked ~ div {
-  /* Ensures the sibling menu reacts to the checkbox state */
-}
-
-.fixed {
-  /* Styles for fixed positioning */
 }
 
 .transition-transform {
@@ -164,80 +150,68 @@ td {
 }
 
 input:-webkit-autofill {
-  background-color: rgba(31, 41, 55, 0.8) !important; /* Matches your bg-black-3 and bg-opacity-20 */
-  color: white !important; /* Ensure text color matches */
+  background-color: rgba(31, 41, 55, 0.8) !important; 
+  color: white !important; 
   /* border-color: rgba(156, 163, 175, 0.25) !important; Matches border-gray-400 and border-opacity-25 */
-  -webkit-text-fill-color: white !important; /* Ensures text color consistency */
-  transition: background-color 5000s ease-in-out 0s; /* Prevent autofill flash */
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s; 
 }
 
 .ant-input-number-input {
-  color: white !important; /* Ensures text color is white */
+  color: white !important; 
 }
 
 
-/* Ensure the upload icon in the Dragger area is white */
 .ant-upload-drag-icon {
-  color: white !important;  /* Ensures the icon is white */
+  color: white !important;  
 }
 
-/* Target the file icon and name in the upload list */
 .ant-upload-list-item .ant-upload-list-item-icon {
-  color: white !important;  /* Ensures the file icon is white */
+  color: white !important;  
 }
 
-/* Make sure the delete button (trash icon) is white */
 .ant-upload-list-item-actions > button .anticon {
-  color: white !important; /* Ensures the delete icon is white */
+  color: white !important; 
   visibility: visible !important;
 }
 
-/* Set hover state for delete button icon */
 .ant-upload-list-item-actions > button:hover .anticon {
-  color: white !important; /* Light gray on hover */
+  color: white !important; 
 }
 
-/* File name text color in upload list */
 .ant-upload-list-item-name {
-  color: white !important; /* Make file name white */
+  color: white !important; 
 }
 
-/* Ensure the text in the upload button is white */
 .ant-upload-text {
-  color: white !important; /* Text in the upload area */
+  color: white !important; 
 }
 
-/* Ensure icon color in input number is white */
 .ant-input-number-input {
-  color: white !important; /* Ensures text color in input is white */
+  color: white !important; 
 }
 
-/* Hover state for file icon */
 .ant-upload-list-item:hover .ant-upload-list-item-icon {
-  color: white !important; /* Light gray on hover */
+  color: white !important; 
 }
 
 .anticon {
   color: white !important;
 }
 
-/* Make the audio controls background transparent */
 audio::-webkit-media-controls {
   background-color: transparent !important;
 }
 
-/* For Firefox */
 audio {
   background-color: transparent !important;
 }
 
-/* Optionally, remove the border or background color for controls */
 audio::-webkit-media-controls-panel {
   background-color: transparent !important;
   border: none !important;
 }
 
-/* For IE/Edge support (if needed) */
 audio::-ms-media-controls-panel {
   background-color: transparent !important;
 }
@@ -288,9 +262,9 @@ audio::-ms-media-controls-panel {
   border-radius: 5px;
   padding: 5px;
   position: absolute;
-  bottom: 120%; /* Adjust this value to change the position */
+  bottom: 120%; 
   left: 50%;
-  margin-left: -100px; /* Center the tooltip */
+  margin-left: -100px; 
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -298,4 +272,10 @@ audio::-ms-media-controls-panel {
 .tooltip:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
+}
+
+.ant-tooltip-inner {
+  background-color: #ffff !important; 
+  color: black !important;             
+  font-size: 14px;                      
 }
