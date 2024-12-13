@@ -224,12 +224,14 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                   />
                 )}
                 {!isFileNameEdit && (
-                  <button
-                    className="text-white-1 hover:text-white-5"
-                    onClick={() => setIsFileNameEdit(true)}
-                  >
-                    <PencilSquareIcon className="h-7 W-7" />
-                  </button>
+                  <Tooltip title="Update">
+                    <button
+                      className="text-white-1 hover:text-white-5"
+                      onClick={() => setIsFileNameEdit(true)}
+                    >
+                      <PencilSquareIcon className="h-7 W-7" />
+                    </button>
+                  </Tooltip>
                 )}
                 {isFileNameEdit && (
                   <>
@@ -279,13 +281,13 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                   >
                     Meeting Minutes
                   </Button>
-                  <Tooltip title="Download" overlayStyle={{ backgroundColor: '#000000', color: 'black' }}>
-                  <div
-                    className="flex items-center space-x-1 "
-                    onClick={() => generatePDFs(result, timestamp)}
-                  >
-                    <HiDownload className="h-7 w-7 text-gray-50" />
-                  </div>
+                  <Tooltip title="Download">
+                    <div
+                      className="flex items-center space-x-1 "
+                      onClick={() => generatePDFs(result, timestamp)}
+                    >
+                      <HiDownload className="h-7 w-7 text-gray-50" />
+                    </div>
                   </Tooltip>
                 </div>
 
@@ -345,29 +347,39 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                         }`}
                       >
                         <td className="px-4 py-2 text-blue-500">
-                          <span
-                            onClick={() => {
-                              handleAudioSeek(segment.start_time);
-                            }}
-                            className="cursor-pointer"
-                          >
-                            {" "}
-                            {elapsedTime}
-                          </span>
+                          <Tooltip title="Seek">
+                            <span
+                              onClick={() => {
+                                handleAudioSeek(segment.start_time);
+                              }}
+                              className="cursor-pointer"
+                            >
+                              {" "}
+                              {elapsedTime}
+                            </span>
+                          </Tooltip>
                         </td>
                         <td className="px-4 py-2 text-blue-500">
                           {segment.speaker}
                         </td>
 
                         <td className="px-4 py-2 text-white-1">
-                          <span
-                            onClick={() => toggleTranslation()}
-                            className="cursor-pointer"
+                          <Tooltip
+                            title={
+                              showTranslation
+                                ? "See Original"
+                                : "See Translation"
+                            }
                           >
-                            {showTranslation
-                              ? segment.translated_text
-                              : segment.transcribed_text}
-                          </span>
+                            <span
+                              onClick={() => toggleTranslation()}
+                              className="cursor-pointer"
+                            >
+                              {showTranslation
+                                ? segment.translated_text
+                                : segment.transcribed_text}
+                            </span>
+                          </Tooltip>
                         </td>
                       </tr>
                     );
