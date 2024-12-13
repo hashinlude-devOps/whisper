@@ -103,6 +103,12 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleAudioSeek = (startTime: number) => {
+    if (!audioUrl) {
+      toast.error("Audio is still downloading. Please wait.", {
+        duration: 3000,
+      });
+      return;
+    }
     if (audioRef.current) {
       audioRef.current.currentTime = startTime;
       audioRef.current.play();
@@ -357,10 +363,10 @@ const AudioResultComponent = ({ id }: { id: number }) => {
           <div className="sticky bottom-0 w-full text-white-1 shadow-lg">
             <div className="max-w-full w-full">
               <CustomAudioPlayer
-                audioUrl={audioUrl} 
+                audioUrl={audioUrl}
                 onTimeUpdate={handleAudioTimeUpdate}
                 audioRef={audioRef}
-                isReady={!!audioUrl} 
+                isReady={!!audioUrl}
                 onPlayAttempt={() => {
                   if (!audioUrl) {
                     toast.error("Audio is still downloading. Please wait.", {
