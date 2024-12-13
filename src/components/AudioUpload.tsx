@@ -212,7 +212,7 @@ export default function AudioUpload() {
               Audio Recorder and Uploader
             </h1>
             <div className="space-y-4">
-              <AudioInput onFileSelected={handleFileSelected} resetKey={resetKey}/>
+              <AudioInput onFileSelected={handleFileSelected}/>
               {audioFile && (
                 <>
                   <div>
