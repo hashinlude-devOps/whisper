@@ -39,6 +39,9 @@ export default function History() {
       message.error("Failed to fetch transcription.");
     }
   };
+  useEffect(() => {
+    console.log(groupedHistory); // Logs the updated groupedHistory after state change
+  }, [groupedHistory]);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -48,6 +51,7 @@ export default function History() {
 
         const categorized = categorizeRecordings(recordings);
         setGroupedHistory(categorized);
+        console.log(groupedHistory)
       } catch (error) {
         console.error("Failed to fetch recordings:", error);
       }
@@ -66,20 +70,20 @@ export default function History() {
     const today = new Date();
     const weekAgo = subDays(today, 7);
     const monthAgo = subDays(today, 30);
-
+  
     const categories: Record<string, any[]> = {
       Today: [],
       "Previous 7 Days": [],
       "Previous 30 Days": [],
     };
-
+  
     const sortedRecordings = recordings.sort((a, b) => {
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     });
-
+  
     sortedRecordings.forEach((recording) => {
       const date = new Date(recording.timestamp);
-
+  
       if (isToday(date)) {
         categories["Today"].push(recording);
       } else if (date > weekAgo) {
@@ -94,9 +98,13 @@ export default function History() {
         categories[monthYear].push(recording);
       }
     });
-
-    return categories;
+  
+    // Filter out empty categories
+    return Object.fromEntries(
+      Object.entries(categories).filter(([key, value]) => value.length > 0)
+    );
   };
+  
 
   const toggleMenu = () => setIsMenuOpen((prev: any) => !prev);
   const uploadnew = () => {
