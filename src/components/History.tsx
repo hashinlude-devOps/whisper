@@ -26,7 +26,7 @@ export default function History() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   const checkScreenSize = () => {
-    setIsSmallScreen(window.innerWidth < 768);
+    setIsSmallScreen(window.innerWidth < 1025);
   };
 
   useEffect(() => {
@@ -105,6 +105,7 @@ export default function History() {
 
   const toggleMenu = () => setIsMenuOpen((prev: any) => !prev);
   const uploadnew = () => {
+    if (isSmallScreen) setIsMenuOpen(false);
     setActiveItem(null);
     setResetKey((prevKey: any) => prevKey + 1);
     router.push("/");
@@ -130,7 +131,7 @@ export default function History() {
           {/* Close Icon */}
           <button
             onClick={toggleMenu}
-            className="p-2 rounded-lg block sm:hidden"
+            className="p-2 rounded-lg block xl:hidden sm:block"
           >
             <div className="w-6 h-6 flex flex-col justify-between items-center space-y-1">
               <div
@@ -145,8 +146,11 @@ export default function History() {
               ></div>
             </div>
           </button>
-          <button className="p-2 rounded-lg" onClick={uploadnew}>
-            <PlusOutlined className="text-white-1 text-2xl" />
+          <button className="p-2 rounded-lg xl:hidden sm:block hover:bg-black-2" onClick={uploadnew}>
+            <PlusOutlined className="text-white-1 text-3xl font-medium" />
+          </button>
+          <button className="p-2 hidden rounded-lg xl:block sm:hidden hover:bg-black-2 px-4" onClick={uploadnew}>
+            <span className="text-lg font-medium"><span className="text-2xl">+</span> New Recoding</span>
           </button>
         </div>
 
@@ -244,12 +248,6 @@ export default function History() {
               <div className={`w-full h-1 bg-white-1 rounded`}></div>
               <div className={`w-full h-1 bg-white-1 rounded`}></div>
             </div>
-          </button>
-          <button
-            className="fixed left-16 p-4 rounded-lg z-20"
-            onClick={uploadnew}
-          >
-            <PlusOutlined className="text-white-1 text-2xl" />
           </button>
         </>
       )}

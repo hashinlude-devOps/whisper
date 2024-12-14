@@ -15,7 +15,7 @@ export const ContextProvider = ({
   const [resetKey, setResetKey] = useState(0);
 
   const checkScreenSize = () => {
-    if (window.innerWidth < 768) {
+    if (window.innerWidth <1025) {
       setIsMenuOpen(false);
     } else {
       setIsMenuOpen(true);

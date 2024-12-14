@@ -201,7 +201,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen lg:ml-[16rem]">
+    <div className="flex flex-col min-h-screen xl:ml-[16rem]">
       {loading ? (
         <Loader />
       ) : (
