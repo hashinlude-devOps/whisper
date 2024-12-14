@@ -10,7 +10,10 @@ import { message, Tooltip } from "antd";
 import Loader from "@/components/Loader";
 import toast from "react-hot-toast";
 import { HiDownload } from "react-icons/hi";
-import { generateDOCXFiles } from "@/components/PdfGenerator";
+import {
+  generateDOCXFiles,
+  generateMOMDOCXFile,
+} from "@/components/PdfGenerator";
 
 export default function MeetingMinutes() {
   const [result, setResult] = React.useState<any>(null);
@@ -91,13 +94,18 @@ export default function MeetingMinutes() {
 
               {/* Right-Aligned Download Button */}
               <div className="my-4 md:my-0">
-                <div className="flex gap-3 flex-row ml-auto">
-                  <Tooltip title="Download">
+                <Tooltip title="Download">
+                  <div className="flex gap-3 flex-row ml-auto">
                     <div className="flex items-center space-x-1 cursor-pointer">
-                      <HiDownload className="h-7 w-7 text-gray-50" />
+                      <HiDownload
+                        className="h-7 w-7 text-gray-50"
+                        onClick={() =>
+                          generateMOMDOCXFile(result?.meeting_minutes)
+                        }
+                      />
                     </div>
-                  </Tooltip>
-                </div>
+                  </div>
+                </Tooltip>
               </div>
             </div>
 
