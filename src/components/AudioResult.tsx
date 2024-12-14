@@ -283,7 +283,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                   </Button>
                   <Tooltip title="Download">
                     <div
-                      className="flex items-center space-x-1 "
+                      className="flex items-center space-x-1 cursor-pointer"
                       onClick={() => generateDOCXFiles(result, timestamp)}
                     >
                       <HiDownload className="h-7 w-7 text-gray-50" />
