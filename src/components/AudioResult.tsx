@@ -254,18 +254,22 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                 )}
               </div>
 
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <div className="flex items-center space-x-1">
-                  <CalendarIcon className="h-7 w-7 text-gray-50" />
                   <span className="text-sm text-gray-50">
-                    {timestamp || "No Timestamp Available"}
+                  {new Date(
+                                  timestamp + " UTC"
+                                ).toLocaleDateString("en-US", {
+                                  month: "short", 
+                                  day: "numeric", 
+                                  year: "numeric", 
+                                })}
                   </span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <ClockIcon className="h-7 w-7 text-gray-50" />
                   <span className="text-sm text-gray-50">{totalDuration}</span>
                 </div>
-              </div>
+              </div> */}
 
               <div className="my-4 md:my-0">
                 <div className="flex gap-3 flex-row">
