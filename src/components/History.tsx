@@ -146,11 +146,19 @@ export default function History() {
               ></div>
             </div>
           </button>
-          <button className="p-2 rounded-lg xl:hidden sm:block hover:bg-black-2" onClick={uploadnew}>
+          <button
+            className="p-2 rounded-lg xl:hidden sm:block hover:bg-black-2"
+            onClick={uploadnew}
+          >
             <PlusOutlined className="text-white-1 text-3xl font-medium" />
           </button>
-          <button className="p-2 hidden rounded-lg xl:block sm:hidden hover:bg-black-2 px-4" onClick={uploadnew}>
-            <span className="text-lg font-medium"><span className="text-2xl">+</span> New Recoding</span>
+          <button
+            className="p-2 hidden rounded-lg xl:block sm:hidden hover:bg-black-2 px-4"
+            onClick={uploadnew}
+          >
+            <span className="text-lg font-medium">
+              <span className="text-2xl">+</span> New Recoding
+            </span>
           </button>
         </div>
 
