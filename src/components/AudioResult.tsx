@@ -17,7 +17,7 @@ import { Button, Input, message, Modal, Tooltip } from "antd";
 import SpeakerCarousel from "./SpeakerCarousel";
 import { useSidebar } from "@/context/ContextProvider";
 import toast from "react-hot-toast";
-import { generateDOCXFiles } from "./pdfgenutils";
+import { generateDOCXFiles } from "./PdfGenerator";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();

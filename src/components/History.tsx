@@ -7,6 +7,7 @@ import { format, isToday, subDays } from "date-fns";
 import message from "antd/es/message";
 import { useSidebar } from "@/context/ContextProvider";
 import toast from "react-hot-toast";
+import { Tooltip } from "antd";
 
 export default function History() {
   const router = useRouter();
@@ -53,9 +54,7 @@ export default function History() {
         const recordings = response.data.recordings;
         const categorized = categorizeRecordings(recordings);
         setGroupedHistory(categorized);
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     };
     fetchHistory();
     const intervalId = setInterval(() => {
@@ -172,49 +171,56 @@ export default function History() {
                               "hover:bg-black-2"
                         } hover:rounded-md`}
                       >
-                        <div className="relative">
-                          <span
-                            key={item.id}
-                            className={`text-sm font-medium cursor-pointer ${
-                              activeItem === item.id
-                                ? "text-gray-100 font-semibold"
-                                : "hover:text-gray-200"
-                            }`}
-                            onClick={() => {
-                              if (item.recording_status === "Completed") {
-                                setActiveItem(item.id);
-                                handleHistoryClick(item.id);
-                              }
-                            }}
-                          >
-                            {item.recordingname
-                              .split("/")
-                              .pop()
-                              ?.replace(/\.[^/.]+$/, "")}
-                          </span>
+                        <Tooltip
+                          title={
+                            item.recording_status === "Failed"
+                              ? "Try reupload audio"
+                              : item.recording_status === "Completed"
+                              ? "View Results"
+                              : "Processing, please wait"
+                          }
+                        >
+                          <div className="relative">
+                            <span
+                              key={item.id}
+                              className={`text-sm font-medium cursor-pointer ${
+                                activeItem === item.id
+                                  ? "text-gray-100 font-semibold"
+                                  : "hover:text-gray-200"
+                              }`}
+                              onClick={() => {
+                                if (item.recording_status === "Completed") {
+                                  setActiveItem(item.id);
+                                  handleHistoryClick(item.id);
+                                }
+                              }}
+                            >
+                              {item.recordingname
+                                .split("/")
+                                .pop()
+                                ?.replace(/\.[^/.]+$/, "")}
+                            </span>
 
-                          {item.recording_status === "Failed" && (
-                            <>
-                              <div className="text-xs text-red-500 font-medium absolute bottom-[-9px] right-0 tooltip">
-                                Failed!
-                                <div className="tooltip-text">
-                                  Please reupload
+                            {item.recording_status === "Failed" && (
+                              <>
+                                <div className="text-xs text-red-500 font-medium absolute bottom-[-13px] left-0">
+                                  Failed!
+                                </div>
+                              </>
+                            )}
+
+                            {item.recording_status === "Pending" && (
+                              <div className="relative w-full mt-2">
+                                <div className="w-[90%] bg-gray-600 rounded h-1">
+                                  <div
+                                    className="bg-green-500 h-1 rounded"
+                                    style={{ width: "70%" }} // Controls the progress width, 70% will fill the bar up to 70%
+                                  ></div>
                                 </div>
                               </div>
-                            </>
-                          )}
-
-                          {item.recording_status === "Pending" && (
-                            <div className="absolute bottom-[-8px] right-0 w-[80%]">
-                              <div className="w-full bg-gray-600 rounded h-1 mt-2">
-                                <div
-                                  className="bg-green-500 h-1 rounded"
-                                  style={{ width: "70%" }}
-                                ></div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                            )}
+                          </div>
+                        </Tooltip>
                       </li>
                     ))}
                   </ul>

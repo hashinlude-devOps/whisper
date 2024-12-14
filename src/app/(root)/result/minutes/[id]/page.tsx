@@ -6,9 +6,11 @@ import {
   fetchMeetingMinutes,
   viewMeetingMinutes,
 } from "@/lib/services/audioService";
-import { message } from "antd";
+import { message, Tooltip } from "antd";
 import Loader from "@/components/Loader";
 import toast from "react-hot-toast";
+import { HiDownload } from "react-icons/hi";
+import { generateDOCXFiles } from "@/components/PdfGenerator";
 
 export default function MeetingMinutes() {
   const [result, setResult] = React.useState<any>(null);
@@ -19,11 +21,10 @@ export default function MeetingMinutes() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-
   const fetchMeetingMinutesData = async () => {
-    if (!id || isDataFetched) return; 
+    if (!id || isDataFetched) return;
 
-    setLoading(true); 
+    setLoading(true);
     try {
       const viewResponse = await viewMeetingMinutes(id.toString());
       if (viewResponse.status === 200 && viewResponse.data) {
@@ -38,20 +39,24 @@ export default function MeetingMinutes() {
         setResult(response.data);
         setIsDataFetched(true);
       } else {
-        toast.error("No results found for this transcription.", { duration: 5000 });
+        toast.error("No results found for this transcription.", {
+          duration: 5000,
+        });
         message.error("No results found for this transcription.");
       }
     } catch (error) {
-      toast.error("An error occurred while fetching meeting minutes.", { duration: 5000 });
+      toast.error("An error occurred while fetching meeting minutes.", {
+        duration: 5000,
+      });
       message.error("An error occurred while fetching meeting minutes.");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchMeetingMinutesData();
-  }, [id]); 
+  }, [id]);
 
   return (
     <>
@@ -60,27 +65,42 @@ export default function MeetingMinutes() {
       ) : (
         result && (
           <div className="flex flex-col space-y-4 p-6 flex-1 mb-4 bg-black text-white-1 lg:ml-[16rem] h-full overflow-y-auto .hide-scrollable ">
-            <div><button 
-          onClick={() => router.push(
-            `/result/${result?.recording_id}`
-          )}
-          className="text-white-1 hover:text-blue-500"
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            className="h-5 w-5"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth="2" 
-              d="M15 19l-7-7 7-7" 
-            />
-          </svg>
-        </button></div>
+            <div className="flex items-center justify-between">
+              {/* Left Button */}
+              <Tooltip title="View Recording Details">
+                <button
+                  onClick={() => router.push(`/result/${result?.recording_id}`)}
+                  className="text-white-1 hover:text-blue-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
+              </Tooltip>
+
+              {/* Right-Aligned Download Button */}
+              <div className="my-4 md:my-0">
+                <div className="flex gap-3 flex-row ml-auto">
+                  <Tooltip title="Download">
+                    <div className="flex items-center space-x-1 cursor-pointer">
+                      <HiDownload className="h-7 w-7 text-gray-50" />
+                    </div>
+                  </Tooltip>
+                </div>
+              </div>
+            </div>
+
             <div>
               Number of speakers
               <span className="m-5 font-bold text-2xl text-blue-500">
