@@ -20,6 +20,7 @@ const loadFont = async (doc: jsPDF, text: string) => {
   
     if (containsArabic(text)) {
       fontUrl = "/fonts/NotoSansArabic-Regular.ttf"; // Arabic font
+      console.log(fontName)
     }
   
     try {
@@ -38,6 +39,7 @@ const loadFont = async (doc: jsPDF, text: string) => {
 // Render Arabic text (reverse for RTL)
 const renderArabicText = (doc: jsPDF, text: string, x: number, y: number, maxWidth: number) => {
     const reversedText = text.split('').reverse().join('');  // Reverse the characters for RTL
+    console.log(reversedText)
     doc.text(reversedText, x, y, { maxWidth, align: "right" });
 };
 
@@ -46,7 +48,7 @@ const renderTextWithDynamicHeight = (doc: jsPDF, text: string, x: number, y: num
   const lines = doc.splitTextToSize(text, maxWidth); // Wrap text into lines based on max width
   const textHeight = lines.length * 7;  // Height is approximately 7 units per line (adjust as needed)
   
-  lines.forEach((line, index) => {
+  lines.forEach((line:any, index:any) => {
     // Check if we're near the bottom of the page and need a new page
     if (y + textHeight > doc.internal.pageSize.height - 20) { // 20 is for the bottom margin
       doc.addPage();
