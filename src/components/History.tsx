@@ -157,7 +157,7 @@ export default function History() {
             onClick={uploadnew}
           >
             <span className="text-lg font-medium">
-              <span className="text-2xl">+</span> New Recoding
+              <span className="text-2xl">+</span> New Recording
             </span>
           </button>
         </div>
@@ -212,6 +212,27 @@ export default function History() {
                                 .pop()
                                 ?.replace(/\.[^/.]+$/, "")}
                             </span>
+                            <div className="flex justify-between items-center text-xs text-gray-400">
+                              <span>
+                                {new Date(
+                                  item.timestamp + " UTC"
+                                ).toLocaleDateString("en-US", {
+                                  month: "short", 
+                                  day: "numeric", 
+                                  year: "numeric", 
+                                })}
+                              </span>
+
+                              <span>
+                                {new Date(
+                                  item.timestamp + " UTC"
+                                ).toLocaleString("en-US", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                })}
+                              </span>
+                            </div>
 
                             {item.recording_status === "Failed" && (
                               <>
