@@ -699,6 +699,11 @@
   resolved "https://registry.npmjs.org/@trysound/sax/-/sax-0.2.0.tgz"
   integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
+"@types/file-saver@^2.0.7":
+  version "2.0.7"
+  resolved "https://registry.npmjs.org/@types/file-saver/-/file-saver-2.0.7.tgz"
+  integrity sha512-dNKVfHd/jk0SkR/exKGj2ggkB45MAkzvWCaqLUUgkyjITkGNzH8H+yUwr+BLJUBjZOe9w8X3wgmXhZDRg1ED6A==
+
 "@types/node@^20":
   version "20.17.9"
   resolved "https://registry.npmjs.org/@types/node/-/node-20.17.9.tgz"
@@ -730,6 +735,11 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
+
+"@xmldom/xmldom@^0.9.6":
+  version "0.9.6"
+  resolved "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.9.6.tgz"
+  integrity sha512-Su4xcxR0CPGwlDHNmVP09fqET9YxbyDXHaSob6JlBH7L6reTYaeim6zbk9o08UarO0L5GTRo3uzl0D+9lSxmvw==
 
 "@zougt/some-loader-utils@^1.4.3":
   version "1.4.3"
@@ -1359,6 +1369,13 @@ dlv@^1.1.3:
   resolved "https://registry.npmjs.org/dlv/-/dlv-1.1.3.tgz"
   integrity sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==
 
+docxtemplater@^3.55.6:
+  version "3.55.6"
+  resolved "https://registry.npmjs.org/docxtemplater/-/docxtemplater-3.55.6.tgz"
+  integrity sha512-5grlhhb8ayGIfejBDdqiQKuHhkgDYNEqcUWnMfjDMNxdlxddCibSqJJIY74Xqjm+ubMZxdmGkauPwbh0hnw+ow==
+  dependencies:
+    "@xmldom/xmldom" "^0.9.6"
+
 dom-serializer@^1.0.1:
   version "1.4.1"
   resolved "https://registry.npmjs.org/dom-serializer/-/dom-serializer-1.4.1.tgz"
@@ -1481,6 +1498,11 @@ figures@^1.3.5:
   dependencies:
     escape-string-regexp "^1.0.5"
     object-assign "^4.1.0"
+
+file-saver@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.npmjs.org/file-saver/-/file-saver-2.0.5.tgz"
+  integrity sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==
 
 fill-range@^7.1.1:
   version "7.1.1"
@@ -2151,6 +2173,11 @@ package-json-from-dist@^1.0.0:
   resolved "https://registry.npmjs.org/package-json-from-dist/-/package-json-from-dist-1.0.1.tgz"
   integrity sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==
 
+pako@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/pako/-/pako-2.1.0.tgz"
+  integrity sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==
+
 parse-node-version@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/parse-node-version/-/parse-node-version-1.0.1.tgz"
@@ -2203,6 +2230,13 @@ pirates@^4.0.1:
   version "4.0.6"
   resolved "https://registry.npmjs.org/pirates/-/pirates-4.0.6.tgz"
   integrity sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==
+
+pizzip@^3.1.7:
+  version "3.1.7"
+  resolved "https://registry.npmjs.org/pizzip/-/pizzip-3.1.7.tgz"
+  integrity sha512-VemVeAQtdIA74AN1Fsd5OmbMbEeS4YOwwlcudgzvmUrOIOPrk1idYC5Tw5FUFq/I0c26ziNOw9z//iPmGfp1jA==
+  dependencies:
+    pako "^2.1.0"
 
 postcss-calc@^8.2.3:
   version "8.2.4"

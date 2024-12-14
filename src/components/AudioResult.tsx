@@ -17,7 +17,7 @@ import { Button, Input, message, Modal, Tooltip } from "antd";
 import SpeakerCarousel from "./SpeakerCarousel";
 import { useSidebar } from "@/context/ContextProvider";
 import toast from "react-hot-toast";
-import { generatePDFs } from "@/lib/utils/pdfgenutils";
+import { generateDOCXFiles } from "./pdfgenutils";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
@@ -284,7 +284,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                   <Tooltip title="Download">
                     <div
                       className="flex items-center space-x-1 "
-                      onClick={() => generatePDFs(result, timestamp)}
+                      onClick={() => generateDOCXFiles(result, timestamp)}
                     >
                       <HiDownload className="h-7 w-7 text-gray-50" />
                     </div>
