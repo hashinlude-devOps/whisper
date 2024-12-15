@@ -25,7 +25,7 @@ const SpeakerCarousel = ({
   };
 
   const handleAfterChange = (current: number) => {
-    setCurrentIndex(current + 1); // Update index (0-based to 1-based)
+    setCurrentIndex(current + 1); 
   };
 
   return (
@@ -35,7 +35,7 @@ const SpeakerCarousel = ({
       </div>
       <Carousel
         ref={carouselRef}
-        dots={false} // Hide default dots
+        dots={false} 
         draggable
         afterChange={handleAfterChange}
         className="rounded-lg"
@@ -68,12 +68,12 @@ const SpeakerCarousel = ({
           <Button
             className="text-white-1 hover:text-white-2 border-none w-full"
             style={{
-              display: currentIndex === 1 ? "none" : "block", // Hide "Previous" when on the first speaker
+              display: currentIndex === 1 ? "none" : "block", 
             }}
             onClick={handlePrev}
-            disabled={currentIndex === 1} // Disable if on the first speaker
+            disabled={currentIndex === 1} 
           >
-            <ChevronLeftIcon className="h-5 w-5" /> {/* Left Arrow Icon */}
+            <ChevronLeftIcon className="h-5 w-5" /> 
           </Button>
         </div>
 
@@ -82,13 +82,13 @@ const SpeakerCarousel = ({
           <Button
             className="text-white-1 hover:text-white-2 border-none w-full"
             style={{
-              display: currentIndex === noOfSpeakers.length ? "none" : "block", // Hide "Next" when on the last speaker
+              display: currentIndex === noOfSpeakers.length ? "none" : "block", 
             }}
             onClick={handleNext}
-            disabled={currentIndex === noOfSpeakers.length} // Disable if on the last speaker
+            disabled={currentIndex === noOfSpeakers.length} 
           >
             <div className="flex justify-end w-full">
-              <ChevronRightIcon className="h-5 w-5" /> {/* Right Arrow Icon */}
+              <ChevronRightIcon className="h-5 w-5" /> 
             </div>
           </Button>
         </div>

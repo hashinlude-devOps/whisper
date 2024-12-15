@@ -17,8 +17,7 @@ export default function Header() {
         if (name) {
           setUserInitial(name.charAt(0).toUpperCase());
         }
-      } catch (error) {
-      }
+      } catch (error) {}
     };
 
     fetchUserName();
@@ -59,8 +58,8 @@ export default function Header() {
         )}
       </div>
       <h1 className="text-[28px] font-bold text-white-1 absolute left-1/2 transform -translate-x-1/2">
-    WHISPER
-  </h1>
+        WHISPER
+      </h1>
     </header>
   );
 }
