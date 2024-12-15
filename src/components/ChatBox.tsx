@@ -218,9 +218,20 @@ const ChatBox: React.FC = () => {
               })}
 
             {/* Display messages for All Tab */}
-            {activeTab === "all" &&
-              allMessages.map((message, index) => {
-                // Check if this is the user message
+            {/* Display messages for All Tab */}
+            {activeTab === "all" ? (
+              <div className="flex flex-col items-center justify-center h-full">
+                <img
+                  src="/progress.png" // Replace with your icon or animation path
+                  alt="Upcoming Feature"
+                  className="w-24 h-24 mb-4"
+                />
+                <p className="text-gray-500 text-center text-sm">
+                  This feature is coming soon! Stay tuned!
+                </p>
+              </div>
+            ) : (
+              currentMessages.map((message, index) => {
                 const isUserMessage = index % 2 === 0;
 
                 return (
@@ -243,32 +254,41 @@ const ChatBox: React.FC = () => {
                     </p>
                   </div>
                 );
-              })}
+              })
+            )}
           </div>
 
+          {/* Input Section */}
           {/* Input Section */}
           <div className="p-4 border-t flex">
             <input
               id="user-input"
               type="text"
-              placeholder="Type a message"
-              className="w-full px-3 py-2 border rounded-l-md text-gray-700 focus:outline-none"
+              placeholder={
+                activeTab === "all" ? "Type a message" : "Type a message"
+              }
+              className={`w-full px-3 py-2 border rounded-l-md text-gray-700 focus:outline-none ${
+                activeTab === "all" ? "bg-gray-200 cursor-not-allowed" : ""
+              }`}
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !isSending) {
+                if (e.key === "Enter" && !isSending && activeTab !== "all") {
                   handleSendMessage();
                   e.preventDefault();
                 }
               }}
+              disabled={activeTab === "all"}
             />
             <button
               id="send-button"
               className={`bg-blue-500 text-white px-4 py-2 rounded-r-md transition duration-300 ${
-                isSending ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+                isSending || activeTab === "all"
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-blue-600"
               }`}
               onClick={handleSendMessage}
-              disabled={isSending}
+              disabled={isSending || activeTab === "all"}
             >
               Send
             </button>
@@ -280,3 +300,31 @@ const ChatBox: React.FC = () => {
 };
 
 export default ChatBox;
+
+// {activeTab === "all" &&
+//   allMessages.map((message, index) => {
+//     const isUserMessage = index % 2 === 0;
+
+//     return (
+//       <div
+//         key={index}
+//         className={`mb-2 ${
+//           isUserMessage
+//             ? "text-right user-message"
+//             : "other-message"
+//         }`}
+//       >
+//         <p
+//           className={`${
+//             isUserMessage
+//               ? "bg-blue-500 text-white"
+//               : "bg-gray-200 text-gray-700"
+//           } rounded-lg py-2 px-4 inline-block max-w-[90%]`}
+//         >
+//           {message}
+//         </p>
+//       </div>
+//     );
+//   })
+//   }
+// </div>
