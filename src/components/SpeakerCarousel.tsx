@@ -65,32 +65,30 @@ const SpeakerCarousel = ({
       <div className="flex justify-between mt-4">
         {/* Previous Button */}
         <div className="flex-1">
-          <Button
+          <div
             className="text-white-1 hover:text-white-2 border-none w-full"
             style={{
               display: currentIndex === 1 ? "none" : "block", 
             }}
             onClick={handlePrev}
-            disabled={currentIndex === 1} 
+            // disabled={currentIndex === 1} 
           >
             <ChevronLeftIcon className="h-5 w-5" /> 
-          </Button>
+          </div>
         </div>
 
         {/* Next Button */}
         <div className="flex-1 text-right">
-          <Button
+        <div
             className="text-white-1 hover:text-white-2 border-none w-full"
             style={{
-              display: currentIndex === noOfSpeakers.length ? "none" : "block", 
+              display: currentIndex === noOfSpeakers.length ? "none" : "block",
             }}
-            onClick={handleNext}
-            disabled={currentIndex === noOfSpeakers.length} 
-          >
+            onClick={handleNext}>
             <div className="flex justify-end w-full">
               <ChevronRightIcon className="h-5 w-5" /> 
             </div>
-          </Button>
+          </div>
         </div>
       </div>
     </div>
