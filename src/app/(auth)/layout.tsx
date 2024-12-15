@@ -15,7 +15,7 @@ export default async function RootLayout({
     redirect("/");
   }
   return (
-    <main className="relative h-screen w-full overflow-hidden flex flex-col justify-between bg-black-3">     
+    <main className="relative h-screen w-full overflow-hidden flex flex-col justify-between bg-black-3">
       {children}
     </main>
   );

@@ -58,6 +58,9 @@ export default function Header() {
           </div>
         )}
       </div>
+      <h1 className="text-[28px] font-bold text-white-1 absolute left-1/2 transform -translate-x-1/2">
+    WHISPER
+  </h1>
     </header>
   );
 }
