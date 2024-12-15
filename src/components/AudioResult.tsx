@@ -156,19 +156,21 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const handleSpeakerEdit = () => {
     setIsModalOpen(false);
     setIsLoading(true);
-    
-    const allSpeakerNames = result?.speaker_list.map((name: string, index: number) => {
-      return (speakerValue as SpeakerValueType)[`speaker_${index}`] || name;
+
+    const allSpeakerNames = result?.speaker_list.map((name: string) => {
+      return (speakerValue as SpeakerValueType)[name] || name; 
     });
-  
+
     const payload = {
       json_path: result?.json_file,
-      speaker_name_updates: allSpeakerNames.reduce((acc: any, name: string, index: number) => {
-        acc[`speaker_${index}`] = name;
-        return acc;
-      }, {}),
+      speaker_name_updates: allSpeakerNames.reduce(
+        (acc: any, updatedName: string, index: number) => {
+          acc[result?.speaker_list[index]] = updatedName; 
+          return acc;
+        },
+        {}
+      ),
     };
-
 
     updateSpeakerNames(payload.json_path, payload.speaker_name_updates)
       .then(async () => {
@@ -176,6 +178,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         const fetchedResult = response.data.result;
         if (fetchedResult) {
           setResult(fetchedResult);
+          setCurrentMeetingId(fetchedResult?.recording_id);
         } else {
           message.error("No results found for this transcription.");
         }

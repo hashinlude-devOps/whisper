@@ -39,15 +39,15 @@ const SpeakerCarousel = ({
         afterChange={handleAfterChange}
         className="rounded-lg"
       >
-        {noOfSpeakers?.map((item: any, index: number) => (
+        {noOfSpeakers?.map((item: string, index: number) => (
           <div key={index} className="flex flex-col items-center space-y-4">
             <div className="flex items-center space-x-4 w-full justify-center">
               <Input
-                placeholder={`Enter ${item} name`} 
+                placeholder={`Enter ${item} name`}
                 onChange={(e) => {
                   setSpeakerValue((prev: any) => ({
                     ...prev,
-                    [`speaker_${index}`]: e.target.value, 
+                    [item]: e.target.value, // Use the current speaker name as the key
                   }));
                 }}
               />
