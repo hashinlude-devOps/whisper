@@ -13,7 +13,6 @@ const ChatBox: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"all" | "current">("current");
   const [isSending, setIsSending] = useState(false);
 
-
   const switchTab = (tab: "all" | "current") => {
     setActiveTab(tab);
   };
@@ -39,7 +38,7 @@ const ChatBox: React.FC = () => {
 
   useEffect(() => {
     const fetchEmbeddingStatus = async () => {
-      if (currentMeetingId !==null) {
+      if (currentMeetingId !== null) {
         try {
           const response = await getEmbeddingStatus(currentMeetingId);
           const status = response?.data?.embedding_status;
@@ -94,11 +93,28 @@ const ChatBox: React.FC = () => {
             response.data.answer,
           ]);
         }
+      } else {
+        const defaultAnswer =
+          "Sorry, something went wrong. Please try again later.";
+        if (activeTab === "current") {
+          setCurrentMessages((prevMessages) => [
+            ...prevMessages,
+            defaultAnswer,
+          ]);
+        } else if (activeTab === "all") {
+          setAllMessages((prevMessages) => [...prevMessages, defaultAnswer]);
+        }
       }
 
       setIsSending(false);
     } catch (error) {
-      // console.error("Error sending message:", error);
+      const defaultAnswer =
+        "Sorry, something went wrong. Please try again later.";
+      if (activeTab === "current") {
+        setCurrentMessages((prevMessages) => [...prevMessages, defaultAnswer]);
+      } else if (activeTab === "all") {
+        setAllMessages((prevMessages) => [...prevMessages, defaultAnswer]);
+      }
       setIsSending(false);
     }
   };
@@ -109,7 +125,7 @@ const ChatBox: React.FC = () => {
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="z-20 text-white flex flex-col shrink-0 grow-0 justify-around 
+          className="z-20 text-white-1 flex flex-col shrink-0 grow-0 justify-around 
             fixed bottom-0 right-0 mb-5 mr-2 rounded-lg"
         >
           <div className="p-1 rounded-full border-4 border-white bg-blue-600">
@@ -159,25 +175,27 @@ const ChatBox: React.FC = () => {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex border-b bg-gray-100">
+          <div className="flex items-center justify-center bg-black-1 rounded-md px-2 py-2 shadow-sm hover:shadow-md transition-shadow cursor-pointer gap-2">
             <button
-              disabled={embeddingStatus !== "Completed"  || !currentMeetingId}
-              className={`flex-1 py-2 text-center bg-black-4 text-sm text-gray-200 ${
-                activeTab === "current" ? "border-b-4 border-gray-50" : ""
+              disabled={embeddingStatus !== "Completed" || !currentMeetingId}
+              className={`flex-1 py-2 text-center bg-black-2  rounded-md text-sm  ${
+                activeTab === "current" ? "text-blue-500" : "text-gray-400"
               } ${
                 embeddingStatus === "Completed" && currentMeetingId
                   ? "cursor-pointer"
                   : "cursor-not-allowed text-gray-500"
               }`}
               onClick={() =>
-                embeddingStatus === "Completed"  && currentMeetingId && switchTab("current")
+                embeddingStatus === "Completed" &&
+                currentMeetingId &&
+                switchTab("current")
               }
             >
               Current
             </button>
             <button
-              className={`flex-1 py-2 text-center bg-black-4 text-sm text-gray-200 ${
-                activeTab === "all" ? "border-b-4 border-gray-50" : ""
+              className={`flex-1 py-2 text-center bg-black-2 rounded-md text-sm cursor-pointer ${
+                activeTab === "all" ? "text-blue-500" : "text-gray-400"
               }`}
               onClick={() => switchTab("all")}
             >
@@ -208,7 +226,7 @@ const ChatBox: React.FC = () => {
                     <p
                       className={`${
                         isUserMessage
-                          ? "bg-blue-500 text-white"
+                          ? "bg-blue-500 text-white-1"
                           : "bg-gray-200 text-gray-700"
                       } rounded-lg py-2 px-4 inline-block max-w-[90%]`}
                     >
@@ -219,18 +237,31 @@ const ChatBox: React.FC = () => {
               })}
 
             {/* Display messages for All Tab */}
-            {activeTab === "all" && (
-              <div className="flex flex-col items-center justify-center h-full">
-                <img
-                  src="/progress.png" // Replace with your icon or animation path
-                  alt="Upcoming Feature"
-                  className="w-24 h-24 mb-4"
-                />
-                <p className="text-gray-500 text-center text-sm">
-                  This feature is coming soon! Stay tuned!
-                </p>
-              </div>
-            ) }
+            {activeTab === "all" &&
+              allMessages.map((message, index) => {
+                const isUserMessage = index % 2 === 0;
+
+                return (
+                  <div
+                    key={index}
+                    className={`mb-2 ${
+                      isUserMessage
+                        ? "text-right user-message"
+                        : "other-message"
+                    }`}
+                  >
+                    <p
+                      className={`${
+                        isUserMessage
+                          ? "bg-blue-500 text-white-1"
+                          : "bg-gray-200 text-gray-700"
+                      } rounded-lg py-2 px-4 inline-block max-w-[90%]`}
+                    >
+                      {message}
+                    </p>
+                  </div>
+                );
+              })}
           </div>
 
           {/* Input Section */}
@@ -238,32 +269,27 @@ const ChatBox: React.FC = () => {
             <input
               id="user-input"
               type="text"
-              placeholder={
-                activeTab === "all" ? "Type a message" : "Type a message"
-              }
-              className={`w-full px-3 py-2 border  bg-gray-100 rounded-l-md text-gray-700 focus:outline-none ${
-                activeTab === "all" ? "bg-gray-300 cursor-not-allowed" : ""
-              }`}
+              placeholder="Type a message"
+              className="w-full px-3 py-2 border  bg-gray-100 rounded-l-md text-gray-700 focus:outline-none "
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !isSending && activeTab !== "all") {
+                if (e.key === "Enter" && !isSending) {
                   handleSendMessage();
                   e.preventDefault();
                 }
               }}
-              disabled={activeTab === "all"}
-              autoComplete="off" 
+              autoComplete="off"
             />
             <button
               id="send-button"
-              className={`bg-blue-500 text-white px-4 py-2 rounded-r-md transition duration-300 ${
-                isSending || activeTab === "all"
+              className={`bg-blue-500 text-white-1 px-4 py-2 rounded-r-md transition duration-300 ${
+                isSending
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:bg-blue-600"
               }`}
               onClick={handleSendMessage}
-              disabled={isSending || activeTab === "all"}
+              disabled={isSending}
             >
               Send
             </button>
@@ -276,30 +302,17 @@ const ChatBox: React.FC = () => {
 
 export default ChatBox;
 
-// {activeTab === "all" &&
-//   allMessages.map((message, index) => {
-//     const isUserMessage = index % 2 === 0;
-
-//     return (
-//       <div
-//         key={index}
-//         className={`mb-2 ${
-//           isUserMessage
-//             ? "text-right user-message"
-//             : "other-message"
-//         }`}
-//       >
-//         <p
-//           className={`${
-//             isUserMessage
-//               ? "bg-blue-500 text-white"
-//               : "bg-gray-200 text-gray-700"
-//           } rounded-lg py-2 px-4 inline-block max-w-[90%]`}
-//         >
-//           {message}
-//         </p>
-//       </div>
-//     );
-//   })
-//   }
-// </div>
+{
+  /* {activeTab === "all" && (
+              <div className="flex flex-col items-center justify-center h-full">
+                <img
+                  src="/progress.png" // Replace with your icon or animation path
+                  alt="Upcoming Feature"
+                  className="w-24 h-24 mb-4"
+                />
+                <p className="text-gray-500 text-center text-sm">
+                  This feature is coming soon! Stay tuned!
+                </p>
+              </div>
+            ) } */
+}
