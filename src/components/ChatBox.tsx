@@ -235,7 +235,6 @@ const ChatBox: React.FC = () => {
           </div>
 
           {/* Input Section */}
-          {/* Input Section */}
           <div className="p-4 border-t flex">
             <input
               id="user-input"
@@ -243,8 +242,8 @@ const ChatBox: React.FC = () => {
               placeholder={
                 activeTab === "all" ? "Type a message" : "Type a message"
               }
-              className={`w-full px-3 py-2 border rounded-l-md text-gray-700 focus:outline-none ${
-                activeTab === "all" ? "bg-gray-200 cursor-not-allowed" : ""
+              className={`w-full px-3 py-2 border  bg-gray-100 rounded-l-md text-gray-700 focus:outline-none ${
+                activeTab === "all" ? "bg-gray-300 cursor-not-allowed" : ""
               }`}
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
@@ -255,6 +254,7 @@ const ChatBox: React.FC = () => {
                 }
               }}
               disabled={activeTab === "all"}
+              autoComplete="off" 
             />
             <button
               id="send-button"

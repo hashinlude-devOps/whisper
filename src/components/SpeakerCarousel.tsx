@@ -3,7 +3,6 @@ import { Carousel, Button } from "antd";
 import { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 
-
 const SpeakerCarousel = ({
   noOfSpeakers,
   setSpeakerValue,
@@ -25,7 +24,7 @@ const SpeakerCarousel = ({
   };
 
   const handleAfterChange = (current: number) => {
-    setCurrentIndex(current + 1); 
+    setCurrentIndex(current + 1);
   };
 
   return (
@@ -35,10 +34,14 @@ const SpeakerCarousel = ({
       </div>
       <Carousel
         ref={carouselRef}
-        dots={false} 
+        dots={false}
         draggable
         afterChange={handleAfterChange}
+        beforeChange={(current, next) => {
+          carouselRef.current?.goTo(next); 
+        }}
         className="rounded-lg"
+        key={currentIndex} 
       >
         {noOfSpeakers?.map((item: any, index: number) => (
           <div key={index} className="flex flex-col items-center space-y-4">
@@ -51,6 +54,7 @@ const SpeakerCarousel = ({
                     [item]: e.target.value,
                   }));
                 }}
+                onFocus={() => carouselRef.current?.goTo(index)}
               />
               <Button
                 className="text-white-1 border-none bg-blue-600 hover:bg-blue-700"
@@ -68,25 +72,26 @@ const SpeakerCarousel = ({
           <div
             className="text-white-1 hover:text-white-2 border-none w-full"
             style={{
-              display: currentIndex === 1 ? "none" : "block", 
+              display: currentIndex === 1 ? "none" : "block",
             }}
             onClick={handlePrev}
-            // disabled={currentIndex === 1} 
+            // disabled={currentIndex === 1}
           >
-            <ChevronLeftIcon className="h-5 w-5" /> 
+            <ChevronLeftIcon className="h-5 w-5" />
           </div>
         </div>
 
         {/* Next Button */}
         <div className="flex-1 text-right">
-        <div
+          <div
             className="text-white-1 hover:text-white-2 border-none w-full"
             style={{
               display: currentIndex === noOfSpeakers.length ? "none" : "block",
             }}
-            onClick={handleNext}>
+            onClick={handleNext}
+          >
             <div className="flex justify-end w-full">
-              <ChevronRightIcon className="h-5 w-5" /> 
+              <ChevronRightIcon className="h-5 w-5" />
             </div>
           </div>
         </div>
