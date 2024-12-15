@@ -154,17 +154,13 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   };
 
   const handleSpeakerEdit = () => {
-    console.log(speakerValue);
-    console.log(result?.speaker_list)
     setIsModalOpen(false);
     setIsLoading(true);
     
     const allSpeakerNames = result?.speaker_list.map((name: string, index: number) => {
-      // Ensure speakerValue is properly typed and fallback to the original name if not updated
       return (speakerValue as SpeakerValueType)[`speaker_${index}`] || name;
     });
   
-    // Construct the payload
     const payload = {
       json_path: result?.json_file,
       speaker_name_updates: allSpeakerNames.reduce((acc: any, name: string, index: number) => {
@@ -173,7 +169,6 @@ const AudioResultComponent = ({ id }: { id: number }) => {
       }, {}),
     };
 
-    console.log("Payload:", payload); // Debugging
 
     updateSpeakerNames(payload.json_path, payload.speaker_name_updates)
       .then(async () => {
