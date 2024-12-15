@@ -133,7 +133,7 @@ const ChatBox: React.FC = () => {
       {isOpen && (
         <div
           id="chat-container"
-          className="fixed bottom-4 right-4 w-96 bg-black-2 shadow-md rounded-lg max-w-lg"
+          className="fixed bottom-4 right-4 w-96 sm:max-w-full xs:max-w-full md:max-w-96 lg:max-w-lg max-w-xs bg-black-2 shadow-md rounded-lg"
         >
           <div className="p-4 border-b bg-blue-500 text-white-1 rounded-t-lg flex justify-between items-center">
             <p className="text-lg font-semibold">Whisper Bot</p>
