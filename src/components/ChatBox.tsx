@@ -13,6 +13,7 @@ const ChatBox: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"all" | "current">("current");
   const [isSending, setIsSending] = useState(false);
 
+
   const switchTab = (tab: "all" | "current") => {
     setActiveTab(tab);
   };
@@ -38,7 +39,7 @@ const ChatBox: React.FC = () => {
 
   useEffect(() => {
     const fetchEmbeddingStatus = async () => {
-      if (currentMeetingId) {
+      if (currentMeetingId !==null) {
         try {
           const response = await getEmbeddingStatus(currentMeetingId);
           const status = response?.data?.embedding_status;
@@ -49,7 +50,7 @@ const ChatBox: React.FC = () => {
             setActiveTab("all");
           }
         } catch (error) {
-          console.error("Error fetching embedding status:", error);
+          // console.error("Error fetching embedding status:", error);
           setActiveTab("all");
         }
       } else {
@@ -97,7 +98,7 @@ const ChatBox: React.FC = () => {
 
       setIsSending(false);
     } catch (error) {
-      console.error("Error sending message:", error);
+      // console.error("Error sending message:", error);
       setIsSending(false);
     }
   };
@@ -160,16 +161,16 @@ const ChatBox: React.FC = () => {
           {/* Tab Navigation */}
           <div className="flex border-b bg-gray-100">
             <button
-              disabled={embeddingStatus !== "Completed"}
+              disabled={embeddingStatus !== "Completed"  || !currentMeetingId}
               className={`flex-1 py-2 text-center bg-black-4 text-sm text-gray-200 ${
                 activeTab === "current" ? "border-b-4 border-gray-50" : ""
               } ${
-                embeddingStatus === "Completed"
+                embeddingStatus === "Completed" && currentMeetingId
                   ? "cursor-pointer"
                   : "cursor-not-allowed text-gray-500"
               }`}
               onClick={() =>
-                embeddingStatus === "Completed" && switchTab("current")
+                embeddingStatus === "Completed"  && currentMeetingId && switchTab("current")
               }
             >
               Current
