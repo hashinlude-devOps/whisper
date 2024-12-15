@@ -20,6 +20,7 @@ export default function History() {
     refreshKey,
     isMenuOpen,
     setIsMenuOpen,
+    setCurrentMeetingId
   } = useSidebar();
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -106,6 +107,7 @@ export default function History() {
   const uploadnew = () => {
     if (isSmallScreen) setIsMenuOpen(false);
     setActiveItem(null);
+    setCurrentMeetingId(null);
     setResetKey((prevKey: any) => prevKey + 1);
     router.push("/");
   };
