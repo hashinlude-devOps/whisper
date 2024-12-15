@@ -170,7 +170,7 @@ const CustomAudioPlayer = ({
           </div>
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center mr-10">
           <Image
             src={isMuted ? "/icons/unmute.svg" : "/icons/mute.svg"}
             width={24}
