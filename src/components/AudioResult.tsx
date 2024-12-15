@@ -178,7 +178,6 @@ const AudioResultComponent = ({ id }: { id: number }) => {
         const fetchedResult = response.data.result;
         if (fetchedResult) {
           setResult(fetchedResult);
-          setCurrentMeetingId(fetchedResult?.recording_id);
         } else {
           message.error("No results found for this transcription.");
         }

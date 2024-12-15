@@ -81,7 +81,6 @@ const ChatBox: React.FC = () => {
       }
 
       if (response && response.data?.answer) {
-        // Add the API response (bot's answer) to the appropriate tab
         if (activeTab === "current") {
           setCurrentMessages((prevMessages) => [
             ...prevMessages,
