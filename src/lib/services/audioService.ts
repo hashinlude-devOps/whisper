@@ -171,7 +171,7 @@ export const globalSearch = async (
   query: string,
 ): Promise<Response> => {
   try {
-    const response = await apiClient<Response>("/global-search", {
+    const response = await apiClient<Response>("/global-query-search", {
       method: "POST",
       body: {
         query: query,
