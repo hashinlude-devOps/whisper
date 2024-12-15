@@ -135,7 +135,7 @@ const ChatBox: React.FC = () => {
           className="fixed bottom-4 right-4 w-96 bg-black-2 shadow-md rounded-lg max-w-lg"
         >
           <div className="p-4 border-b bg-blue-500 text-white-1 rounded-t-lg flex justify-between items-center">
-            <p className="text-lg font-semibold">Admin Bot</p>
+            <p className="text-lg font-semibold">Whisper Bot</p>
             <button
               onClick={toggleChat}
               className="text-white-1 hover:text-gray-400 focus:outline-none focus:text-gray-400"
