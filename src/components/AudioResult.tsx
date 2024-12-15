@@ -9,8 +9,6 @@ import {
   updateRecordingName,
   updateSpeakerNames,
 } from "@/lib/services/audioService";
-import CalendarIcon from "@heroicons/react/20/solid/CalendarIcon";
-import ClockIcon from "@heroicons/react/20/solid/ClockIcon";
 import { HiDownload } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 import { Button, Input, message, Modal, Tooltip } from "antd";
@@ -23,8 +21,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
   const [speakerValue, setSpeakerValue] = React.useState([{}]);
   const [loading, setIsLoading] = React.useState(false);
-  const { setActiveItem } = useSidebar();
-  const { refreshHistory } = useSidebar();
+  const { setActiveItem ,refreshHistory, setCurrentMeetingId} = useSidebar();
 
   const [isFileNameEdit, setIsFileNameEdit] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -85,6 +82,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
   useEffect(() => {
     setActiveItem(id);
+    setCurrentMeetingId(id)
     return () => {
       setActiveItem(null);
     };

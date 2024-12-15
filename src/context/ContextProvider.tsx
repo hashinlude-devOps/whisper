@@ -13,6 +13,7 @@ export const ContextProvider = ({
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeItem, setActiveItem] = useState<number | null>(null);
   const [resetKey, setResetKey] = useState(0);
+  const [currentMeetingId, setCurrentMeetingId] = useState<string | null>(null);
 
   const checkScreenSize = () => {
     if (window.innerWidth <1025) {
@@ -46,6 +47,8 @@ export const ContextProvider = ({
         setActiveItem,
         resetKey,
         setResetKey,
+        currentMeetingId,
+        setCurrentMeetingId
       }}
     >
       {children}

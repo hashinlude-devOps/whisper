@@ -11,13 +11,14 @@ import Loader from "@/components/Loader";
 import toast from "react-hot-toast";
 import { HiDownload } from "react-icons/hi";
 import {
-  generateDOCXFiles,
   generateMOMDOCXFile,
 } from "@/components/PdfGenerator";
+import { useSidebar } from "@/context/ContextProvider";
 
 export default function MeetingMinutes() {
   const [result, setResult] = React.useState<any>(null);
   const [isDataFetched, setIsDataFetched] = useState(false);
+  const { setCurrentMeetingId} = useSidebar();
 
   const params = useParams();
   const id = params?.id;
@@ -59,6 +60,7 @@ export default function MeetingMinutes() {
 
   useEffect(() => {
     fetchMeetingMinutesData();
+    setCurrentMeetingId(id);
   }, [id]);
 
   return (

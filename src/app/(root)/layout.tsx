@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import ProtectedPage from "@/context/ProtectedPage";
+import ChatBox from "@/components/ChatBox";
 
 export default async function RootLayout({
   children,
@@ -25,7 +26,6 @@ export default async function RootLayout({
         <div className="flex h-screen">
           {/* Sidebar/History */}
           <History />
-
           {/* Main Content */}
           <div className="flex-1 flex flex-col overflow-hidden">
             <Header />
@@ -33,7 +33,9 @@ export default async function RootLayout({
               {children}
             </main>
           </div>
-        </div>{" "}
+        </div>
+         {/* Chat Box */}
+         <ChatBox />
       </SidebarProviderWrapper>
     </>
   );

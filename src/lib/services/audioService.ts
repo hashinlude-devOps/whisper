@@ -133,3 +133,53 @@ export const viewMeetingMinutes = async (id: string,): Promise<Response> => {
 
 
 
+export const getEmbeddingStatus = async (id: string,): Promise<Response> => {
+  try {
+    const response = await apiClient<Response>(`/get-embedding-status/${id}`, {
+      method: "GET",
+    });
+    return (response); 
+  } catch (error) {
+    console.error("Error fetching status:", error);
+    throw error; 
+  }
+};
+
+
+
+export const querySearch = async (
+  query: string,
+  id: string
+): Promise<Response> => {
+  try {
+    const response = await apiClient<Response>("/query-search", {
+      method: "POST",
+      body: {
+        query: query,
+        recording_id: id,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error searching:", error);
+    throw error;
+  }
+};
+
+
+export const globalSearch = async (
+  query: string,
+): Promise<Response> => {
+  try {
+    const response = await apiClient<Response>("/global-search", {
+      method: "POST",
+      body: {
+        query: query,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error searching:", error);
+    throw error;
+  }
+};
