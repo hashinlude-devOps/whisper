@@ -219,7 +219,6 @@ const ChatBox: React.FC = () => {
               })}
 
             {/* Display messages for All Tab */}
-            {/* Display messages for All Tab */}
             {activeTab === "all" && (
               <div className="flex flex-col items-center justify-center h-full">
                 <img
