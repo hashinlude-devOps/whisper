@@ -20,7 +20,7 @@ export default function History() {
     refreshKey,
     isMenuOpen,
     setIsMenuOpen,
-    setCurrentMeetingId
+    setCurrentMeetingId,
   } = useSidebar();
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -179,10 +179,16 @@ export default function History() {
                         key={item.id}
                         className={`flex flex-col space-y-1 p-2 ${
                           activeItem === item.id
-                            ? "bg-black-2 rounded-md"
+                            ? "bg-black-2 rounded-md cursor-pointer"
                             : item.recording_status === "Completed" &&
-                              "hover:bg-black-2"
+                              "hover:bg-black-2 cursor-pointer"
                         } hover:rounded-md`}
+                        onClick={() => {
+                          if (item.recording_status === "Completed") {
+                            setActiveItem(item.id);
+                            handleHistoryClick(item.id);
+                          }
+                        }}
                       >
                         <Tooltip
                           title={
@@ -195,18 +201,11 @@ export default function History() {
                         >
                           <div className="relative">
                             <span
-                              key={item.id}
-                              className={`text-sm font-medium cursor-pointer ${
+                              className={`text-sm font-medium  ${
                                 activeItem === item.id
                                   ? "text-gray-100 font-semibold"
                                   : "hover:text-gray-200"
                               }`}
-                              onClick={() => {
-                                if (item.recording_status === "Completed") {
-                                  setActiveItem(item.id);
-                                  handleHistoryClick(item.id);
-                                }
-                              }}
                             >
                               {item.recordingname
                                 .split("/")
@@ -218,9 +217,9 @@ export default function History() {
                                 {new Date(
                                   item.timestamp + " UTC"
                                 ).toLocaleDateString("en-US", {
-                                  month: "short", 
-                                  day: "numeric", 
-                                  year: "numeric", 
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
                                 })}
                               </span>
 
