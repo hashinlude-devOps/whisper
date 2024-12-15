@@ -106,8 +106,8 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
       <div className="w-full max-w-lg bg-black-3 bg-opacity-10 backdrop-filter backdrop-blur-lg border border-gray-50 border-opacity-25 rounded-lg p-8 shadow-lg">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <h1 className="text-2xl font-bold text-center mb-4 text-white-1">
-              {isSignin ? "Log In" : "Sign Up"}
+            <h1 className="text-[26px] font-bold text-center mb-4 text-white-1">
+             WHISPER
             </h1>
 
             {!isSignin && (
