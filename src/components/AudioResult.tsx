@@ -19,9 +19,9 @@ import { generateDOCXFiles } from "./PdfGenerator";
 
 const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
-  const [speakerValue, setSpeakerValue] = React.useState([{}]);
+  const [speakerValue, setSpeakerValue] = React.useState({});
   const [loading, setIsLoading] = React.useState(false);
-  const { setActiveItem ,refreshHistory, setCurrentMeetingId} = useSidebar();
+  const { setActiveItem, refreshHistory, setCurrentMeetingId } = useSidebar();
 
   const [isFileNameEdit, setIsFileNameEdit] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -82,7 +82,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
   useEffect(() => {
     setActiveItem(id);
-    setCurrentMeetingId(id)
+    setCurrentMeetingId(id);
     return () => {
       setActiveItem(null);
     };
@@ -149,10 +149,33 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     }
   };
 
+  type SpeakerValueType = {
+    [key: string]: string;
+  };
+
   const handleSpeakerEdit = () => {
+    console.log(speakerValue);
+    console.log(result?.speaker_list)
     setIsModalOpen(false);
     setIsLoading(true);
-    updateSpeakerNames(result?.json_file, speakerValue)
+    
+    const allSpeakerNames = result?.speaker_list.map((name: string, index: number) => {
+      // Ensure speakerValue is properly typed and fallback to the original name if not updated
+      return (speakerValue as SpeakerValueType)[`speaker_${index}`] || name;
+    });
+  
+    // Construct the payload
+    const payload = {
+      json_path: result?.json_file,
+      speaker_name_updates: allSpeakerNames.reduce((acc: any, name: string, index: number) => {
+        acc[`speaker_${index}`] = name;
+        return acc;
+      }, {}),
+    };
+
+    console.log("Payload:", payload); // Debugging
+
+    updateSpeakerNames(payload.json_path, payload.speaker_name_updates)
       .then(async () => {
         const response = await getTranscription(id.toString());
         const fetchedResult = response.data.result;
