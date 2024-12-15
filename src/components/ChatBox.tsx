@@ -219,7 +219,7 @@ const ChatBox: React.FC = () => {
 
             {/* Display messages for All Tab */}
             {/* Display messages for All Tab */}
-            {activeTab === "all" ? (
+            {activeTab === "all" && (
               <div className="flex flex-col items-center justify-center h-full">
                 <img
                   src="/progress.png" // Replace with your icon or animation path
@@ -230,32 +230,7 @@ const ChatBox: React.FC = () => {
                   This feature is coming soon! Stay tuned!
                 </p>
               </div>
-            ) : (
-              currentMessages.map((message, index) => {
-                const isUserMessage = index % 2 === 0;
-
-                return (
-                  <div
-                    key={index}
-                    className={`mb-2 ${
-                      isUserMessage
-                        ? "text-right user-message"
-                        : "other-message"
-                    }`}
-                  >
-                    <p
-                      className={`${
-                        isUserMessage
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 text-gray-700"
-                      } rounded-lg py-2 px-4 inline-block max-w-[90%]`}
-                    >
-                      {message}
-                    </p>
-                  </div>
-                );
-              })
-            )}
+            ) }
           </div>
 
           {/* Input Section */}
