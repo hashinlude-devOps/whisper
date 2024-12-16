@@ -21,7 +21,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
   const [noOfSpeakers, setNoOfSpeakers] = React.useState<any>();
   const [speakerValue, setSpeakerValue] = React.useState({});
   const [loading, setIsLoading] = React.useState(false);
-  const { setActiveItem, refreshHistory, setCurrentMeetingId } = useSidebar();
+  const { setActiveItem, refreshHistory, setCurrentMeetingId, triggerFetchEmbeddingStatus } = useSidebar();
 
   const [isFileNameEdit, setIsFileNameEdit] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -117,8 +117,15 @@ const AudioResultComponent = ({ id }: { id: number }) => {
     }
   };
 
+  useEffect(() => {
+    const activeSegment = document.querySelector(".highlighted-segment");
+    activeSegment?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [currentAudioTime]);
+  
+
+
   const toggleTranslation = () => {
-    setShowTranslation(!showTranslation); // Toggle translation visibility
+    setShowTranslation(!showTranslation); 
   };
 
   const handleSpeakerAudioPlay = (speaker: string) => {
@@ -130,7 +137,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
 
     if (speakerSegment) {
       const { start_time, end_time } = speakerSegment;
-      const duration = (end_time - start_time) * 1000; // Convert to milliseconds
+      const duration = (end_time - start_time) * 1000; 
 
       audioRef.current.currentTime = start_time;
       audioRef.current.play();
@@ -176,6 +183,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
       .then(async () => {
         const response = await getTranscription(id.toString());
         const fetchedResult = response.data.result;
+        triggerFetchEmbeddingStatus();
         if (fetchedResult) {
           setResult(fetchedResult);
         } else {
@@ -356,7 +364,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                     const startTime = segment.start_time;
                     const endTime = segment.end_time;
                     const elapsedTime = formatTime(index === 0 ? 0 : startTime);
-                    const bufferTime = 0.3;
+                    const bufferTime = 0.1;
                     const isHighlighted =
                       currentAudioTime >= startTime - bufferTime &&
                       currentAudioTime <= endTime + bufferTime;
@@ -365,7 +373,7 @@ const AudioResultComponent = ({ id }: { id: number }) => {
                       <tr
                         key={index}
                         className={`table-row transition-colors duration-300 ${
-                          isHighlighted ? "bg-black-2" : "hover:bg-black-2"
+                          isHighlighted ? "bg-black-5 highlighted-segment" : "hover:bg-black-2"
                         }`}
                       >
                         <td className="px-4 py-2 text-blue-500">

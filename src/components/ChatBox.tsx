@@ -17,7 +17,7 @@ const ChatBox: React.FC = () => {
     setActiveTab(tab);
   };
 
-  const { currentMeetingId } = useSidebar();
+  const { currentMeetingId,embeddingStatusKey } = useSidebar();
   const [embeddingStatus, setEmbeddingStatus] = useState<string | null>(null);
   const chatboxRef = useRef<HTMLDivElement>(null);
 
@@ -58,7 +58,7 @@ const ChatBox: React.FC = () => {
     };
 
     fetchEmbeddingStatus();
-  }, [currentMeetingId]);
+  }, [embeddingStatusKey,currentMeetingId]);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 const Context = createContext<any>(null);
 
@@ -14,6 +14,7 @@ export const ContextProvider = ({
   const [activeItem, setActiveItem] = useState<number | null>(null);
   const [resetKey, setResetKey] = useState(0);
   const [currentMeetingId, setCurrentMeetingId] = useState<string | null>(null);
+  const [embeddingStatusKey, setEmbeddingStatusKey] = useState(0); 
 
   const checkScreenSize = () => {
     if (window.innerWidth <1025) {
@@ -26,6 +27,10 @@ export const ContextProvider = ({
   const refreshHistory = () => {
     setRefreshKey((prev) => prev + 1); // Increment key to trigger a refresh
   };
+
+  const triggerFetchEmbeddingStatus = useCallback(() => {
+    setEmbeddingStatusKey((prev) => prev + 1);
+  }, []);
 
   useEffect(() => {
     checkScreenSize();
@@ -48,7 +53,9 @@ export const ContextProvider = ({
         resetKey,
         setResetKey,
         currentMeetingId,
-        setCurrentMeetingId
+        setCurrentMeetingId,
+        embeddingStatusKey,
+        triggerFetchEmbeddingStatus,
       }}
     >
       {children}
