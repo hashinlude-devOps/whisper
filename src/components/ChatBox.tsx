@@ -38,19 +38,24 @@ const ChatBox: React.FC = () => {
   }, [currentMessages, allMessages]);
 
   useEffect(() => {
+    let timeoutId: any;
+
     const fetchEmbeddingStatus = async () => {
       if (currentMeetingId !== null) {
         try {
           const response = await getEmbeddingStatus(currentMeetingId);
           const status = response?.data?.embedding_status;
           setEmbeddingStatus(status);
+
           if (status === "Completed") {
             setActiveTab("current");
           } else {
             setActiveTab("all");
+            // Retry fetching status after 10 seconds
+            timeoutId = setTimeout(fetchEmbeddingStatus, 10000);
           }
         } catch (error) {
-          // console.error("Error fetching embedding status:", error);
+          console.error("Error fetching embedding status:", error);
           setActiveTab("all");
         }
       } else {
@@ -59,6 +64,13 @@ const ChatBox: React.FC = () => {
     };
 
     fetchEmbeddingStatus();
+
+    return () => {
+      // Clear timeout when the effect is cleaned up
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [embeddingStatusKey, currentMeetingId]);
 
   const handleSendMessage = async () => {
