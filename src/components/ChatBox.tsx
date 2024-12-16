@@ -12,12 +12,13 @@ const ChatBox: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"all" | "current">("current");
   const [isSending, setIsSending] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const switchTab = (tab: "all" | "current") => {
     setActiveTab(tab);
   };
 
-  const { currentMeetingId,embeddingStatusKey } = useSidebar();
+  const { currentMeetingId, embeddingStatusKey } = useSidebar();
   const [embeddingStatus, setEmbeddingStatus] = useState<string | null>(null);
   const chatboxRef = useRef<HTMLDivElement>(null);
 
@@ -58,7 +59,7 @@ const ChatBox: React.FC = () => {
     };
 
     fetchEmbeddingStatus();
-  }, [embeddingStatusKey,currentMeetingId]);
+  }, [embeddingStatusKey, currentMeetingId]);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
@@ -71,7 +72,7 @@ const ChatBox: React.FC = () => {
     } else if (activeTab === "all") {
       setAllMessages([...allMessages, query]);
     }
-
+    setIsTyping(true);
     try {
       let response;
       if (activeTab === "current" && currentMeetingId) {
@@ -104,7 +105,7 @@ const ChatBox: React.FC = () => {
           setAllMessages((prevMessages) => [...prevMessages, defaultAnswer]);
         }
       }
-
+      setIsTyping(false);
       setIsSending(false);
     } catch (error) {
       const defaultAnswer =
@@ -115,6 +116,7 @@ const ChatBox: React.FC = () => {
         setAllMessages((prevMessages) => [...prevMessages, defaultAnswer]);
       }
       setIsSending(false);
+      setIsTyping(false);
     }
   };
 
@@ -207,7 +209,6 @@ const ChatBox: React.FC = () => {
             className="p-4 h-96 overflow-y-auto hide-scrollable"
             ref={chatboxRef}
           >
-            {/* Display messages for Current Tab */}
             {activeTab === "current" &&
               currentMessages.map((message, index) => {
                 // Check if this is the user message
@@ -235,7 +236,6 @@ const ChatBox: React.FC = () => {
                 );
               })}
 
-            {/* Display messages for All Tab */}
             {activeTab === "all" &&
               allMessages.map((message, index) => {
                 const isUserMessage = index % 2 === 0;
@@ -261,9 +261,18 @@ const ChatBox: React.FC = () => {
                   </div>
                 );
               })}
+
+            {isTyping && (
+              <div className="mb-1 text-left other-message ">
+                <p className="bg-gray-200 text-gray-700 rounded-lg py-1 px-2 inline-block max-w-[90%]">
+                  <span className="inline-block w-2 h-2 bg-gray-600 rounded-full animate-bounce delay-75 mr-1"></span>
+                  <span className="inline-block w-2 h-2 bg-gray-600 rounded-full animate-bounce delay-150 mr-1"></span>
+                  <span className="inline-block w-2 h-2 bg-gray-600 rounded-full animate-bounce delay-300"></span>
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Input Section */}
           <div className="p-4 border-t flex">
             <input
               id="user-input"
