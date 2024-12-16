@@ -77,14 +77,14 @@ const AuthForm = ({ initialType = "signin" }: { initialType?: AuthType }) => {
           setUploadStatus("Incorrect email or password.");
           toast.error(result.error);
         } else {
-          toast.success("Login successful!");
+          // toast.success("Login successful!");
           router.push("/");
         }
       } else {
         const response = await signup(values);
 
         if (response.status === 200) {
-          toast.success("Registration successful! Please log in.");
+          // toast.success("Registration successful! Please log in.");
           router.push("/sign-in");
         } else {
           setUploadStatus(response.data?.error);

@@ -34,7 +34,7 @@ export default function RootLayout({ children }: any) {
           <AntdRegistry>
             <ConfigProvider theme={themeConfig}>
               {/* Apply the custom theme to Ant Design components */}
-              <Toaster position="bottom-right" />
+              <Toaster position="top-right" />
               {children}
             </ConfigProvider>
           </AntdRegistry>

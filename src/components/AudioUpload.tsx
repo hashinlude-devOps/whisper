@@ -111,6 +111,9 @@ export default function AudioUpload() {
       const fetchedResult = result.data;
 
       if (result.status === 202) {
+        toast.success("File successfully uploaded.", {
+          duration: 5000,
+        });
         refreshHistory();
         setCurrentStep(2);
         seterrorStatus(null)
@@ -127,7 +130,9 @@ export default function AudioUpload() {
 
           if (recordingStatus === "completed") {
             setCurrentStep(3);
-
+            toast.success(`Processing completed.`, {
+              duration: 5000,
+            });
             router.push(`/result/${statusResponse.data.recording_id}`);
             refreshHistory();
             setIsProgressVisible(false);
@@ -153,6 +158,9 @@ export default function AudioUpload() {
                   retryStatusResponse.data.recording_status.toLowerCase();
 
                 if (retryRecordingStatus === "completed") {
+                  toast.success(`Processing completed.`, {
+                    duration: 5000,
+                  });
                   clearInterval(checkStatusInterval);
                   setCurrentStep(3);
                   router.push(
