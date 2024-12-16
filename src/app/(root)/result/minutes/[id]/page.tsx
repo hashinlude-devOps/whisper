@@ -6,19 +6,17 @@ import {
   fetchMeetingMinutes,
   viewMeetingMinutes,
 } from "@/lib/services/audioService";
-import { message, Tooltip } from "antd";
+import { Button, message, Tooltip } from "antd";
 import Loader from "@/components/Loader";
 import toast from "react-hot-toast";
 import { HiDownload } from "react-icons/hi";
-import {
-  generateMOMDOCXFile,
-} from "@/components/PdfGenerator";
+import { generateMOMDOCXFile } from "@/components/PdfGenerator";
 import { useSidebar } from "@/context/ContextProvider";
 
 export default function MeetingMinutes() {
   const [result, setResult] = React.useState<any>(null);
   const [isDataFetched, setIsDataFetched] = useState(false);
-  const { setCurrentMeetingId} = useSidebar();
+  const { setCurrentMeetingId } = useSidebar();
 
   const params = useParams();
   const id = params?.id;
@@ -53,6 +51,31 @@ export default function MeetingMinutes() {
         duration: 5000,
       });
       message.error("An error occurred while fetching meeting minutes.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegenerate = async () => {
+    if (!id) {
+      message.error("Invalid meeting ID.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetchMeetingMinutes(id.toString());
+      if (response?.data) {
+        setResult(response.data);
+      } else {
+        toast.error("No results found for this transcription.", {
+          duration: 5000,
+        });
+      }
+    } catch (error) {
+      toast.error("An error occurred while regenerating meeting minutes.", {
+        duration: 5000,
+      });
     } finally {
       setLoading(false);
     }
@@ -96,18 +119,26 @@ export default function MeetingMinutes() {
 
               {/* Right-Aligned Download Button */}
               <div className="my-4 md:my-0">
-                <Tooltip title="Download">
-                  <div className="flex gap-3 flex-row ml-auto">
-                    <div className="flex items-center space-x-1 cursor-pointer">
-                      <HiDownload
-                        className="h-7 w-7 text-gray-50"
-                        onClick={() =>
-                          generateMOMDOCXFile(result?.meeting_minutes)
-                        }
-                      />
+                <div className="flex gap-3 flex-row">
+                  <Button
+                    className="text-white-1 border-none bg-blue-600 hover:bg-blue-700"
+                    onClick={handleRegenerate}
+                  >
+                    Regenerate
+                  </Button>
+                  <Tooltip title="Download">
+                    <div className="flex gap-3 flex-row ml-auto">
+                      <div className="flex items-center space-x-1 cursor-pointer">
+                        <HiDownload
+                          className="h-7 w-7 text-gray-50"
+                          onClick={() =>
+                            generateMOMDOCXFile(result?.meeting_minutes)
+                          }
+                        />
+                      </div>
                     </div>
-                  </div>
-                </Tooltip>
+                  </Tooltip>
+                </div>
               </div>
             </div>
 
