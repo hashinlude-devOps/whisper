@@ -92,7 +92,7 @@ export default function MeetingMinutes() {
         <Loader />
       ) : (
         result && (
-          <div className="flex flex-col space-y-4 p-6 flex-1 mb-4 bg-black text-white-1 xl:ml-[16rem] h-full overflow-y-auto .hide-scrollable ">
+          <div className="flex flex-col space-y-4 p-6 flex-1 mb-4 bg-black text-white-1 xl:ml-[16rem] h-full overflow-y-auto .hide-scrollable">
             <div className="flex items-center justify-between">
               {/* Left Button */}
               <Tooltip title="View Recording Details">
@@ -142,13 +142,7 @@ export default function MeetingMinutes() {
               </div>
             </div>
 
-            <div>
-              Number of speakers
-              <span className="m-5 font-bold text-2xl text-blue-500">
-                {result?.meeting_minutes?.no_of_speakers}
-              </span>
-            </div>
-
+            {/* Attendees & Important Dates */}
             <div className="flex flex-col md:flex-row gap-4">
               <div className="p-4 bg-black-1 rounded-lg shadow-lg w-full sm:w-[50%]">
                 <h3 className="text-lg font-semibold mb-3 text-white-1">
@@ -156,7 +150,7 @@ export default function MeetingMinutes() {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {result?.meeting_minutes?.attendees.map(
-                    (attendee: string, index: number) => (
+                    (attendee: any, index: any) => (
                       <span
                         key={index}
                         className="px-3 py-1 bg-yellow-500 text-gray-900 text-sm font-medium rounded"
@@ -167,14 +161,15 @@ export default function MeetingMinutes() {
                   )}
                 </div>
               </div>
+
               <div className="p-4 bg-black-1 rounded-lg shadow-lg w-full sm:w-[50%]">
                 <h3 className="text-lg font-semibold mb-3 text-white-1">
                   Important Dates
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {result?.meeting_minutes?.imp_dates?.length > 0 ? (
+                  {result?.meeting_minutes?.imp_dates.length > 0 ? (
                     result?.meeting_minutes?.imp_dates.map(
-                      (date: string, index: number) => (
+                      (date: any, index: any) => (
                         <span
                           key={index}
                           className="px-3 py-1 bg-yellow-500 text-black-1 text-sm font-medium rounded"
@@ -191,14 +186,16 @@ export default function MeetingMinutes() {
                 </div>
               </div>
             </div>
+
+            {/* Key Events */}
             <div className="p-4 bg-black-1 rounded-lg shadow-lg w-full">
-              <h3 className="text-lg font-semibold mb-3 text-white-500">
+              <h3 className="text-lg font-semibold mb-3 text-white-1">
                 Key Events
               </h3>
               <div className="flex flex-wrap gap-2">
                 {result?.meeting_minutes?.key_events.length > 0 ? (
                   result?.meeting_minutes?.key_events.map(
-                    (event: string, index: number) => (
+                    (event: any, index: any) => (
                       <span
                         key={index}
                         className="px-3 py-1 bg-yellow-500 text-gray-900 text-sm font-medium rounded"
@@ -215,12 +212,103 @@ export default function MeetingMinutes() {
               </div>
             </div>
 
+            {/* Meeting Introduction (Starts With) */}
             <div className="p-4 bg-black-1 rounded-lg shadow-lg w-full">
               <h3 className="text-lg font-semibold mb-3 text-white-1">
+                Meeting Introduction
+              </h3>
+              <div className="text-sm">
+                {result?.meeting_minutes?.starts_with ? (
+                  <p>{result?.meeting_minutes?.starts_with}</p>
+                ) : (
+                  <p className="text-gray-400">No introduction available</p>
+                )}
+              </div>
+            </div>
+
+            {/* Conclusions Section */}
+            <div className="p-4 bg-black-1 rounded-lg shadow-lg w-full">
+              <h3 className="text-lg font-semibold mb-3 text-white-1">
+                Conclusions
+              </h3>
+              <div className="text-sm">
+                {result?.meeting_minutes?.conclusions ? (
+                  <p>{result?.meeting_minutes?.conclusions}</p>
+                ) : (
+                  <p className="text-gray-400">No conclusions available</p>
+                )}
+              </div>
+            </div>
+
+            {/* Next Actions */}
+            <div className="p-4 bg-black-1 rounded-lg shadow-lg w-full">
+              <h3 className="text-lg font-semibold mb-3 text-white-1">
+                Next Actions
+              </h3>
+              {result?.meeting_minutes?.next_actions?.length > 0 ? (
+                <ul className="list-disc pl-5 text-sm">
+                  {result?.meeting_minutes?.next_actions.map(
+                    (action:any, index:any) => (
+                      <li key={index} className="text-gray-300">
+                        {action}
+                      </li>
+                    )
+                  )}
+                </ul>
+              ) : (
+                <p className="text-gray-400">No next actions available</p>
+              )}
+            </div>
+
+            {/* Promises Given */}
+            <div className="p-4 bg-black-1 rounded-lg shadow-lg w-full">
+              <h3 className="text-lg font-semibold mb-3 text-white-1">
+                Promises Given
+              </h3>
+              {result?.meeting_minutes?.promises_given?.length > 0 ? (
+                <ul className="list-disc pl-5 text-sm">
+                  {result?.meeting_minutes?.promises_given.map(
+                    (promise:any, index:any) => (
+                      <li key={index} className="text-gray-300">
+                        {promise}
+                      </li>
+                    )
+                  )}
+                </ul>
+              ) : (
+                <p className="text-gray-400">No promises given</p>
+              )}
+            </div>
+
+            {/* What To Do */}
+            <div className="p-4 bg-black-1 rounded-lg shadow-lg w-full">
+              <h3 className="text-lg font-semibold mb-3 text-white-1">
+                What To Do
+              </h3>
+              {result?.meeting_minutes?.what_to_do?.length > 0 ? (
+                <ul className="list-disc pl-5 text-sm">
+                  {result?.meeting_minutes?.what_to_do.map((todo:any, index:any) => (
+                    <li key={index} className="text-gray-300">
+                      {todo}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-400">No tasks available</p>
+              )}
+            </div>
+
+            {/* Summary Section */}
+            <div className="p-4 bg-black-1 rounded-lg shadow-lg w-full">
+              <h3 className="text-lg font-semibold mb-3 text-white-500">
                 Summary
               </h3>
               <div className="text-sm">
-                <p>{result?.meeting_minutes?.summary}</p>
+                {result?.meeting_minutes?.summary ? (
+                  <p>{result?.meeting_minutes?.summary}</p>
+                ) : (
+                  <p className="text-gray-400">No summary available</p>
+                )}
               </div>
             </div>
           </div>
