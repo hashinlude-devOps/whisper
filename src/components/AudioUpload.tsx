@@ -8,13 +8,15 @@ import {
   getRecordingUploadStatus,
   uploadAudio,
 } from "@/lib/services/audioService";
-import { convertToWav } from "@/lib/audioutils";
+import { convertToAac } from "@/lib/audioutils";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import ProgressBar from "@/components/ui/progressbar";
 import { useSidebar } from "@/context/ContextProvider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { toBlobURL, fetchFile } from "@ffmpeg/util";
 
 export default function AudioUpload() {
   const [audioFile, setAudioFile] = useState<File | Blob | null | any>(null);
@@ -22,40 +24,115 @@ export default function AudioUpload() {
   const [processStatus, setprocessStatus] = useState<string | null>(null);
   const [errorStatus, seterrorStatus] = useState<string | null>(null);
   const [loading, setIsLoading] = useState(false);
-  const { refreshHistory,resetKey } = useSidebar();
+  const { refreshHistory, resetKey } = useSidebar();
 
   const router = useRouter();
   const [currentStep, setCurrentStep] = React.useState(0);
   const [isProgressVisible, setIsProgressVisible] = useState(false);
   const [isButtonVisible, setIsButtonVisible] = useState(false);
+  const [ffmpeg, setFFmpeg] = useState<FFmpeg | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const load = async () => {
+    const ffmpeg = new FFmpeg();
+    setFFmpeg(ffmpeg);
+
+    try {
+      // Load ffmpeg.wasm-core script
+      const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.4/dist/umd";
+      await ffmpeg.load({
+        coreURL: await toBlobURL(
+          `${baseURL}/ffmpeg-core.js`,
+          "text/javascript"
+        ),
+        wasmURL: await toBlobURL(
+          `${baseURL}/ffmpeg-core.wasm`,
+          "application/wasm"
+        ),
+      });
+      setIsReady(true);
+      setMessage("FFmpeg is ready!");
+    } catch (error) {
+      // setMessage('Failed to load FFmpeg: ' + error.message);
+    }
+  };
 
   const handleFileSelected = async (file: File | Blob) => {
     try {
+      console.log("hi am here..")
       setIsButtonVisible(false);
       setAudioFile(null);
-      seterrorStatus(null)
+      seterrorStatus(null);
       setprocessStatus("Compressing selected audio file");
-      const convertedFile = await convertToWav(file);
 
+      if (!ffmpeg || !isReady) {
+        setprocessStatus(null);
+        seterrorStatus("FFmpeg is not initialized or ready.");
+        toast.error("FFmpeg is not ready. Please try again later.", {
+          duration: 5000,
+        });
+        setIsButtonVisible(true);
+        return;
+      }
+
+      const fileBuffer = await fetchFile(file);
+      if (!fileBuffer) {
+        throw new Error("Unable to process the input file.");
+      }
+
+      await ffmpeg.writeFile("input.mp4", fileBuffer);
+
+      await ffmpeg.exec([
+        "-i",
+        "input.mp4",
+        "-vn", // Disable video
+        "-c:a",
+        "aac",
+        "-ac",
+        "1",
+        "-ar",
+        "16000",
+        "-b:a",
+        "16k",
+        "-movflags",
+        "+faststart",
+        "output.aac",
+      ]);
+
+      // Retrieve the output file
+      const data = await ffmpeg.readFile("output.aac"); // Returns Uint8Array
+
+      // Wrap the Uint8Array in a Blob
+      const convertedBlob = new Blob([data], { type: "audio/aac" });
+
+      // Generate the final file
       const originalFileName =
         file instanceof File ? file.name : "recorded_audio";
       const fileNameWithoutExtension = originalFileName.replace(
         /\.[^/.]+$/,
         ""
       );
-      const finalFileName = `${fileNameWithoutExtension}.wav`;
-      const finalFile = new File([convertedFile], finalFileName, {
-        type: "audio/wav",
+      const finalFileName = `${fileNameWithoutExtension}.aac`;
+      const finalFile = new File([convertedBlob], finalFileName, {
+        type: "audio/aac",
       });
+
+      // Update states
       setAudioFile(finalFile);
       setIsButtonVisible(true);
-      seterrorStatus(null)
+      seterrorStatus(null);
       setprocessStatus(null);
-      toast.success("File successfully compressed.", {
+      toast.success("File successfully compressed.", { duration: 5000 });
+    } catch (error) {
+      console.error("Error during file processing:", error);
+      toast.error("Error converting to AAC: " + (error as Error).message, {
         duration: 5000,
       });
-    } catch (error) {
-      toast.error("Error converting to WAV", { duration: 5000 });
       setIsButtonVisible(true);
       setprocessStatus(null);
       seterrorStatus("Error during conversion.");
@@ -75,7 +152,7 @@ export default function AudioUpload() {
     const value = event.target.value.trim();
     if (value === "" || /^[1-9]\d*$/.test(value)) {
       setSpeakers(value);
-      seterrorStatus(null); 
+      seterrorStatus(null);
     } else {
       setprocessStatus(null);
       seterrorStatus("Please enter a valid whole number greater than 0.");
@@ -102,7 +179,7 @@ export default function AudioUpload() {
     setIsProgressVisible(true);
     setIsButtonVisible(false);
     setIsLoading(true);
-    seterrorStatus(null)
+    seterrorStatus(null);
     setprocessStatus("Please wait, Uploading");
     setCurrentStep(1);
 
@@ -116,7 +193,7 @@ export default function AudioUpload() {
         });
         refreshHistory();
         setCurrentStep(2);
-        seterrorStatus(null)
+        seterrorStatus(null);
         setprocessStatus(
           "You can continue with other tasks. Your audio is being processed in the background."
         );
@@ -220,7 +297,7 @@ export default function AudioUpload() {
               Audio Recorder and Uploader
             </h1>
             <div className="space-y-4">
-              <AudioInput onFileSelected={handleFileSelected}/>
+              <AudioInput onFileSelected={handleFileSelected} />
               {audioFile && (
                 <>
                   <div>
@@ -237,6 +314,7 @@ export default function AudioUpload() {
                       placeholder="Enter number of speakers"
                     />
                   </div>
+
                   {isButtonVisible && (
                     <Button
                       onClick={handleUpload}
