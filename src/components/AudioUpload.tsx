@@ -64,7 +64,6 @@ export default function AudioUpload() {
 
   const handleFileSelected = async (file: File | Blob) => {
     try {
-      console.log("hi am here..")
       setIsButtonVisible(false);
       setAudioFile(null);
       seterrorStatus(null);
@@ -129,7 +128,7 @@ export default function AudioUpload() {
       setprocessStatus(null);
       toast.success("File successfully compressed.", { duration: 5000 });
     } catch (error) {
-      console.error("Error during file processing:", error);
+      // console.error("Error during file processing:", error);
       toast.error("Error converting to AAC: " + (error as Error).message, {
         duration: 5000,
       });

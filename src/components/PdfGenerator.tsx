@@ -21,20 +21,20 @@ const generateTranslationDOCX = async (result: any, timestamp: string) => {
       timestamp: timestamp,
       segments: result.result.map((segment: any) => ({
         speaker: segment.speaker,
-        text: segment.translated_text || "No Text Available", 
+        text: segment.translated_text || "No Text Available",
       })),
     };
 
-    // console.log(data); 
+    // console.log(data);
 
     doc.setData(data);
 
     doc.render();
 
     const out = doc.getZip().generate({ type: "blob" });
-    saveAs(out, "translation_result.docx"); 
+    saveAs(out, "translation_result.docx");
   } catch (error) {
-    // console.error("Error generating Translation DOCX:", error); 
+    // console.error("Error generating Translation DOCX:", error);
     throw error;
   }
 };
@@ -58,7 +58,7 @@ const generateTranscriptionDOCX = async (result: any, timestamp: string) => {
       timestamp: timestamp,
       segments: result.result.map((segment: any) => ({
         speaker: segment.speaker,
-        text: segment.transcribed_text || "No Text Available", 
+        text: segment.transcribed_text || "No Text Available",
       })),
     };
     doc.setData(data);
@@ -66,7 +66,7 @@ const generateTranscriptionDOCX = async (result: any, timestamp: string) => {
     doc.render();
 
     const out = doc.getZip().generate({ type: "blob" });
-    saveAs(out, "transcription_result.docx"); 
+    saveAs(out, "transcription_result.docx");
   } catch (error) {
     // console.error("Error generating Translation DOCX:", error);
     throw error;
@@ -77,18 +77,44 @@ const generateMeetingMinutesDOCX = async (result: any) => {
   try {
     const response = await fetch("/template/meeting_minutes_template.docx");
     if (!response.ok) {
-      throw new Error(`Failed to load meeting minutes template: ${response.statusText}`);
+      throw new Error(
+        `Failed to load meeting minutes template: ${response.statusText}`
+      );
     }
     const arrayBuffer = await response.arrayBuffer();
 
     const zip = new PizZip(arrayBuffer);
     const doc = new Docxtemplater(zip);
-    console.log(result)
+    console.log(result);
     const data = {
-      attendees: result.attendees ? result.attendees.join(", ") : "", 
-      imp_dates: (result.imp_dates && result.imp_dates.length > 0) ? result.imp_dates.join(", ") : "No important dates",
-      key_events: result.key_events ? result.key_events.join("\n") : "No key events available", // Join with line breaks
-      summary: result.summary || "No summary available", 
+      attendees: result.attendees ? result.attendees.join(", ") : "",
+      starts_with: result.starts_with || "",
+      imp_dates:
+        result.imp_dates && result.imp_dates.length > 0
+          ? result.imp_dates.join(", ")
+          : "No important dates",
+      key_events: result.key_events
+        ? result.key_events.map(
+            (event: string, index: number) => `${index + 1}. ${event}`
+          )
+        : ["No key events available"],
+      next_actions: result.next_actions
+        ? result.next_actions.map(
+            (event: string, index: number) => `${index + 1}. ${event}`
+          )
+        : ["No next actions available"],
+      promises_given: result.promises_given
+        ? result.promises_given.map(
+            (event: string, index: number) => `${index + 1}. ${event}`
+          )
+        : ["No promises given available"],
+      what_to_do:  result.what_to_do
+      ? result.what_to_do.map(
+          (event: string, index: number) => `${index + 1}. ${event}`
+        )
+      : ["No to do list available"],
+      summary: result.summary || "No summary available",
+      conclusions:  result.conclusions || "No conclusions available",
     };
 
     doc.setData(data);

@@ -22,7 +22,7 @@ export const uploadAudio = async (
 
     return response; 
   } catch (error) {
-    console.error("Error uploading audio:", error);
+    // console.error("Error uploading audio:", error);
     throw error; 
   }
 };
@@ -34,7 +34,7 @@ export const getRecordings = async (): Promise<Response> => {
       });
       return (response); 
     } catch (error) {
-      console.error("Error fetching recordings:", error);
+      // console.error("Error fetching recordings:", error);
       throw error; 
     }
 };
@@ -46,7 +46,7 @@ export const getRecordingUploadStatus = async (id: string,): Promise<Response> =
     });
     return (response); 
   } catch (error) {
-    console.error("Error fetching recordings:", error);
+    // console.error("Error fetching recordings:", error);
     throw error; 
   }
 };
@@ -66,7 +66,7 @@ export const updateSpeakerNames = async (
     });
     return response;
   } catch (error) {
-    console.error("Error updating speaker names:", error);
+    // console.error("Error updating speaker names:", error);
     throw error;
   }
 };
@@ -79,7 +79,7 @@ export const getTranscription = async (id: string,): Promise<Response> => {
     });
     return (response); 
   } catch (error) {
-    console.error("Error fetching recordings:", error);
+    // console.error("Error fetching recordings:", error);
     throw error; 
   }
 };
@@ -98,7 +98,7 @@ export const updateRecordingName = async (
     });
     return response;
   } catch (error) {
-    console.error("Error updating recording names:", error);
+    // console.error("Error updating recording names:", error);
     throw error;
   }
 };
@@ -113,7 +113,7 @@ export const fetchMeetingMinutes = async (id: string): Promise<Response> => {
     );
     return response;
   } catch (error) {
-    console.error("Error generating meeting minutes:", error);
+    // console.error("Error generating meeting minutes:", error);
     throw error;
   }
 };
@@ -126,7 +126,7 @@ export const viewMeetingMinutes = async (id: string,): Promise<Response> => {
     });
     return (response); 
   } catch (error) {
-    console.error("Error fetching recordings:", error);
+    // console.error("Error fetching recordings:", error);
     throw error; 
   }
 };
@@ -140,7 +140,7 @@ export const getEmbeddingStatus = async (id: string,): Promise<Response> => {
     });
     return (response); 
   } catch (error) {
-    console.error("Error fetching status:", error);
+    // console.error("Error fetching status:", error);
     throw error; 
   }
 };
@@ -161,7 +161,7 @@ export const querySearch = async (
     });
     return response;
   } catch (error) {
-    console.error("Error searching:", error);
+    // console.error("Error searching:", error);
     throw error;
   }
 };
@@ -179,7 +179,7 @@ export const globalSearch = async (
     });
     return response;
   } catch (error) {
-    console.error("Error searching:", error);
+    // console.error("Error searching:", error);
     throw error;
   }
 };

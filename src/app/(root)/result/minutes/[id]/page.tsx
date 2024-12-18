@@ -283,7 +283,7 @@ export default function MeetingMinutes() {
             {/* What To Do */}
             <div className="p-4 bg-black-1 rounded-lg shadow-lg w-full">
               <h3 className="text-lg font-semibold mb-3 text-white-1">
-                What To Do
+                To Do
               </h3>
               {result?.meeting_minutes?.what_to_do?.length > 0 ? (
                 <ul className="list-disc pl-5 text-sm">

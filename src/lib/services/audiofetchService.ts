@@ -21,7 +21,7 @@ export const getSegmentAudio = async (segmentUrl: string): Promise<string> => {
       const blob = await response.blob();
       return URL.createObjectURL(blob); 
     } catch (error) {
-      console.error("Error fetching segment audio:", error);
+      // console.error("Error fetching segment audio:", error);
       return "";
     }
   };
@@ -40,7 +40,7 @@ export const getSegmentAudio = async (segmentUrl: string): Promise<string> => {
         throw new Error(`Failed to fetch audio from ${endpoint}`);
       }
     } catch (error) {
-      console.error("Error fetching full audio:", error);
+      // console.error("Error fetching full audio:", error);
       return "";
     }
   };

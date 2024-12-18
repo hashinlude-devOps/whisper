@@ -59,7 +59,7 @@ export const apiClient = async <T>(
 
     return { status: response.status, data };  
   } catch (error: any) {
-    console.error(`API Error [${method} ${url}]:`, error.message);
+    // console.error(`API Error [${method} ${url}]:`, error.message);
     throw error;
   }
 };

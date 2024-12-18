@@ -27,7 +27,7 @@ interface Response {
       // Return the response for consistent handling
       return response;
     } catch (error: any) {
-      console.error('Signin error:', error);
+      // console.error('Signin error:', error);
       throw error; // Rethrow the error to be handled in the UI
     }
   };
@@ -42,7 +42,7 @@ interface Response {
       // Return the response for consistent handling
       return response;
     } catch (error: any) {
-      console.error('Signup error:', error);
+      // console.error('Signup error:', error);
       throw error; // Rethrow the error to be handled in the UI
     }
   };
@@ -57,7 +57,7 @@ interface Response {
   
       return true; 
     } catch (error) {
-      console.error("Error validating user:", error);
+      // console.error("Error validating user:", error);
       return false; 
     }
   };
@@ -69,6 +69,6 @@ export const logout = async () => {
     // Call signOut with the callback URL
     await signOut({ redirect: true, callbackUrl: "/sign-in" });
   } catch (error) {
-    console.error("Error during logout:", error);
+    // console.error("Error during logout:", error);
   }
 };

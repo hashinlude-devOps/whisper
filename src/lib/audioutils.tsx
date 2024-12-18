@@ -111,7 +111,7 @@ export async function convertToAac(blob: Blob): Promise<Blob> {
     return new Blob([data], { type: 'audio/aac' });
 
   } catch (error) {
-    console.error('Error during AAC conversion:', error);
+    // console.error('Error during AAC conversion:', error);
     throw new Error('Error during AAC conversion');
   } finally {
     // Cleanup FFmpeg memory
